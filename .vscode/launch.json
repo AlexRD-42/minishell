@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Executable (LLDB)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/main",
+      "cwd": "${workspaceFolder}",
+      "args": [],
+      "env": { "LSAN_OPTIONS": "detect_leaks=0" },
+      "stopOnEntry": false,
+      "preLaunchTask": "build"
+    }
+  ]
+}

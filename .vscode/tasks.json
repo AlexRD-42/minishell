@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "bear",
+      "args": ["--output", "build/compile_commands.json", "--","make", "debug"],
+      "group": { "kind": "build", "isDefault": true },
+    }
+  ]
+}
