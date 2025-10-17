@@ -8,7 +8,7 @@ VPATH = sources sources/utils
 
 # Files --------------------------------------- #
 LIBS =
-SRCS = main.c memory.c string.c
+SRCS = main.c heredoc.c memory.c string.c
 OBJS = $(addprefix $(OBJ_PATH)/, $(SRCS:.c=.o))
 
 # Flags --------------------------------------- #
