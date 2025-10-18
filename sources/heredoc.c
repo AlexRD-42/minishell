@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/18 10:59:29 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/18 16:13:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,9 @@
 #include <stdio.h>
 #include "minishell.h"
 
+// Possible UB
 static inline
-uint8_t	eof_cmp(const char *str, const char *eof)
+uint8_t	stt_eof_cmp(const char *str, const char *eof)
 {
 	while (*str == *eof && *eof != 0)
 	{
@@ -29,28 +30,25 @@ uint8_t	eof_cmp(const char *str, const char *eof)
 	return (*eof == 0 && (*str == 0 || *str == '\n'));
 }
 
-// Can be optimized to search for first /n prior to length
-// Remove the ternary dumbass
-size_t	is_eof(const char *str, const char *eof, size_t eof_len, size_t length)
+// Possible infinite loop
+static
+size_t	stt_find_eof(const char *str, const char *eof, size_t eof_length, size_t length)
 {
-	static size_t	start = 0;
-	size_t			i;
+	size_t	i;
 
-	i = start;
-	if (length <= eof_len)
-		return (SIZE_MAX);
-	length -= eof_len;
-	while (eof_cmp(str, eof) == 0 && i < length)
+	i = 0;
+	while (i + eof_length < length)
 	{
-		while (str[i] != '\n' && i < length)
+		if (stt_eof_cmp(str + i, eof) == 1)
+			return (i);
+		while (i < length && str[i] != '\n')
 			i++;
-		if (str[i] == '\n')
-			start = ++i;
 	}
-	return (i < length ? i : SIZE_MAX);
+	return (SIZE_MAX);
 }
 
-int	write_to_buffer(char *buffer, size_t length)
+static
+int	stt_write_to_pipe(char *buffer, size_t length)
 {
 	int	fd[2];
 
@@ -64,38 +62,26 @@ int	write_to_buffer(char *buffer, size_t length)
 	return (fd[0]);
 }
 
-// First write everything from buffer to disk
-// Then do normal read and write appends to file
-int	write_to_disk(char *buffer, size_t length)
-{
-	
-}
-
-// <<'EOF', <<"EOF", or <<\EOF (delimiter quoted in any way): No expansions
-// EOF is always taken literally
-// There is no need for length if buffer is zeroed
-
-// Create a GNL with (fd, *buffer, buffer_size) 
 int	heredoc(const char *eof)
 {
 	ssize_t			bytes_read;
 	size_t			offset;
-	const size_t	eof_length = ft_strlen(eof);
-	char			buffer[65536];
 	size_t			length;
+	char			buffer[65536];
+	const size_t	eof_length = ft_strlen(eof);
 
 	offset = 0;
 	bytes_read = read(STDIN_FILENO, buffer, PAGE_SIZE);
 	while (bytes_read > 0 && offset < 65536 - PAGE_SIZE)
 	{
-		offset += (size_t) bytes_read;
-		length = is_eof(buffer, eof, eof_length, offset);
+		length = stt_find_eof(buffer + offset, eof, eof_length, (size_t) bytes_read);
 		if (length != SIZE_MAX)
-			return (write_to_buffer(buffer, length));
+			return (stt_write_to_pipe(buffer, length + offset));
+		offset += (size_t) bytes_read;
 		bytes_read = read(STDIN_FILENO, buffer + offset, PAGE_SIZE);
 	}
-	length = is_eof(buffer, eof, eof_length, offset);
+	length = stt_find_eof(buffer, eof, eof_length, offset);
 	if (length != SIZE_MAX)
-		return (write_to_buffer(buffer, length));
+		return (stt_write_to_pipe(buffer, length));
 	return (-1);
 }
