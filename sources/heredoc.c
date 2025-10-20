@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/18 16:13:01 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/20 21:31:00 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,8 @@
 #include <stdio.h>
 #include "minishell.h"
 
-// Possible UB
-static inline
-uint8_t	stt_eof_cmp(const char *str, const char *eof)
+static inline uint8_t	\
+stt_eof_cmp(const char *str, const char *eof)
 {
 	while (*str == *eof && *eof != 0)
 	{
@@ -30,25 +29,25 @@ uint8_t	stt_eof_cmp(const char *str, const char *eof)
 	return (*eof == 0 && (*str == 0 || *str == '\n'));
 }
 
-// Possible infinite loop
-static
-size_t	stt_find_eof(const char *str, const char *eof, size_t eof_length, size_t length)
+static const char	\
+*stt_find_eof(const char *str, const char *eof, const char *end, size_t eof_len)
 {
-	size_t	i;
+	const char	*nl_pos = NULL;
 
-	i = 0;
-	while (i + eof_length < length)
+	end -= eof_len;
+	while (str <= end)
 	{
-		if (stt_eof_cmp(str + i, eof) == 1)
-			return (i);
-		while (i < length && str[i] != '\n')
-			i++;
+		nl_pos = str++;
+		if (stt_eof_cmp(nl_pos, eof) == 1)
+			break ;
+		while (str < end && *str != '\n')
+			str++;
 	}
-	return (SIZE_MAX);
+	return (nl_pos);
 }
 
-static
-int	stt_write_to_pipe(char *buffer, size_t length)
+static int	\
+stt_write_to_pipe(const char *buffer, size_t length)
 {
 	int	fd[2];
 
@@ -62,26 +61,29 @@ int	stt_write_to_pipe(char *buffer, size_t length)
 	return (fd[0]);
 }
 
+// Check for UB in execution
 int	heredoc(const char *eof)
 {
-	ssize_t			bytes_read;
-	size_t			offset;
-	size_t			length;
-	char			buffer[65536];
-	const size_t	eof_length = ft_strlen(eof);
+	ssize_t		bytes_read;
+	size_t		eof_len;
+	char		buffer[68 * 1024];
+	char		*read_end;
+	const char 	*nl_pos = buffer;
 
-	offset = 0;
+	if (eof == NULL)
+		return (-1);
 	bytes_read = read(STDIN_FILENO, buffer, PAGE_SIZE);
-	while (bytes_read > 0 && offset < 65536 - PAGE_SIZE)
+	// if (bytes_read < 0)
+	// 	return (-1);
+	eof_len = ft_strlen(eof);
+	read_end = buffer + bytes_read * (bytes_read < 0);
+	while (bytes_read > 0 && read_end < buffer + 65536)
 	{
-		length = stt_find_eof(buffer + offset, eof, eof_length, (size_t) bytes_read);
-		if (length != SIZE_MAX)
-			return (stt_write_to_pipe(buffer, length + offset));
-		offset += (size_t) bytes_read;
-		bytes_read = read(STDIN_FILENO, buffer + offset, PAGE_SIZE);
+		nl_pos = stt_find_eof(nl_pos, eof, read_end, eof_len);
+		if (nl_pos != NULL && stt_eof_cmp(nl_pos, eof) == 1)
+			return (stt_write_to_pipe(buffer, (size_t)(nl_pos - buffer)));
+		bytes_read = read(STDIN_FILENO, read_end, PAGE_SIZE);
+		read_end += bytes_read;
 	}
-	length = stt_find_eof(buffer, eof, eof_length, offset);
-	if (length != SIZE_MAX)
-		return (stt_write_to_pipe(buffer, length));
 	return (-1);
 }
