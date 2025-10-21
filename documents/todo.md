@@ -14,3 +14,9 @@ Despite the line length being unbounded, code execution works because the values
 However, this presents a problem for the working history, because it needs to be saved in its entirety.
 
 Possible solution is to have the working history be saved in the stack (4mb), and when it needs more space 
+
+
+# Create safe_write
+Short writes: write(fd, buf, len) can return 0 < n < len. That means only n bytes were written (common with pipes, sockets, terminals, nonblocking fds). You must advance the pointer and loop until all bytes are written or an error occurs.
+
+EINTR: A system call was interrupted by a signal before it made progress. write() returns -1 with errno == EINTR. Just retry the call.
