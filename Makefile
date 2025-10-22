@@ -9,7 +9,7 @@ VPATH = sources sources/utils sources/commands
 # Files --------------------------------------- #
 LIBS =
 SRCS = main.c heredoc.c memory.c string.c \
-echo.c
+echo.c syscalls.c
 OBJS = $(addprefix $(OBJ_PATH)/, $(SRCS:.c=.o))
 
 # Flags --------------------------------------- #

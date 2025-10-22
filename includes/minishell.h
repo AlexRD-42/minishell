@@ -13,17 +13,18 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <unistd.h>
+# include <stdint.h>
+# include <stddef.h>
+# include <unistd.h>
+# include <stdbool.h>
 
-#ifndef FT_PAGE_SIZE
-# define FT_PAGE_SIZE 4096
-#endif
+# ifndef FT_PAGE_SIZE
+#  define FT_PAGE_SIZE 4096
+# endif
 
-#ifndef FT_PATH_MAX
-# define FT_PATH_MAX 4096
-#endif
+# ifndef FT_PATH_MAX
+#  define FT_PATH_MAX 4096
+# endif
 
 size_t	ft_strlen(const char *str);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dst_size);
@@ -36,6 +37,13 @@ void	*ft_bzero(void *dst_void, size_t length);
 void	*ft_memset(void *dst_void, const uint8_t byte, size_t length);
 
 ssize_t	ft_write(int fd, const void *buffer, size_t length);
+
+typedef struct s_shell
+{
+	char	*input;
+	char	**envp;
+	bool	non_interactive;
+}	t_shell;
 
 typedef struct s_str
 {

@@ -4,3 +4,4 @@ build/**
 *.a
 *.o
 *.out
+.vscode/settings.json
