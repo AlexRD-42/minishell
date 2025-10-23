@@ -1,5 +1,3 @@
-cp $(find -iname "opendir.c") ../minishell/assets/libc_source
-
 ## stdlib
 	malloc, free, exit, getenv
 
@@ -35,8 +33,8 @@ cp $(find -iname "opendir.c") ../minishell/assets/libc_source
 ## termcap.h
 	tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 
-## readline/readline
-	readline, rl_on_new_line, rl_replace_line, rl_redisplay
+## readline
+	readline, rl_on_new_line, rl_replace_line, rl_redisplay, rl_clear_history, add_history
 
-## readline/history
-	rl_clear_history, add_history
+
+cp $(find -iname "opendir.c") ../minishell/assets/libc_source

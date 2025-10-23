@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 10:26:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/21 11:57:08 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/23 15:41:43 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ uses getcwd to determine the current path
 // Check if cwd returns nl
 // Check short writes
 
-int	cmd_pwd(int argc, const char **argv)
+int	msh_pwd(int argc, const char **argv)
 {
 	char	buffer[FT_PATH_MAX];
 

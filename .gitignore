@@ -1,7 +1,7 @@
 .cache
 build/**
+.vscode
 *.exe
 *.a
 *.o
 *.out
-.vscode/settings.json

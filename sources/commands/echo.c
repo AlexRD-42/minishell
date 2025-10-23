@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 10:25:13 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/21 11:56:18 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/23 15:41:36 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ them followed by a newline (-n suppresses the newline)
 #include <minishell.h>
 
 // To do: Error handling
-int	cmd_echo(int argc, const char **argv)
+int	msh_echo(int argc, const char **argv)
 {
 	size_t	i;
 	uint8_t	no_nl;
