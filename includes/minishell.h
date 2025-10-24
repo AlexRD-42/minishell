@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/23 16:56:04 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/24 16:38:25 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,20 @@
 
 # include "msh_types.h"
 
-size_t	ft_strlen(const char *str);
-size_t	ft_strlcpy(char *dst, const char *src, size_t dst_size);
-size_t	ft_strlcat(char *dst, const char *src, size_t dst_size);
-int32_t	ft_strncmp(const char *str1, const char *str2, size_t length);
-int32_t	ft_strcmp(const char *str1, const char *str2);
+size_t		ft_strlen(const char *str);
+size_t		ft_strlcpy(char *dst, const char *src, size_t dst_size);
+size_t		ft_strlcat(char *dst, const char *src, size_t dst_size);
+int32_t		ft_strncmp(const char *str1, const char *str2, size_t length);
+int32_t		ft_strcmp(const char *str1, const char *str2);
 
-void	*ft_memcpy(void *dst_void, const void *src_void, size_t length);
-void	*ft_bzero(void *dst_void, size_t length);
-void	*ft_memset(void *dst_void, const uint8_t byte, size_t length);
+const char	*ft_strfind(const char *str, const char *charset, uint8_t ref);
+const char	*ft_strchr(const char *str, unsigned char c);
 
-ssize_t	ft_write(int fd, const void *buffer, size_t length);
+void		*ft_memmove(void *vdst, const void *vsrc, size_t length);
+void		*ft_bzero(void *dst_void, size_t length);
+void		*ft_memset(void *dst_void, const uint8_t byte, size_t length);
+void		*ft_memcpy(void *restrict vdst, const void *restrict vsrc, size_t length);
+
+ssize_t		ft_write(int fd, const void *buffer, size_t length);
 
 #endif

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   types.h                                            :+:      :+:    :+:   */
+/*   msh_types.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/23 16:55:25 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/24 14:31:34 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,18 @@
 #  define FT_ENV_SIZE 65536
 # endif
 
-typedef struct s_memory
+typedef struct s_env
 {
-	char	env_data[FT_ENV_SIZE];		// 64kb
-	char	*env_ptr[FT_ENV_ENTRIES];	// 8kb
-}	t_memory;
+	size_t	count;
+	size_t	offset;
+	char	data[FT_ENV_SIZE];		// 64kb
+	char	*ptr[FT_ENV_ENTRIES];	// 8kb
+}	t_env;
 
 typedef struct s_shell
 {
 	char	*input;
-	char	**envp;
+	t_env	env;
 	bool	mode; // 0 for non_interactive, 1 for interactive
 }	t_shell;
 
