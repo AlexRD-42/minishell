@@ -1,19 +1,14 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
+/*   msh_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/21 10:25:13 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/23 15:41:36 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/10/25 14:00:30 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-/*
-Echo prints out the arguments to the standard output, with a space separating
-them followed by a newline (-n suppresses the newline)
-*/
 
 #include <stdint.h>
 #include <stddef.h>
@@ -21,7 +16,9 @@ them followed by a newline (-n suppresses the newline)
 #include <stdio.h>
 #include <minishell.h>
 
-// To do: Error handling
+/* Echo prints out the arguments to stdout, with a space separating them
+followed by a newline (-n suppresses the newline)
+To do: Error handling */
 int	msh_echo(int argc, const char **argv)
 {
 	size_t	i;
@@ -46,4 +43,10 @@ int	msh_echo(int argc, const char **argv)
 	if (no_nl == 0)
 		write(STDOUT_FILENO, "\n", 1);
 	return (0);
+}
+
+// 
+int	msh_exit(int argc, const char **argv)
+{
+	
 }
