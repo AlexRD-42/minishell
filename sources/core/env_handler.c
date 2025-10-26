@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/25 14:03:26 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/26 17:05:58 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,14 +99,17 @@ uint8_t	env_add(t_env *env, const char *entry)
 	return (0);
 }
 
-// Need to reserve first 8kb to PWD and OLDPWD
+// first 8kb are reserved for PWD and OLDPWD
 uint8_t	env_copy(t_env *env, const char **envp_src)
 {
 	size_t	i;
 	size_t	length;
 
-	i = 0;
-	env->offset = 0;
+	ft_memset(env->data, 0, FT_ENV_SIZE);
+	env->ptr[0] = env->data;
+	env->ptr[1] = env->data + FT_PATH_MAX + 1;
+	i = 2;
+	env->offset = 2 * FT_PATH_MAX + 1; // + 1?
 	while (envp_src[i] != NULL)
 	{
 		length = ft_strlen(envp_src[i]) + 1;
@@ -119,6 +122,25 @@ uint8_t	env_copy(t_env *env, const char **envp_src)
 	}
 	env->count = i;
 	env->ptr[i] = NULL;
+	return (0);
+}
+
+uint8_t	env_init(t_env *env, const char **envp_src)
+{
+	size_t	i;
+	uint8_t	buffer[2 * FT_PATH_MAX];
+
+	ft_memset(buffer, 0, 2 * FT_PATH_MAX);
+	env_copy(env, envp_src);
+	i = env_find(env, "PWD");
+	if (i != SIZE_MAX)
+		ft_memcpy(buffer, env->ptr[i], ft_strlen(env->ptr[i]) + 1);
+	i = env_find(env, "OLDPWD");
+	if (i != SIZE_MAX)
+		ft_memcpy(buffer + FT_PATH_MAX, env->ptr[i], ft_strlen(env->ptr[i]) + 1);
+	env_del(env, "PWD");
+	env_del(env, "OLDPWD");
+	ft_memcpy(buffer + FT_PATH_MAX, env->ptr[i], 2 * FT_PATH_MAX);
 	return (0);
 }
 

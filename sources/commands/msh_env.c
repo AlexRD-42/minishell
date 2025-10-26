@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:55:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/25 14:01:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/26 16:59:45 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,44 @@ int	msh_env(int argc, const char **argv, const char **envp)
 // }
 
 // 
-int	msh_export(int argc, const char **argv, const char **envp)
+int	msh_export(int argc, const char **argv, t_env *env)
 {
-	
+	int		rvalue;
+	size_t	i;
+
+	if (argc < 2)
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		return (1);	// Lack of arguments
+	}
+	rvalue = 0;
+	i = 1;
+	while (argv[i] != NULL)
+	{
+		rvalue += env_add(env, argv[i]) != 0;
+		i++;
+	}
+	return (rvalue);
 }
 
-// 
-int	msh_unset(int argc, const char **argv, const char **envp)
+// 0  All name operands were successfully unset
+// >0 At least one name could not be unset
+int	msh_unset(int argc, const char **argv, t_env *env)
 {
-	
+	int		rvalue;
+	size_t	i;
+
+	if (argc < 2)
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		return (1);	// Lack of arguments
+	}
+	rvalue = 0;
+	i = 1;
+	while (argv[i] != NULL)
+	{
+		rvalue += env_del(env, argv[i]) != 0;
+		i++;
+	}
+	return (rvalue);
 }
