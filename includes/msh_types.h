@@ -10,6 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef MSH_TYPES_H
+# define MSH_TYPES_H
+
 # include <stdint.h>
 # include <stddef.h>
 # include <unistd.h>
@@ -31,6 +34,30 @@
 #  define FT_ENV_SIZE 65536
 # endif
 
+# ifndef FT_TOKEN_MAX
+#  define FT_TOKEN_MAX 256
+# endif
+
+typedef enum e_type
+{
+	ERROR = -1,
+	UNSET = 0,
+	WORD = 1 << 0,
+	OR = 1 << 1,
+	AND = 1 << 2,
+	PIPE = 1 << 3,
+	OPEN_PARENTHESIS = 1 << 4,
+	CLOSE_PARENTHESIS = 1 << 5,
+	REDIRECT_IN = 1 << 6,
+	REDIRECT_OUT = 1 << 7,
+	APPEND = 1 << 8,
+	HEREDOC = 1 << 9,
+	LIMITER = 1 << 10,
+	SINGLE_QUOTE = 1 << 11,
+	DOUBLE_QUOTE = 1 << 12,
+	END = 1 << 13,
+}	t_type;
+
 typedef struct s_env
 {
 	size_t	count;
@@ -39,10 +66,18 @@ typedef struct s_env
 	char	*ptr[FT_ENV_ENTRIES];	// 8kb
 }	t_env;
 
+typedef struct s_token
+{
+	t_str		str;
+	t_type		type;
+	t_type		sub_type;
+}	t_token;
+
 typedef struct s_shell
 {
 	char	*input;
 	t_env	env;
+	t_token	tokens[FT_TOKEN_MAX];
 	bool	mode; // 0 for non_interactive, 1 for interactive
 }	t_shell;
 
@@ -55,3 +90,5 @@ typedef struct s_str
 	};
 	size_t	length;
 }	t_str;
+
+#endif

@@ -43,4 +43,16 @@ uint8_t		env_add(t_env *env, const char *entry);
 uint8_t		env_copy(t_env *env, const char **envp_src);
 uint8_t		env_init(t_env *env, const char **envp_src);
 
+int			ft_isspace(int c);
+
+int			tokenize(t_shell *shell, char *input);
+int			validate_syntax(t_shell *shell, int parenthesis_depth);
+void		syntax_error(t_token token);
+int			not_implemented(char **input);
+int			end_error(t_token last_token);
+int			start_error(t_token first_token);
+void		handle_quote_token(t_token *token, char **input);
+void		handle_word_token(t_token *token, char **input);
+int			cmp_token(char **input, char *token);
+
 #endif
