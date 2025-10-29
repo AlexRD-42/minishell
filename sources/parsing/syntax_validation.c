@@ -17,15 +17,13 @@ stt_syntax_check_parenthesis(t_token current, t_token prev, int *paren_depth)
 {
 	if (current.type & (OPEN_PAREN))
 	{
-		if (prev.type & (WORD | SINGLE_QUOTE | DOUBLE_QUOTE | APPEND
-				| HEREDOC | REDIRECT_IN | REDIRECT_OUT | CLOSE_PAREN))
+		if (prev.type & (REDIR | WORD | CLOSE_PAREN))
 			return (syntax_print_error(current), 1);
 		(*paren_depth)++;
 	}
 	if (current.type & (CLOSE_PAREN))
 	{
-		if (prev.type & (PIPE | OR | AND | OPEN_PAREN | REDIRECT_IN
-				| REDIRECT_OUT | APPEND | HEREDOC))
+		if (prev.type & (OPERATOR | REDIR | OPEN_PAREN))
 			return (syntax_print_error(current), 1);
 		(*paren_depth)--;
 	}
@@ -37,10 +35,9 @@ stt_syntax_check_parenthesis(t_token current, t_token prev, int *paren_depth)
 static inline int	\
 stt_syntax_check_operator(t_token current, t_token prev)
 {
-	if (current.type & (PIPE | OR | AND))
+	if (current.type & (OPERATOR))
 	{
-		if (prev.type & (PIPE | OR | AND | OPEN_PAREN | REDIRECT_IN
-				| REDIRECT_OUT | APPEND | HEREDOC))
+		if (prev.type & (OPERATOR | REDIR | OPEN_PAREN))
 			return (syntax_print_error(current), 1);
 	}
 	return (0);
@@ -49,9 +46,9 @@ stt_syntax_check_operator(t_token current, t_token prev)
 static inline int	\
 stt_syntax_check_redirect(t_token current, t_token prev)
 {
-	if (current.type & (REDIRECT_IN | REDIRECT_OUT | APPEND | HEREDOC))
+	if (current.type & (REDIR))
 	{
-		if (prev.type & (REDIRECT_IN | REDIRECT_OUT | APPEND | HEREDOC))
+		if (prev.type & (REDIR))
 			return (syntax_print_error(current), 1);
 	}
 	return (0);
@@ -60,7 +57,7 @@ stt_syntax_check_redirect(t_token current, t_token prev)
 static inline int	\
 stt_syntax_check_word(t_token current, t_token prev)
 {
-	if (current.type & (WORD | SINGLE_QUOTE | DOUBLE_QUOTE))
+	if (current.type & (WORD))
 	{
 		if (prev.type & (CLOSE_PAREN))
 			return (syntax_print_error(current), 1);

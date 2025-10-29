@@ -48,11 +48,9 @@ stt_token_finder(t_token *token, char **input)
 	else if (stt_token_cmp(input, "<<"))
 		token->type = HEREDOC;
 	else if (stt_token_cmp(input, ">"))
-		token->type = REDIRECT_OUT;
+		token->type = REDIR_OUT;
 	else if (stt_token_cmp(input, "<"))
-		token->type = REDIRECT_IN;
-	else if (**input == '\'' || **input == '"')
-		token_quote_handler(token, input);
+		token->type = REDIR_IN;
 	else
 		token_word_handler(token, input);
 }

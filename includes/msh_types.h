@@ -38,6 +38,12 @@
 #  define FT_TOKEN_MAX 256
 # endif
 
+# define REDIR 0b000011110000000
+//   (REDIR_IN | REDIR_OUT | APPEND | HEREDOC)
+
+# define OPERATOR 0b0000000000011100
+//   (OR | AND | PIPE)
+
 typedef enum e_type
 {
 	ERROR = 1,
@@ -46,16 +52,13 @@ typedef enum e_type
 	OR = 1 << 2,
 	AND = 1 << 3,
 	PIPE = 1 << 4,
-	OPEN_PARENTHESIS = 1 << 5,
-	CLOSE_PARENTHESIS = 1 << 6,
-	REDIRECT_IN = 1 << 7,
-	REDIRECT_OUT = 1 << 8,
+	OPEN_PAREN = 1 << 5,
+	CLOSE_PAREN = 1 << 6,
+	REDIR_IN = 1 << 7,
+	REDIR_OUT = 1 << 8,
 	APPEND = 1 << 9,
 	HEREDOC = 1 << 10,
-	LIMITER = 1 << 11,
-	SINGLE_QUOTE = 1 << 12,
-	DOUBLE_QUOTE = 1 << 13,
-	END = 1 << 14,
+	END = 1 << 11,
 }	t_type;
 
 typedef struct s_env
@@ -79,8 +82,8 @@ typedef struct s_str
 typedef struct s_token
 {
 	const char		*str;
-	uint16_t	type;
-	uint16_t	length;
+	uint16_t		type;
+	uint16_t		length;
 }	t_token;
 
 typedef struct s_shell

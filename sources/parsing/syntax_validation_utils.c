@@ -14,27 +14,14 @@
 
 int	syntax_check_start(t_token first_token)
 {
-	if (first_token.type & (OR
-			| AND
-			| CLOSE_PAREN
-			| PIPE
-			| REDIRECT_OUT
-			| APPEND
-			| HEREDOC))
+	if (first_token.type & (OPERATOR | CLOSE_PAREN))
 		return (syntax_print_error(first_token), 1);
 	return (0);
 }
 
 int	syntax_check_end(t_token last_token)
 {
-	if (last_token.type & (OR
-			| AND
-			| PIPE
-			| REDIRECT_IN
-			| REDIRECT_OUT
-			| APPEND
-			| HEREDOC
-			| OPEN_PAREN))
+	if (last_token.type & (OPERATOR | REDIR | OPEN_PAREN))
 		return (write(2,
 				"mini: syntax error near unexpected token 'newline'\n", 51),
 			1);

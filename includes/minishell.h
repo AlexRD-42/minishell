@@ -45,12 +45,11 @@ uint8_t		env_init(t_env *env, const char **envp_src);
 
 int			tokenize(t_shell *shell, char *input);
 int			token_not_implemented(char **input);
-void		token_quote_handler(t_token *token, char **input);
 void		token_word_handler(t_token *token, char **input);
 
 int			syntax_validation(t_shell *shell, int parenthesis_depth);
-void		syntax_print_error(t_token token);
 int			syntax_check_end(t_token last_token);
 int			syntax_check_start(t_token first_token);
+void		syntax_print_error(t_token token);
 
 #endif
