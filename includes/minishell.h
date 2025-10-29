@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/28 11:19:38 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/26 16:59:41 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,14 @@ uint8_t		env_add(t_env *env, const char *entry);
 uint8_t		env_copy(t_env *env, const char **envp_src);
 uint8_t		env_init(t_env *env, const char **envp_src);
 
-int			ft_isspace(int c);
 int			tokenize(t_shell *shell, char *input);
-int			validate_syntax(t_shell *shell, int parenthesis_depth);
-void		syntax_error(t_token token);
-int			not_implemented(char **input);
-int			end_error(t_token last_token);
-int			start_error(t_token first_token);
-void		handle_quote_token(t_token *token, char **input);
-void		handle_word_token(t_token *token, char **input);
-int			cmp_token(char **input, char *token);
+int			token_not_implemented(char **input);
+void		token_quote_handler(t_token *token, char **input);
+void		token_word_handler(t_token *token, char **input);
+
+int			syntax_validation(t_shell *shell, int parenthesis_depth);
+void		syntax_print_error(t_token token);
+int			syntax_check_end(t_token last_token);
+int			syntax_check_start(t_token first_token);
 
 #endif

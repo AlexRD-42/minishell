@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/29 11:47:12 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/24 14:31:34 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,22 +40,22 @@
 
 typedef enum e_type
 {
-	ERROR = -1,
+	ERROR = 1,
 	UNSET = 0,
-	WORD = 1 << 0,
-	OR = 1 << 1,
-	AND = 1 << 2,
-	PIPE = 1 << 3,
-	OPEN_PARENTHESIS = 1 << 4,
-	CLOSE_PARENTHESIS = 1 << 5,
-	REDIRECT_IN = 1 << 6,
-	REDIRECT_OUT = 1 << 7,
-	APPEND = 1 << 8,
-	HEREDOC = 1 << 9,
-	LIMITER = 1 << 10,
-	SINGLE_QUOTE = 1 << 11,
-	DOUBLE_QUOTE = 1 << 12,
-	END = 1 << 13,
+	WORD = 1 << 1,
+	OR = 1 << 2,
+	AND = 1 << 3,
+	PIPE = 1 << 4,
+	OPEN_PARENTHESIS = 1 << 5,
+	CLOSE_PARENTHESIS = 1 << 6,
+	REDIRECT_IN = 1 << 7,
+	REDIRECT_OUT = 1 << 8,
+	APPEND = 1 << 9,
+	HEREDOC = 1 << 10,
+	LIMITER = 1 << 11,
+	SINGLE_QUOTE = 1 << 12,
+	DOUBLE_QUOTE = 1 << 13,
+	END = 1 << 14,
 }	t_type;
 
 typedef struct s_env
@@ -78,16 +78,10 @@ typedef struct s_str
 
 typedef struct s_token
 {
-	t_str		str;
-	t_type		type;
+	const char		*str;
+	uint16_t	type;
+	uint16_t	length;
 }	t_token;
-
-typedef struct s_token2
-{
-	char		*ptr;
-	uint32_t	flags;
-	uint32_t	length;
-}	t_token2;
 
 typedef struct s_shell
 {
