@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   validate_syntax.c                                  :+:      :+:    :+:   */
+/*   validate_syntax_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:44:17 by feazeved          #+#    #+#             */
-/*   Updated: 2025/07/13 11:18:39 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/10/28 11:35:03 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,9 @@ int	end_error(t_token last_token)
 
 int	ft_isspace(int c)
 {
-	return (c == '\t' || c == ' ' || c == '\n' || c == '\f' || c == '\r'
-		|| '\v');
+	// return (c == '\t' || c == ' ' || c == '\n' || c == '\f' || c == '\r'
+	// 	|| c == '\v');
+	return ((c >= 9 && c <= 13) || c == ' ');
 }
 
 int	not_implemented(char **input)
@@ -75,6 +76,6 @@ int	not_implemented(char **input)
 void	syntax_error(t_token token)
 {
 	write(2, "minishell: syntax error near unexpected token '", 48);
-	write(2, token.str.kstr, token.str.length);
+	write(2, token.str.kptr, token.str.length);
 	write(2, "'\n", 2);
 }

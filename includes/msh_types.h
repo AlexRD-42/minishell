@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/24 14:31:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/29 11:47:12 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,21 +66,6 @@ typedef struct s_env
 	char	*ptr[FT_ENV_ENTRIES];	// 8kb
 }	t_env;
 
-typedef struct s_token
-{
-	t_str		str;
-	t_type		type;
-	t_type		sub_type;
-}	t_token;
-
-typedef struct s_shell
-{
-	char	*input;
-	t_env	env;
-	t_token	tokens[FT_TOKEN_MAX];
-	bool	mode; // 0 for non_interactive, 1 for interactive
-}	t_shell;
-
 typedef struct s_str
 {
 	union
@@ -90,5 +75,26 @@ typedef struct s_str
 	};
 	size_t	length;
 }	t_str;
+
+typedef struct s_token
+{
+	t_str		str;
+	t_type		type;
+}	t_token;
+
+typedef struct s_token2
+{
+	char		*ptr;
+	uint32_t	flags;
+	uint32_t	length;
+}	t_token2;
+
+typedef struct s_shell
+{
+	char	*input;
+	t_env	env;
+	t_token	tokens[FT_TOKEN_MAX];
+	bool	mode; // 0 for non_interactive, 1 for interactive
+}	t_shell;
 
 #endif

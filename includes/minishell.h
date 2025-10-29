@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/26 16:59:41 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/28 11:19:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ uint8_t		env_copy(t_env *env, const char **envp_src);
 uint8_t		env_init(t_env *env, const char **envp_src);
 
 int			ft_isspace(int c);
-
 int			tokenize(t_shell *shell, char *input);
 int			validate_syntax(t_shell *shell, int parenthesis_depth);
 void		syntax_error(t_token token);
