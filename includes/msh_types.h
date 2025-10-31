@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/24 14:31:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/31 12:19:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,39 +15,13 @@
 
 # include <stdint.h>
 # include <stddef.h>
-# include <unistd.h>
 # include <stdbool.h>
-
-# ifndef FT_PAGE_SIZE
-#  define FT_PAGE_SIZE 4096
-# endif
-
-# ifndef FT_PATH_MAX
-#  define FT_PATH_MAX 4096
-# endif
-
-# ifndef FT_ENV_ENTRIES
-#  define FT_ENV_ENTRIES 1024
-# endif
-
-# ifndef FT_ENV_SIZE
-#  define FT_ENV_SIZE 65536
-# endif
-
-# ifndef FT_TOKEN_MAX
-#  define FT_TOKEN_MAX 256
-# endif
-
-# define REDIR 0b000011110000000
-//   (REDIR_IN | REDIR_OUT | APPEND | HEREDOC)
-
-# define OPERATOR 0b0000000000011100
-//   (OR | AND | PIPE)
+# include "msh_defines.h"
 
 typedef enum e_type
 {
-	ERROR = 1,
 	UNSET = 0,
+	ERROR = 1,
 	WORD = 1 << 1,
 	OR = 1 << 2,
 	AND = 1 << 3,
@@ -79,12 +53,24 @@ typedef struct s_str
 	size_t	length;
 }	t_str;
 
+// Melhor manter como uint32_t, porque mantem o alinhamento de 16 bytes
+// Caso seja necessario compactar, melhor usar token_small de 8 bytes
 typedef struct s_token
 {
-	const char		*str;
-	uint16_t		type;
-	uint16_t		length;
+	const char	*str;
+	uint32_t	type;
+	uint32_t	length;
 }	t_token;
+
+// Precisa do ponteiro inicial para manter referencia do offset. Ex:
+// char *optr = posicao da str do primeiro token;
+// depois pra usar o token, seria *(optr + offset);
+typedef struct s_token_small
+{
+	uint32_t	offset;
+	uint16_t	type;
+	uint16_t	length;
+}	t_token_small;
 
 typedef struct s_shell
 {

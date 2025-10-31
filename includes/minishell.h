@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/26 16:59:41 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/31 12:13:57 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 # include <stdint.h>
 # include <stddef.h>
-# include <unistd.h>
 # include <stdbool.h>
+# include <unistd.h>
 
 # include "msh_types.h"
 
@@ -37,7 +37,7 @@ void		*ft_memcpy(void *restrict vdst, const void *restrict vsrc, size_t length);
 ssize_t		ft_write(int fd, const void *buffer, size_t length);
 
 int			env_print(t_env *env);
-size_t		env_find(t_env *env, const char *str);
+size_t		env_find(t_env *env, const char *entry);
 uint8_t		env_del(t_env *env, const char *entry);
 uint8_t		env_add(t_env *env, const char *entry);
 uint8_t		env_copy(t_env *env, const char **envp_src);

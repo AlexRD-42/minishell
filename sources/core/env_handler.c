@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/26 17:05:58 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/10/29 11:49:17 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	env_print(t_env *env)
 }
 
 // Guarantee that str does not have '='
-size_t	env_find(t_env *env, const char *str)
+size_t	env_find(t_env *env, const char *entry)
 {
 	size_t	i;
 	size_t	j;
@@ -52,9 +52,9 @@ size_t	env_find(t_env *env, const char *str)
 	while (i < env->count)
 	{
 		j = 0;
-		while (env->ptr[i][j] == str[j] && str[j] != 0)
+		while (env->ptr[i][j] == entry[j] && entry[j] != 0)
 			j++;
-		if (str[j] == 0 && env->ptr[i][j] == '=')
+		if (entry[j] == 0 && env->ptr[i][j] == '=')
 			return (i);
 		i++;
 	}
