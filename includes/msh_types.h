@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/31 12:19:52 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/03 16:51:54 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,5 +79,7 @@ typedef struct s_shell
 	t_token	tokens[FT_TOKEN_MAX];
 	bool	mode; // 0 for non_interactive, 1 for interactive
 }	t_shell;
+
+typedef int (*builtin_fn)(int argc, const char **argv, t_env *env);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 11:23:48 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/31 12:29:09 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/03 15:11:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,23 +32,9 @@ int	exec_error(int error_code)
 	return (-1);
 }
 
-static
-char	*find_path(char **envp)
-{
-	if (envp == NULL)
-		return (NULL);
-	while (*envp != NULL && !((*envp)[0] == 'P' && (*envp)[1] == 'A'
-		&& (*envp)[2] == 'T' && (*envp)[3] == 'H' && (*envp)[4] == '='))
-	{
-		envp++;
-	}
-	if (*envp != NULL)
-		return (*envp + 5);
-	return (NULL);
-}
-
+// Could also reserve space for path
 static const
-char	*find_path3(const char **envp)
+char	*find_path(const char **envp)
 {
 	const char	*ptr;
 

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/31 12:13:57 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/03 16:48:39 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,8 @@ void		*ft_memcpy(void *restrict vdst, const void *restrict vsrc, size_t length);
 
 ssize_t		ft_write(int fd, const void *buffer, size_t length);
 
-int			env_print(t_env *env);
-size_t		env_find(t_env *env, const char *entry);
-uint8_t		env_del(t_env *env, const char *entry);
+size_t		env_find(t_env *env, const char *entry, size_t start);
+size_t		env_del(t_env *env, const char *entry, size_t start);
 uint8_t		env_add(t_env *env, const char *entry);
 uint8_t		env_copy(t_env *env, const char **envp_src);
 uint8_t		env_init(t_env *env, const char **envp_src);
@@ -51,5 +50,13 @@ int			syntax_validation(t_shell *shell, int parenthesis_depth);
 int			syntax_check_end(t_token last_token);
 int			syntax_check_start(t_token first_token);
 void		syntax_print_error(t_token token);
+
+int			msh_cd(int argc, const char **argv, t_env *env);
+int			msh_pwd(int argc, const char **argv, t_env *env);
+int			msh_exit(int argc, const char **argv, t_env *env);
+int			msh_unset(int argc, const char **argv, t_env *env);
+int			msh_env(int argc, const char **argv, t_env *env);
+int			msh_export(int argc, const char **argv, t_env *env);
+int			msh_echo(int argc, const char **argv, t_env *env);
 
 #endif

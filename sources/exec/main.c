@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 11:23:48 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/29 13:18:30 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/03 15:13:31 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include "pipex.h"
 #include <sys/wait.h>
 
 static

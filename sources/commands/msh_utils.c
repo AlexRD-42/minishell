@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/29 16:58:58 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/03 15:25:28 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 /* Echo prints out the arguments to stdout, with a space separating them
 followed by a newline (-n suppresses the newline)
 To do: Error handling */
-int	msh_echo(int argc, const char **argv)
+int	msh_echo(int argc, const char **argv, t_env *env)
 {
 	size_t	i;
 	uint8_t	no_nl;
@@ -46,7 +46,7 @@ int	msh_echo(int argc, const char **argv)
 }
 
 // 
-int	msh_exit(int argc, const char **argv)
+int	msh_exit(int argc, const char **argv, t_env *env)
 {
 	
 }

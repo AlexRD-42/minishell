@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/29 11:49:17 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/03 16:48:45 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,41 +14,15 @@
 #include <stddef.h>
 #include <unistd.h>
 #include "minishell.h"
-
-int	env_print(t_env *env)
-{
-	ssize_t	rvalue;
-	size_t	i;
-	size_t	length;
-
-	if (env->count == 0 || env->ptr[0] == NULL)
-		return (1);
-	i = 1;
-	while (i < env->count)
-	{
-		env->ptr[i][-1] = '\n';
-		i++;
-	}
-	length = ft_strlen(env->ptr[env->count - 1]);
-	env->ptr[env->count - 1][length] = '\n';
-	rvalue = ft_write(STDOUT_FILENO, env->ptr[0], env->offset);
-	env->ptr[env->count - 1][length] = 0;
-	i = 1;
-	while (i < env->count)
-	{
-		env->ptr[i][-1] = '\n';
-		i++;
-	}
-	return (rvalue <= 0);	// 1 on failure
-}
+#include "msh_defines.h"
 
 // Guarantee that str does not have '='
-size_t	env_find(t_env *env, const char *entry)
+size_t	env_find(t_env *env, const char *entry, size_t start)
 {
 	size_t	i;
 	size_t	j;
 
-	i = 0;
+	i = start;
 	while (i < env->count)
 	{
 		j = 0;
@@ -61,16 +35,21 @@ size_t	env_find(t_env *env, const char *entry)
 	return (SIZE_MAX);
 }
 
-// Optionally make it so that compaction happens on threshold of free space
-uint8_t	env_del(t_env *env, const char *entry)
+// Optionally make it so that compaction happens on lack of free space
+size_t	env_del(t_env *env, const char *entry, size_t start)
 {
 	char	*ptr;
 	size_t	index;
 	size_t	length;
 
-	index = env_find(env, entry);
+	index = env_find(env, entry, start);
 	if (index == SIZE_MAX)
-		return (1); // Could not find var
+		return (SIZE_MAX); // Could not find var
+	if (index <= 3)
+	{
+		ft_memset(env->ptr[index], 0, FT_PATH_MAX);
+		return (index);
+	}
 	ptr = env->ptr[index];
 	length = ft_strlen(ptr) + 1;
 	env->offset -= length;
@@ -82,9 +61,12 @@ uint8_t	env_del(t_env *env, const char *entry)
 	}
 	env->ptr[index] = NULL;
 	env->count--;
-	return (0);
+	return (index);
 }
 
+// TO DO:
+// If its reserved, it needs to go back to the appropriate slot
+// WTFF export VAR+=suffix
 uint8_t	env_add(t_env *env, const char *entry)
 {
 	const size_t	length = ft_strlen(entry) + 1;
@@ -99,7 +81,8 @@ uint8_t	env_add(t_env *env, const char *entry)
 	return (0);
 }
 
-// first 8kb are reserved for PWD and OLDPWD
+// first 16kb are reserved for PATH, PWD, OLDPWD and TBD
+// What if envp is null?
 uint8_t	env_copy(t_env *env, const char **envp_src)
 {
 	size_t	i;
@@ -107,9 +90,11 @@ uint8_t	env_copy(t_env *env, const char **envp_src)
 
 	ft_memset(env->data, 0, FT_ENV_SIZE);
 	env->ptr[0] = env->data;
-	env->ptr[1] = env->data + FT_PATH_MAX + 1;
-	i = 2;
-	env->offset = 2 * FT_PATH_MAX + 1; // + 1?
+	env->ptr[1] = env->ptr[0] + FT_PATH_MAX;
+	env->ptr[2] = env->ptr[1] + FT_PATH_MAX;
+	env->ptr[3] = env->ptr[2] + FT_PATH_MAX;
+	env->offset = 4 * FT_PATH_MAX;
+	i = 4;
 	while (envp_src[i] != NULL)
 	{
 		length = ft_strlen(envp_src[i]) + 1;
@@ -125,22 +110,27 @@ uint8_t	env_copy(t_env *env, const char **envp_src)
 	return (0);
 }
 
+// Copies an env to the arena in t_env, and moves path, pwd, oldpwd
+// to the first 16kb (reserved for them)
 uint8_t	env_init(t_env *env, const char **envp_src)
 {
 	size_t	i;
-	uint8_t	buffer[2 * FT_PATH_MAX];
 
-	ft_memset(buffer, 0, 2 * FT_PATH_MAX);
+	if (envp_src == NULL)
+		return (1);
 	env_copy(env, envp_src);
-	i = env_find(env, "PWD");
+	i = env_find(env, "PATH", 0);
 	if (i != SIZE_MAX)
-		ft_memcpy(buffer, env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	i = env_find(env, "OLDPWD");
+		ft_memcpy(env->ptr[0], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
+	i = env_find(env, "PWD", 0);
 	if (i != SIZE_MAX)
-		ft_memcpy(buffer + FT_PATH_MAX, env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	env_del(env, "PWD");
-	env_del(env, "OLDPWD");
-	ft_memcpy(buffer + FT_PATH_MAX, env->ptr[i], 2 * FT_PATH_MAX);
+		ft_memcpy(env->ptr[1], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
+	i = env_find(env, "OLDPWD", 0);
+	if (i != SIZE_MAX)
+		ft_memcpy(env->ptr[2], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
+	env_del(env, "PATH", 4);
+	env_del(env, "PWD", 4);
+	env_del(env, "OLDPWD", 4);
 	return (0);
 }
 
@@ -149,5 +139,4 @@ int	main(int argc, const char **argv, const char **envp)
 	t_shell	shell;
 	
 	env_copy(&shell.env, envp);
-	env_print(&shell.env);
 }

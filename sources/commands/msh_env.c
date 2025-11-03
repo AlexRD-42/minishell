@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:55:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/26 16:59:45 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/03 16:49:23 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "minishell.h"
 
 // Running env with no arguments will print the env to stdout
-int	msh_env(int argc, const char **argv, const char **envp)
+int	msh_env(int argc, const char **argv, t_env *env)
 {
 	size_t	i;
 	size_t	length;
@@ -26,10 +26,10 @@ int	msh_env(int argc, const char **argv, const char **envp)
 	(void) argv;
 	i = 0;
 	offset = 0;
-	while (envp[i] != NULL)
+	while (env->ptr[i] != NULL)
 	{
-		length = ft_strlen(envp[i]);
-		ft_memcpy(buffer + offset, envp[i], length);
+		length = ft_strlen(env->ptr[i]);
+		ft_memcpy(buffer + offset, env->ptr[i], length);
 		offset += length;
 		buffer[offset++] = '\n';
 		i++;
@@ -37,31 +37,11 @@ int	msh_env(int argc, const char **argv, const char **envp)
 	return (ft_write(STDOUT_FILENO, buffer, offset) <= 0);
 }
 
-// int	msh_env(int argc, const char **argv, const char **envp)
-// {
-// 	size_t	i;
-// 	size_t	length;
-
-// 	(void) argc;
-// 	(void) argv;
-// 	i = 0;
-// 	while (envp[i] != NULL)
-// 	{
-// 		length = ft_strlen(envp[i]);
-// 		if (ft_write(STDOUT_FILENO, envp[i], length) <= 0)
-// 			return (1);
-// 		if (ft_write(STDOUT_FILENO, "\n", 1) <= 0)
-// 			return (1);
-// 		i++;
-// 	}
-// 	return (0);
-// }
-
-// 
+//
 int	msh_export(int argc, const char **argv, t_env *env)
 {
-	int		rvalue;
 	size_t	i;
+	int		rvalue;
 
 	if (argc < 2)
 	{
@@ -94,7 +74,7 @@ int	msh_unset(int argc, const char **argv, t_env *env)
 	i = 1;
 	while (argv[i] != NULL)
 	{
-		rvalue += env_del(env, argv[i]) != 0;
+		rvalue += (env_del(env, argv[i], 0) != SIZE_MAX);
 		i++;
 	}
 	return (rvalue);
