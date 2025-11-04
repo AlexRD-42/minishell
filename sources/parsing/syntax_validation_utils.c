@@ -31,6 +31,6 @@ int	syntax_check_end(t_token last_token)
 void	syntax_print_error(t_token token)
 {
 	write(2, "mini: syntax error near unexpected token '", 42);
-	write(2, token.str, token.length);
+	write(2, token.ptr, token.length);
 	write(2, "'\n", 2);
 }

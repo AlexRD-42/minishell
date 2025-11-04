@@ -47,8 +47,9 @@ size_t	stt_token_word_handler(t_token *token, char *str)
 	while (*end == '"' || *end == '\'')
 	{
 		quote = *end;
-		if (stt_token_quote_handler(token, end, quote) == NULL)
-			return (0); // Erro?
+		end = stt_token_quote_handler(token, end, quote);
+		if (!end)
+			return (0);// Erro?
 		end = ft_strfind(end, lookup_table, 1);
 		if (!end)
 			break ;
@@ -109,7 +110,8 @@ char	*stt_get_next_token(t_token *token, char *str)
 	token->length = stt_token_finder(token, str);
 	if (token->length == 0)
 	{
-		write(2, "minishell: syntax error near unexpected token '<'\n", 50);
+		token->type = ERROR;
+		write(2, "minishell: syntax error near not implemented token\n", 51);
 		return (NULL);
 	}
 	return (str + token->length);
