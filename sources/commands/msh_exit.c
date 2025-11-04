@@ -1,22 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   msh_exit.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/04 14:20:03 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/11/03 20:50:17 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 #include <unistd.h>
-#include <stdbool.h>
+#include <stdio.h>
 #include <minishell.h>
 
-int	msh_exec(t_token *token)
+// 
+int	msh_exit(int argc, const char **argv, t_env *env)
 {
 	
 }

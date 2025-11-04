@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/21 12:29:55 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/04 14:10:58 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "minishell.h"
+#include "msh_defines.h"
 
 static inline uint8_t	\
 stt_eof_cmp(const char *str, const char *eof)
@@ -67,7 +68,7 @@ int	heredoc(const char *eof)
 {
 	ssize_t		bytes_read;
 	size_t		eof_len;
-	char		buffer[68 * 1024];
+	char		buffer[FT_HDOC_SIZE + FT_PAGE_SIZE];
 	char		*read_end;
 	const char 	*nl_pos = buffer;
 
@@ -76,7 +77,7 @@ int	heredoc(const char *eof)
 	eof_len = ft_strlen(eof);
 	bytes_read = read(STDIN_FILENO, buffer, FT_PAGE_SIZE);
 	read_end = buffer + bytes_read * (bytes_read > 0);
-	while (bytes_read > 0 && read_end < buffer + 65536)
+	while (bytes_read > 0 && read_end < buffer + FT_HDOC_SIZE)
 	{
 		nl_pos = stt_find_eof(nl_pos, eof, read_end, eof_len);
 		if (nl_pos != NULL && stt_eof_cmp(nl_pos, eof) == 1)

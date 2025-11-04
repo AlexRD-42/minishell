@@ -6,19 +6,19 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/31 12:19:37 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/04 10:59:15 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MSH_DEFINES_H
 # define MSH_DEFINES_H
 
-// Bytes
+// Bytes (1 byte)
 # ifndef FT_PAGE_SIZE
 #  define FT_PAGE_SIZE 4096
 # endif
 
-// Bytes
+// Bytes (1 byte)
 # ifndef FT_PATH_MAX
 #  define FT_PATH_MAX 4096
 # endif
@@ -28,9 +28,14 @@
 #  define FT_ENV_ENTRIES 1024
 # endif
 
-// Bytes 
+// Bytes (1 byte)
 # ifndef FT_ENV_SIZE
 #  define FT_ENV_SIZE 65536
+# endif
+
+// Bytes (1 byte)
+# ifndef FT_HDOC_SIZE
+#  define FT_HDOC_SIZE 65536
 # endif
 
 // Struct (8/12/16 bytes)

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   msh_utils.c                                        :+:      :+:    :+:   */
+/*   msh_echo.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 15:25:28 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/03 20:50:22 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,4 @@ int	msh_echo(int argc, const char **argv, t_env *env)
 	if (no_nl == 0)
 		write(STDOUT_FILENO, "\n", 1);
 	return (0);
-}
-
-// 
-int	msh_exit(int argc, const char **argv, t_env *env)
-{
-	
 }

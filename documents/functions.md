@@ -7,7 +7,7 @@
 	getcwd, chdir, isatty, ttyname, ttyslot
 
 ## dirent
-	opendir, readdir, closedir,
+	opendir, readdir, closedir
 
 ## fcntl
 	open

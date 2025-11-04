@@ -1,22 +1,13 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   var_expand.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/04 14:20:03 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/11/04 13:02:10 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdint.h>
-#include <stddef.h>
-#include <unistd.h>
-#include <stdbool.h>
-#include <minishell.h>
-
-int	msh_exec(t_token *token)
-{
-	
-}
+// cat f*n*e

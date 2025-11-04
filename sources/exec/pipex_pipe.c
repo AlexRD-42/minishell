@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 10:45:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/31 12:22:03 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/04 11:13:32 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+
+// 
 
 static
 int	ft_child(char *cmd, int fd_read, int fd_write, char **envp)

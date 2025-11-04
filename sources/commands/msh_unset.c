@@ -1,22 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   msh_unset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/04 14:20:03 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/10/25 13:55:18 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/11/03 20:50:32 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdint.h>
 #include <stddef.h>
 #include <unistd.h>
-#include <stdbool.h>
-#include <minishell.h>
+#include "minishell.h"
 
-int	msh_exec(t_token *token)
+// 0  All name operands were successfully unset
+// >0 At least one name could not be unset
+int	msh_unset(int argc, const char **argv, t_env *env)
 {
-	
+	int		rvalue;
+	size_t	i;
+
+	if (argc < 2)
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		return (1);	// Lack of arguments
+	}
+	rvalue = 0;
+	i = 1;
+	while (argv[i] != NULL)
+	{
+		rvalue += (env_del(env, argv[i], 0) != SIZE_MAX);
+		i++;
+	}
+	return (rvalue);
 }

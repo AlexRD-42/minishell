@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 16:51:54 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/04 15:47:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ typedef enum e_type
 	END = 1 << 11,
 }	t_type;
 
+// STU_END: END | OR | AND
+
 typedef struct s_env
 {
 	size_t	count;
@@ -57,7 +59,7 @@ typedef struct s_str
 // Caso seja necessario compactar, melhor usar token_small de 8 bytes
 typedef struct s_token
 {
-	const char	*str;
+	const char	*ptr;
 	uint32_t	type;
 	uint32_t	length;
 }	t_token;

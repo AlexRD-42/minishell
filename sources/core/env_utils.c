@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_handler.c                                      :+:      :+:    :+:   */
+/*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 16:48:45 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/03 20:57:14 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ size_t	env_find(t_env *env, const char *entry, size_t start)
 }
 
 // Optionally make it so that compaction happens on lack of free space
+// env_compact;
+
 size_t	env_del(t_env *env, const char *entry, size_t start)
 {
 	char	*ptr;
@@ -64,25 +66,9 @@ size_t	env_del(t_env *env, const char *entry, size_t start)
 	return (index);
 }
 
-// TO DO:
-// If its reserved, it needs to go back to the appropriate slot
-// WTFF export VAR+=suffix
-uint8_t	env_add(t_env *env, const char *entry)
-{
-	const size_t	length = ft_strlen(entry) + 1;
-
-	if (env->offset + length > FT_ENV_SIZE || env->count >= FT_ENV_ENTRIES - 1)
-		return (1); // Out of memory
-	env->ptr[env->count] = env->data + env->offset;
-	ft_memcpy(env->ptr[env->count], entry, length);
-	env->offset += length;
-	env->count++;
-	env->ptr[env->count] = NULL;
-	return (0);
-}
-
 // first 16kb are reserved for PATH, PWD, OLDPWD and TBD
 // What if envp is null?
+static
 uint8_t	env_copy(t_env *env, const char **envp_src)
 {
 	size_t	i;
@@ -112,6 +98,7 @@ uint8_t	env_copy(t_env *env, const char **envp_src)
 
 // Copies an env to the arena in t_env, and moves path, pwd, oldpwd
 // to the first 16kb (reserved for them)
+// Needs to increment SHLVL
 uint8_t	env_init(t_env *env, const char **envp_src)
 {
 	size_t	i;

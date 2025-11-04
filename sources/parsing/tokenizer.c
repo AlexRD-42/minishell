@@ -3,93 +3,132 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:44:17 by feazeved          #+#    #+#             */
-/*   Updated: 2025/07/13 11:18:39 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/04 16:41:10 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static inline int	\
-stt_token_cmp(char **input, char *token)
+static const
+char	*stt_token_quote_handler(t_token *token, const char *end, char quote)
 {
-	size_t	token_len;
-
-	token_len = 1;
-	if (token[1])
-		token_len++;
-	if (ft_strncmp(*input, token, token_len) == 0)
+	end++;
+	while (*end && *end != quote)
+		end++;
+	if (!*end)
 	{
-		(*input) += token_len;
-		return (1);
+		token->type = ERROR;
+		write(2, "minishell: syntax error: unclosed quote\n", 40);
+		return (NULL);
 	}
-	return (0);
+	end++;
+	return (end);
 }
 
-static void	\
-stt_token_finder(t_token *token, char **input)
+// Aqui eh possivel criar uma LUT que sempre sera usada, do tipo:
+// 	static const uint8_t	lut[256] = {
+// ['\t'] = 1, ['\n'] = 1, ['\v'] = 1, ['\f'] = 1, ['\r'] = 1};
+static
+size_t	stt_token_word_handler(t_token *token, char *str)
 {
-	if (stt_token_cmp(input, "||"))
-		token->type = OR;
-	else if (stt_token_cmp(input, "|"))
-		token->type = PIPE;
-	else if (stt_token_cmp(input, "&&"))
-		token->type = AND;
-	else if (token_not_implemented(input))
-		token->type = ERROR;
-	else if (stt_token_cmp(input, "("))
-		token->type = OPEN_PAREN;
-	else if (stt_token_cmp(input, ")"))
-		token->type = CLOSE_PAREN;
-	else if (stt_token_cmp(input, ">>"))
+	char		*start;
+	char		*lookup_table;
+	const char	*end;
+	char		quote;
+
+	start = str;
+	lookup_table = "\t\n\v\f\r |&();<>'\"";
+	end = ft_strfind(start, lookup_table, 1);
+	if (!end)
+		end = start + ft_strlen(start);
+	while (*end == '"' || *end == '\'')
+	{
+		quote = *end;
+		if (stt_token_quote_handler(token, end, quote) == NULL)
+			return (0); // Erro?
+		end = ft_strfind(end, lookup_table, 1);
+		if (!end)
+			break ;
+	}
+	if (!end)
+		end = start + ft_strlen(start);
+	token->type = WORD;
+	return ((size_t)(end - start));
+}
+
+static
+size_t	stt_token_finder(t_token *token, char *str)
+{
+	if ((str[0] == '&' && str[1] != '&') || (str[0] == ';') ||
+		(str[0] == '>' && str[1] == '>' && str[2] == '>') ||
+		(str[0] == '<' && str[1] == '<' && str[2] == '<'))
+		return (0);
+	if (str[0] == '>' && str[1] == '>')
 		token->type = APPEND;
-	else if (stt_token_cmp(input, "<<"))
+	else if (str[0] == '<' && str[1] == '<')
 		token->type = HEREDOC;
-	else if (stt_token_cmp(input, ">"))
+	else if (str[0] == '&' && str[1] == '&')
+		token->type = AND;
+	else if (str[0] == '|' && str[1] == '|')
+		token->type = OR;
+	else if (str[0] == '|')
+		token->type = PIPE;
+	else if (str[0] == '(')
+		token->type = OPEN_PAREN;
+	else if (str[0] == ')')
+		token->type = CLOSE_PAREN;
+	else if (str[0] == '>')
 		token->type = REDIR_OUT;
-	else if (stt_token_cmp(input, "<"))
+	else if (str[0] == '<')
 		token->type = REDIR_IN;
 	else
-		token_word_handler(token, input);
+		return (stt_token_word_handler(token, str));
+	return (1 + ((token->type & (APPEND | HEREDOC | AND | OR)) != 0));
 }
 
-static inline int	\
-stt_ft_isspace(int c)
+static
+char	*stt_get_next_token(t_token *token, char *str)
 {
-	return ((c >= 9 && c <= 13) || c == ' ');
-}
+	char	*ostr;
 
-static void	\
-stt_get_next_token(t_token *token, char **input)
-{
-	while (stt_ft_isspace(**input))
-		(*input)++;
-	if (!*input || **input == '\0')
+	ostr = str;
+	while (*str == ' ' || (*str >= 9 && *str <= 13))
+		str++;
+	if (*str == 0)
 	{
+		token->ptr = ostr;
 		token->type = END;
-		return ;
+		token->length = (size_t)(str - ostr);
+		return (str);
 	}
-	token->str = *input;
-	stt_token_finder(token, input);
-	token->length = (size_t)(*input - token->str);
+	token->ptr = str;
+	token->type = UNSET;
+	token->length = stt_token_finder(token, str);
+	if (token->length == 0)
+	{
+		write(2, "minishell: syntax error near unexpected token '<'\n", 50);
+		return (NULL);
+	}
+	return (str + token->length);
 }
 
 int	tokenize(t_shell *shell, char *input)
 {
-	int	i;
+	size_t	i;
 
 	i = 0;
 	while (true)
 	{
 		if (i >= FT_TOKEN_MAX - 1)
 		{
-			write(2, "too many tokens\n", 16);
+			write(2, "too many tokens\n", 16);	// ERROR_MSG
 			shell->tokens[FT_TOKEN_MAX - 1].type = END;
 			return (-1);
 		}
-		stt_get_next_token(&shell->tokens[i], &input);
+		input = stt_get_next_token(&shell->tokens[i], input);
 		if (shell->tokens[i].type == END)
 			break ;
 		if (shell->tokens[i].type == ERROR)

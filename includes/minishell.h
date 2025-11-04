@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 16:48:39 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/04 10:34:50 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,14 @@ const char	*ft_strfind(const char *str, const char *charset, uint8_t ref);
 const char	*ft_strchr(const char *str, unsigned char c);
 
 void		*ft_memmove(void *vdst, const void *vsrc, size_t length);
-void		*ft_bzero(void *dst_void, size_t length);
 void		*ft_memset(void *dst_void, const uint8_t byte, size_t length);
 void		*ft_memcpy(void *restrict vdst, const void *restrict vsrc, size_t length);
 
 ssize_t		ft_write(int fd, const void *buffer, size_t length);
 
+
 size_t		env_find(t_env *env, const char *entry, size_t start);
 size_t		env_del(t_env *env, const char *entry, size_t start);
-uint8_t		env_add(t_env *env, const char *entry);
-uint8_t		env_copy(t_env *env, const char **envp_src);
 uint8_t		env_init(t_env *env, const char **envp_src);
 
 int			tokenize(t_shell *shell, char *input);
