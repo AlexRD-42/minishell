@@ -39,8 +39,6 @@ void	interactive_shell(t_shell *shell)
 		/* add to history*/
 		if (tokenize(shell) == -1)
 			continue ;
-		if (parse(shell) == -1)
-			continue ;
 		execute(shell);
 	}
 }

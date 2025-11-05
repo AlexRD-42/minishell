@@ -98,7 +98,7 @@ char	*stt_get_next_token(t_token *token, char *str)
 	ostr = str;
 	while (*str == ' ' || (*str >= 9 && *str <= 13))
 		str++;
-	if (*str == 0)
+	if (*str == 0 || *str == '#')
 	{
 		token->ptr = ostr;
 		token->type = END;

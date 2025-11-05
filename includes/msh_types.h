@@ -32,7 +32,9 @@ typedef enum e_type
 	REDIR_OUT = 1 << 8,
 	APPEND = 1 << 9,
 	HEREDOC = 1 << 10,
-	END = 1 << 11,
+	LIMITER = 1 << 11,
+	FILE = 1 << 12,
+	END = 1 << 13,
 }	t_type;
 
 // STU_END: END | OR | AND
@@ -59,7 +61,11 @@ typedef struct s_str
 // Caso seja necessario compactar, melhor usar token_small de 8 bytes
 typedef struct s_token
 {
-	const char	*ptr;
+	union
+	{
+		const char	*ptr;
+		int32_t		fds[2];
+	};
 	uint32_t	type;
 	uint32_t	length;
 }	t_token;
