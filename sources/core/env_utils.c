@@ -115,9 +115,13 @@ uint8_t	env_init(t_env *env, const char **envp_src)
 	i = env_find(env, "OLDPWD", 0);
 	if (i != SIZE_MAX)
 		ft_memcpy(env->ptr[2], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	env_del(env, "PATH", 4);
-	env_del(env, "PWD", 4);
-	env_del(env, "OLDPWD", 4);
+	i = env_find(env, "SHLVL", 0);
+	if (i != SIZE_MAX)
+		ft_memcpy(env->ptr[3], shlvl(env->ptr[i]), ft_strlen(env->ptr[i]) + 1);
+	env_del(env, "PATH", 5);
+	env_del(env, "PWD", 5);
+	env_del(env, "OLDPWD", 5);
+	env_del(env, "SHLVL", 5);
 	return (0);
 }
 

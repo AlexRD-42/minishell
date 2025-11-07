@@ -15,6 +15,8 @@
 #include <unistd.h>
 #include "minishell.h"
 
+int	g_status;
+
 void	non_interactive_shell(t_shell *shell)
 {
 
@@ -27,6 +29,14 @@ void	non_interactive_shell(t_shell *shell)
 // 4.3 Parse tokens
 // 4.4 Execute
 // 4.5? Clean struct
+
+void	handle_sigint_prompt(int sig)
+{
+	(void)sig;
+	g_status = 130; // same as Bash
+	write(STDOUT_FILENO, "\n", 1);
+}
+
 void	interactive_shell(t_shell *shell)
 {
 	while (1)
