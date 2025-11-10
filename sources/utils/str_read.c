@@ -52,12 +52,12 @@ char	*ft_strfind(const char *str, const char *charset, uint8_t ref)
 		lookup_table[i++] = 0UL;
 	while (*charset != 0)
 	{
-		((uint8_t *)lookup_table)[(uint8_t) *charset] = 1;
+		((uint8_t *)lookup_table)[(uint8_t)(*charset)] = 1;
 		charset++;
 	}
 	ref = (ref != 0);
 	((uint8_t *)lookup_table)[0] = ref;
-	while (((uint8_t *)lookup_table)[(uint8_t) *str] != ref)
+	while (((uint8_t *)lookup_table)[(uint8_t)(*str)] != ref)
 		str++;
 	if (*str != 0)
 		return (str);
@@ -84,8 +84,7 @@ int32_t	ft_strncmp(const char *str1, const char *str2, size_t length)
 // 0x40: _ + upper + lower + digits, 0x80: Hex
 uint8_t	ft_ascii(const char c)
 {
-	static const uint8_t	ltable[256] =
-	{
+	static const uint8_t	ltable[256] = {
 		0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
 		0x01, 0x02, 0x02, 0x02, 0x02, 0x02, 0x01, 0x01,
 		0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
@@ -103,5 +102,6 @@ uint8_t	ft_ascii(const char c)
 		0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0xE0,
 		0x60, 0x60, 0x60, 0x04, 0x04, 0x04, 0x04, 0x01
 	};
+
 	return (ltable [(const uint8_t) c]);
 }

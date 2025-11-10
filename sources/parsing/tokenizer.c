@@ -20,7 +20,7 @@ char	*stt_token_quote_handler(t_token *token, const char *end, char quote)
 		end++;
 	if (!*end)
 	{
-		token->type = ERROR;
+		token->type = FT_ERROR;
 		write(2, "minishell: syntax error: unclosed quote\n", 40);
 		return (NULL);
 	}
@@ -56,38 +56,38 @@ size_t	stt_token_word_handler(t_token *token, char *str)
 	}
 	if (!end)
 		end = start + ft_strlen(start);
-	token->type = WORD;
+	token->type = FT_WORD;
 	return ((size_t)(end - start));
 }
 
 static
 size_t	stt_token_finder(t_token *token, char *str)
 {
-	if ((str[0] == '&' && str[1] != '&') || (str[0] == ';') ||
-		(str[0] == '>' && str[1] == '>' && str[2] == '>') ||
-		(str[0] == '<' && str[1] == '<' && str[2] == '<'))
+	if ((str[0] == '&' && str[1] != '&') || (str[0] == ';')
+		|| (str[0] == '>' && str[1] == '>' && str[2] == '>')
+		|| (str[0] == '<' && str[1] == '<' && str[2] == '<'))
 		return (0);
 	if (str[0] == '>' && str[1] == '>')
-		token->type = APPEND;
+		token->type = FT_APPND;
 	else if (str[0] == '<' && str[1] == '<')
-		token->type = HEREDOC;
+		token->type = FT_HRDOC;
 	else if (str[0] == '&' && str[1] == '&')
-		token->type = AND;
+		token->type = FT_AND;
 	else if (str[0] == '|' && str[1] == '|')
-		token->type = OR;
+		token->type = FT_OR;
 	else if (str[0] == '|')
-		token->type = PIPE;
+		token->type = FT_PIPE;
 	else if (str[0] == '(')
-		token->type = OPEN_PAREN;
+		token->type = FT_OPEN_PAREN;
 	else if (str[0] == ')')
-		token->type = CLOSE_PAREN;
+		token->type = FT_CLOSE_PAREN;
 	else if (str[0] == '>')
-		token->type = REDIR_OUT;
+		token->type = FT_REDIR_OUT;
 	else if (str[0] == '<')
-		token->type = REDIR_IN;
+		token->type = FT_REDIR_IN;
 	else
 		return (stt_token_word_handler(token, str));
-	return (1 + ((token->type & (APPEND | HEREDOC | AND | OR)) != 0));
+	return (1 + ((token->type & (FT_APPND | FT_HRDOC | FT_AND | FT_OR)) != 0));
 }
 
 static
@@ -101,16 +101,16 @@ char	*stt_get_next_token(t_token *token, char *str)
 	if (*str == 0 || *str == '#')
 	{
 		token->ptr = ostr;
-		token->type = END;
+		token->type = FT_END;
 		token->length = (size_t)(str - ostr);
 		return (str);
 	}
 	token->ptr = str;
-	token->type = UNSET;
+	token->type = FT_UNSET;
 	token->length = stt_token_finder(token, str);
 	if (token->length == 0)
 	{
-		token->type = ERROR;
+		token->type = FT_ERROR;
 		write(2, "minishell: syntax error near not implemented token\n", 51);
 		return (NULL);
 	}
@@ -126,14 +126,14 @@ int	tokenize(t_shell *shell, char *input)
 	{
 		if (i >= FT_TOKEN_MAX - 1)
 		{
-			write(2, "too many tokens\n", 16);	// ERROR_MSG
-			shell->tokens[FT_TOKEN_MAX - 1].type = END;
+			write(2, "too many tokens\n", 16);// ERROR_MSG
+			shell->tokens[FT_TOKEN_MAX - 1].type = FT_END;
 			return (-1);
 		}
 		input = stt_get_next_token(&shell->tokens[i], input);
-		if (shell->tokens[i].type == END)
+		if (shell->tokens[i].type == FT_END)
 			break ;
-		if (shell->tokens[i].type == ERROR)
+		if (shell->tokens[i].type == FT_ERROR)
 			return (-1);
 		i++;
 	}

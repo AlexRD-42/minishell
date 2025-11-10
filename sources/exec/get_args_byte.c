@@ -41,9 +41,9 @@ int	msh_build_argv(t_token *token, t_env *env, char *buffer, char **argv)
 	size_t	i;
 
 	i = 0;
-	while ((token->type & (AND | OR | PIPE | END)) == 0)
+	while ((token->type & (FT_AND | FT_OR | FT_PIPE | FT_END)) == 0)
 	{
-		if (token->type == WORD)
+		if (token->type == FT_WORD)
 		{
 			argv[i] = buffer;
 			buffer = stt_parse_word(token->ptr, token->length, env, buffer);

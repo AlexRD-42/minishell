@@ -14,14 +14,14 @@
 
 int	syntax_check_start(t_token first_token)
 {
-	if (first_token.type & (OPERATOR | CLOSE_PAREN))
+	if (first_token.type & (FT_OPERATOR | FT_CLOSE_PAREN))
 		return (syntax_print_error(first_token), 1);
 	return (0);
 }
 
 int	syntax_check_end(t_token last_token)
 {
-	if (last_token.type & (OPERATOR | REDIR | OPEN_PAREN))
+	if (last_token.type & (FT_OPERATOR | FT_REDIR | FT_OPEN_PAREN))
 		return (write(2,
 				"mini: syntax error near unexpected token 'newline'\n", 51),
 			1);

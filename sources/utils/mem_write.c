@@ -73,7 +73,8 @@ void	*ft_memmove(void *vdst, const void *vsrc, size_t length)
 }
 
 // With O1, calls builtin memcpy
-void	*ft_memcpy(void *restrict vdst, const void *restrict vsrc, size_t length)
+void	\
+*ft_memcpy(void *restrict vdst, const void *restrict vsrc, size_t length)
 {
 	unsigned char		*restrict dst;
 	const unsigned char	*restrict src = vsrc;

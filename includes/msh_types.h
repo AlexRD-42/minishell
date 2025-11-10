@@ -20,21 +20,22 @@
 
 typedef enum e_type
 {
-	UNSET = 0,
-	ERROR = 1,
-	WORD = 1 << 1,
-	OR = 1 << 2,
-	AND = 1 << 3,
-	PIPE = 1 << 4,
-	OPEN_PAREN = 1 << 5,
-	CLOSE_PAREN = 1 << 6,
-	REDIR_IN = 1 << 7,
-	REDIR_OUT = 1 << 8,
-	APPEND = 1 << 9,
-	HEREDOC = 1 << 10,
-	LIMITER = 1 << 11,
-	FILE = 1 << 12,
-	END = 1 << 13,
+	FT_UNSET = 0,
+	FT_ERROR = 1,
+	FT_WORD = 1 << 1,
+	FT_OR = 1 << 2,
+	FT_AND = 1 << 3,
+	FT_PIPE = 1 << 4,
+	FT_OPEN_PAREN = 1 << 5,
+	FT_CLOSE_PAREN = 1 << 6,
+	FT_REDIR_IN = 1 << 7,
+	FT_REDIR_OUT = 1 << 8,
+	FT_APPND = 1 << 9,
+	FT_HRDOC = 1 << 10,
+	FT_LIMITER = 1 << 11,
+	FT_FILE = 1 << 12,
+	FT_EXPAND = 1 << 13,
+	FT_END = 1 << 14,
 }	t_type;
 
 enum e_ascii

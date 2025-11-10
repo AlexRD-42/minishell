@@ -23,7 +23,7 @@ stt_shlvl_valid(char *str, long *result)
 		str++;
 	if (!*str)
 		return (0);
-	if (*str == '-' ||*str == '+')
+	if (*str == '-' || *str == '+')
 	{
 		if (*str == '-')
 			sign = -1;
