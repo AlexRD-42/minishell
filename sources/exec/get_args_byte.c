@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/10 11:25:38 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/10 17:10:05 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,9 @@ int	msh_build_argv(t_token *token, t_env *env, char *buffer, char **argv)
 	size_t	i;
 
 	i = 0;
-	while ((token->type & (FT_AND | FT_OR | FT_PIPE | FT_END)) == 0)
+	while ((token->type & E_STUSEP) == 0)
 	{
-		if (token->type == FT_WORD)
+		if (token->type == E_WORD)
 		{
 			argv[i] = buffer;
 			buffer = stt_parse_word(token->ptr, token->length, env, buffer);

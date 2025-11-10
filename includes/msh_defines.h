@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/04 10:59:15 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/10 17:12:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,5 @@
 # ifndef FT_ARG_MAX
 #  define FT_ARG_MAX 1024
 # endif
-
-// END HDOC APPEND RDIN RDOUT CLPAR OPPAR PIPE AND OR WORD UNSET ERROR
-# define FT_REDIR 1920
-//   (REDIR_IN | REDIR_OUT | APPEND | HEREDOC)
-// # define REDIR 0b000011110000000
-
-# define FT_OPERATOR 28
-//   (OR | AND | PIPE)
-// # define OPERATOR 0b0000000000011100
 
 #endif

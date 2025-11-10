@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   syntax_validation.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:44:17 by feazeved          #+#    #+#             */
-/*   Updated: 2025/07/13 11:18:39 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/10 17:12:16 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,15 @@
 static inline int	\
 stt_syntax_check_parenthesis(t_token current, t_token prev, int *paren_depth)
 {
-	if (current.type & (FT_OPEN_PAREN))
+	if (current.type & (E_OPEN_PAREN))
 	{
-		if (prev.type & (FT_REDIR | FT_WORD | FT_CLOSE_PAREN))
+		if (prev.type & (E_REDIR | E_WORD | E_CLOSE_PAREN))
 			return (syntax_print_error(current), 1);
 		(*paren_depth)++;
 	}
-	if (current.type & (FT_CLOSE_PAREN))
+	if (current.type & (E_CLOSE_PAREN))
 	{
-		if (prev.type & (FT_OPERATOR | FT_REDIR | FT_OPEN_PAREN))
+		if (prev.type & (E_OPERATOR | E_REDIR | E_OPEN_PAREN))
 			return (syntax_print_error(current), 1);
 		(*paren_depth)--;
 	}
@@ -35,9 +35,9 @@ stt_syntax_check_parenthesis(t_token current, t_token prev, int *paren_depth)
 static inline int	\
 stt_syntax_check_operator(t_token current, t_token prev)
 {
-	if (current.type & (FT_OPERATOR))
+	if (current.type & (E_OPERATOR))
 	{
-		if (prev.type & (FT_OPERATOR | FT_REDIR | FT_OPEN_PAREN))
+		if (prev.type & (E_OPERATOR | E_REDIR | E_OPEN_PAREN))
 			return (syntax_print_error(current), 1);
 	}
 	return (0);
@@ -46,9 +46,9 @@ stt_syntax_check_operator(t_token current, t_token prev)
 static inline int	\
 stt_syntax_check_redirect(t_token current, t_token prev)
 {
-	if (current.type & (FT_REDIR))
+	if (current.type & (E_REDIR))
 	{
-		if (prev.type & (FT_REDIR))
+		if (prev.type & (E_REDIR))
 			return (syntax_print_error(current), 1);
 	}
 	return (0);
@@ -57,9 +57,9 @@ stt_syntax_check_redirect(t_token current, t_token prev)
 static inline int	\
 stt_syntax_check_word(t_token current, t_token prev)
 {
-	if (current.type & (FT_WORD))
+	if (current.type & (E_WORD))
 	{
-		if (prev.type & (FT_CLOSE_PAREN))
+		if (prev.type & (E_CLOSE_PAREN))
 			return (syntax_print_error(current), 1);
 	}
 	return (0);
@@ -72,9 +72,9 @@ int	syntax_validation(t_shell *shell, int paren_depth)
 
 	if (syntax_check_start(shell->tokens[0]))
 		return (-1);
-	paren_depth = (shell->tokens[0].type == FT_OPEN_PAREN);
+	paren_depth = (shell->tokens[0].type == E_OPEN_PAREN);
 	current = &shell->tokens[1];
-	while (current->type != FT_END)
+	while (current->type != E_END)
 	{
 		previous = current - 1;
 		if (stt_syntax_check_parenthesis(*current, *previous, &paren_depth))

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/08 10:08:26 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/10 17:12:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ t_token	*stt_findstu_sep(t_token *tokens)
 	sep = NULL;
 	in_paren = 0;
 	current = tokens;
-	while (current->type != (FT_END))
+	while (current->type != (E_END))
 	{
-		if (current->type & (FT_OPEN_PAREN))
+		if (current->type & (E_OPEN_PAREN))
 			in_paren++;
-		else if (current->type & (FT_CLOSE_PAREN))
+		else if (current->type & (E_CLOSE_PAREN))
 			in_paren--;
-		if (!in_paren && current->type & (FT_AND | FT_OR))
+		if (!in_paren && current->type & (E_AND | E_OR))
 		{
 			sep = current;
 			break ;
@@ -81,25 +81,25 @@ static void	stt_set_fds(t_token *tokens)
 	t_token	*current;
 
 	current = tokens;
-	while (current->type != (FT_END))
+	while (current->type != (E_END))
 	{
-		if (current->type & (FT_HRDOC))
+		if (current->type & (E_HRDOC))
 		{
-			(current + 1)->type = FT_LIMITER;
+			(current + 1)->type = E_LIMITER;
 			if (!stt_has_quote((current + 1)->ptr, (current + 1)->length))
-				(current + 1)->type |= FT_EXPAND;
+				(current + 1)->type |= E_EXPAND;
 			current->fds[0] = heredoc(current + 1);
 		}
-		else if (current->type & (FT_REDIR))
+		else if (current->type & (E_REDIR))
 		{
 			current->fds[0] = -1;
 			current->fds[1] = -1;
-			(current + 1)->type = FT_FILE;
+			(current + 1)->type = E_FILE;
 		}
-		else if (current->type & (FT_WORD | FT_FILE))
+		else if (current->type & (E_WORD | E_FILE))
 		{
 			if (stt_expand_asterisk(current->ptr, current->length))
-				current->type |= FT_EXPAND;
+				current->type |= E_EXPAND;
 		}
 		current++;
 	}
@@ -110,18 +110,18 @@ int	execute(t_shell *shell)
 	t_token	*current;
 	int		return_value;
 
-	if (shell->tokens[0].type & (FT_END))
+	if (shell->tokens[0].type & (E_END))
 		return ;
 	stt_set_fds(shell->tokens);
 	current = stt_findstu_sep(shell->tokens);
 	return_value = exec_stu(shell->tokens);
-	if (current->type & FT_END)
+	if (current->type & E_END)
 		return (return_value);
-	while (current->type & (FT_AND | FT_OR))
+	while (current->type & (E_AND | E_OR))
 	{
-		if ((current->type & FT_OR) && return_value)
+		if ((current->type & E_OR) && return_value)
 			return_value = exec_stu(current + 1);
-		if ((current->type & FT_AND) && !return_value)
+		if ((current->type & E_AND) && !return_value)
 			return_value = exec_stu(current + 1);
 		current = stt_findstu_sep(current + 1);
 	}
