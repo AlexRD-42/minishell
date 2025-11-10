@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 20:57:14 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/10 12:37:39 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,41 +16,43 @@
 #include "minishell.h"
 #include "msh_defines.h"
 
-// Guarantee that str does not have '='
-size_t	env_find(t_env *env, const char *entry, size_t start)
+// Attempts to find the entry string in Env vars
+// Searches backwards to delete reserved vars last
+size_t	env_find(t_env *env, const char *entry, size_t length)
 {
 	size_t	i;
 	size_t	j;
 
-	i = start;
-	while (i < env->count)
+	if (length == 0)
+	{
+		while (entry[length] != 0 && entry[length] != '=')
+			length++;
+	}
+	i = env->count + (env->count == 0);
+	while (i-- > 0)
 	{
 		j = 0;
-		while (env->ptr[i][j] == entry[j] && entry[j] != 0)
+		while (j < length && env->ptr[i][j] == entry[j])
 			j++;
-		if (entry[j] == 0 && env->ptr[i][j] == '=')
+		if (j == length && env->ptr[i][j] == '=')
 			return (i);
-		i++;
 	}
 	return (SIZE_MAX);
 }
 
-// Optionally make it so that compaction happens on lack of free space
-// env_compact;
-
-size_t	env_del(t_env *env, const char *entry, size_t start)
+uint8_t	env_del(t_env *env, const char *entry)
 {
 	char	*ptr;
 	size_t	index;
 	size_t	length;
 
-	index = env_find(env, entry, start);
+	index = env_find(env, entry, 0);
 	if (index == SIZE_MAX)
-		return (SIZE_MAX); // Could not find var
+		return (1); // Could not find var
 	if (index <= 3)
 	{
 		ft_memset(env->ptr[index], 0, FT_PATH_MAX);
-		return (index);
+		return (0);
 	}
 	ptr = env->ptr[index];
 	length = ft_strlen(ptr) + 1;
@@ -63,7 +65,7 @@ size_t	env_del(t_env *env, const char *entry, size_t start)
 	}
 	env->ptr[index] = NULL;
 	env->count--;
-	return (index);
+	return (0);
 }
 
 // first 16kb are reserved for PATH, PWD, OLDPWD and TBD
@@ -98,7 +100,7 @@ uint8_t	env_copy(t_env *env, const char **envp_src)
 
 // Copies an env to the arena in t_env, and moves path, pwd, oldpwd
 // to the first 16kb (reserved for them)
-// Needs to increment SHLVL
+// Needs to increment SHLVL (just call export later)
 uint8_t	env_init(t_env *env, const char **envp_src)
 {
 	size_t	i;
@@ -106,22 +108,19 @@ uint8_t	env_init(t_env *env, const char **envp_src)
 	if (envp_src == NULL)
 		return (1);
 	env_copy(env, envp_src);
-	i = env_find(env, "PATH", 0);
+	i = env_find(env, "PATH", 4);
 	if (i != SIZE_MAX)
 		ft_memcpy(env->ptr[0], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	i = env_find(env, "PWD", 0);
+	i = env_find(env, "PWD", 3);
 	if (i != SIZE_MAX)
 		ft_memcpy(env->ptr[1], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	i = env_find(env, "OLDPWD", 0);
+	i = env_find(env, "OLDPWD", 6);
 	if (i != SIZE_MAX)
 		ft_memcpy(env->ptr[2], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	i = env_find(env, "SHLVL", 0);
-	if (i != SIZE_MAX)
-		ft_memcpy(env->ptr[3], shlvl(env->ptr[i]), ft_strlen(env->ptr[i]) + 1);
-	env_del(env, "PATH", 5);
-	env_del(env, "PWD", 5);
-	env_del(env, "OLDPWD", 5);
-	env_del(env, "SHLVL", 5);
+	// Need to implement export properly for SHLVL
+	env_del(env, "PATH");
+	env_del(env, "PWD");
+	env_del(env, "OLDPWD");
 	return (0);
 }
 

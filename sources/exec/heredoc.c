@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/04 14:10:58 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/10 12:38:48 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "minishell.h"
-#include "msh_defines.h"
 
 static inline uint8_t	\
 stt_eof_cmp(const char *str, const char *eof)
@@ -57,14 +56,15 @@ stt_write_to_pipe(const char *buffer, size_t length)
 		perror("pipe");
 		return (-1);
 	}
-	write(fd[1], buffer, length);
+	ft_write(fd[1], buffer, length);
 	close(fd[1]);
 	return (fd[0]);
 }
 
 // Check for UB in execution
 // To check: is \nEOF\0 valid?
-int	heredoc(const char *eof)
+// Needs variable expansion
+int	heredoc(t_token *token)
 {
 	ssize_t		bytes_read;
 	size_t		eof_len;

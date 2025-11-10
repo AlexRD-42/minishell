@@ -3,16 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/05 13:34:57 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/08 10:08:26 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static t_token	*stt_findstu_sep(t_token *tokens)
+
+// State: XOR TOGGLE
+static
+t_token	*stt_findstu_sep(t_token *tokens)
 {
 	t_token	*current;
 	t_token	*root;
@@ -20,7 +23,7 @@ static t_token	*stt_findstu_sep(t_token *tokens)
 
 	root = NULL;
 	in_paren = 0;
-	current = &(*tokens);
+	current = tokens;
 	while (current->type != END)
 	{
 		if (current->type & OPEN_PAREN)
@@ -34,29 +37,28 @@ static t_token	*stt_findstu_sep(t_token *tokens)
 	return (root);
 }
 
-const
+static const
 char	*stt_has_quote(const char *str, size_t length)
 {
-	int	i;
+	const char	*end = str + length;
 
-	i = 0;
-	while (*str != 0 && i < length)
+	while (str < end && *str != 0)
 	{
 		if (*str == '\'' || *str == '"')
 			return (str);
 		str++;
-		i++;
 	}
 	return (NULL);
 }
 
-static void	stt_set_fds(t_token *tokens)
+static
+void	stt_set_fds(t_token *tokens)
 {
 	t_token	*current;
 	int		expand;
 
 	expand = 1;
-	current = &tokens[0];
+	current = &tokens[0];	// ??
 	while (current->type != END)
 	{
 		if (current->type & HEREDOC)

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:55:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 20:54:06 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/06 22:26:57 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "minishell.h"
 
 // Running env with no arguments will print the env to stdout
+// TO DO: option to print in ascending order
 int	msh_env(int argc, const char **argv, t_env *env)
 {
 	size_t	i;

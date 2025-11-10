@@ -9,6 +9,56 @@ uint8_t	env_cmp(const char *var, const char *str)
 	return (*str == 0 && *var == '=');
 }
 
+env_del(t_env *env, const char *entry)
+{
+	char	*ptr;
+	char	**array_ptr;
+	size_t	length;
+
+	array_ptr = env_find(env, entry, 0);
+	if (array_ptr == NULL)
+		return (1);
+	ptr = *array_ptr;
+	if (ptr < (env->data + 4 * FT_PATH_MAX))
+	{
+		ft_memset(ptr, 0, FT_PATH_MAX);
+		return (0);
+	}
+	length = ft_strlen(ptr) + 1;
+	env->offset -= length;
+	ft_memmove(ptr, ptr + length, env->offset - (size_t)(ptr - env->data));
+	while (array_ptr[1] != NULL)
+	{
+		array_ptr[0] = array_ptr[1] - length;
+		array_ptr++;
+	}
+	*array_ptr = NULL;
+	env->count--;
+	return (0);
+}
+
+char	**env_find(t_env *env, const char *entry, size_t length)
+{
+	size_t	i;
+	size_t	j;
+
+	if (length == 0)
+	{
+		while (entry[length] != 0 && entry[length] != '=')
+			length++;
+	}
+	i = env->count + (env->count == 0);
+	while (i-- > 0)
+	{
+		j = 0;
+		while (j < length && env->ptr[i][j] == entry[j])
+			j++;
+		if (j == length && env->ptr[i][j] == '=')
+			return (&env->ptr[i]);
+	}
+	return (NULL);
+}
+
 char	*env_find(t_env *env, const char *str)
 {
 	size_t	i;

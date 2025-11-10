@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:55:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 20:53:42 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/06 22:39:40 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ uint8_t	env_add(t_env *env, const char *entry)
 	return (0);
 }
 
-// TO DO: Add append and argless prints in 
+// TO DO: Add append and argless prints in
 int	msh_export(int argc, const char **argv, t_env *env)
 {
 	size_t	i;

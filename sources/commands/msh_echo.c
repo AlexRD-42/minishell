@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 20:50:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/10 11:33:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <minishell.h>
+#include "minishell.h"
 
 /* Echo prints out the arguments to stdout, with a space separating them
 followed by a newline (-n suppresses the newline)

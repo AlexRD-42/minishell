@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/04 15:47:52 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/10 11:27:03 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,21 @@ typedef enum e_type
 	FILE = 1 << 12,
 	END = 1 << 13,
 }	t_type;
+
+enum e_ascii
+{
+	E_NULL = 0x00,
+	E_CTRL = 0x01,
+	E_SPACE = 0x02,
+	E_SYMBOL = 0x04,
+	E_DIGIT = 0x08,
+	E_UPPER = 0x10,
+	E_LOWER = 0x20,
+	E_LETTER = 0x30,
+	E_ALPHA = 0x38,
+	E_IDENT = 0x40,
+	E_HEX = 0x80
+};
 
 // STU_END: END | OR | AND
 
