@@ -17,10 +17,8 @@ static
 t_token	*stt_findstu_sep(t_token *tokens)
 {
 	t_token	*current;
-	t_token	*sep;
 	int		in_paren;
 
-	sep = NULL;
 	in_paren = 0;
 	current = tokens;
 	while (current->type != (E_END))
@@ -31,14 +29,13 @@ t_token	*stt_findstu_sep(t_token *tokens)
 			in_paren--;
 		if (!in_paren && current->type & (E_AND | E_OR))
 		{
-			sep = current;
-			break ;
+			current->type |= E_STU_END;
+			return (current);
 		}
 		current++;
 	}
-	if (!sep)
-		return (current);
-	return (sep);
+	current->type |= E_STU_END;
+	return (current);
 }
 
 static const
@@ -119,11 +116,13 @@ int	execute(t_shell *shell)
 		return (return_value);
 	while (current->type & (E_AND | E_OR))
 	{
+		stt_findstu_sep(current + 1);
 		if ((current->type & E_OR) && return_value)
 			return_value = exec_stu(current + 1);
-		if ((current->type & E_AND) && !return_value)
+		else if ((current->type & E_AND) && !return_value)
 			return_value = exec_stu(current + 1);
-		current = stt_findstu_sep(current + 1);
+		while (current->type != E_STU_END)
+			current++;
 	}
 	return (return_value);
 }
