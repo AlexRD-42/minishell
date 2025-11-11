@@ -29,6 +29,8 @@ stt_shlvl_valid(char *str, long *result)
 			sign = -1;
 		str++;
 	}
+	if (!*str)
+		return (0);
 	while (*str >= '0' && *str <= '9')
 		value = (value * 10) + *str++ - '0';
 	while (*str == ' ' || (*str >= 9 && *str <= 13))
