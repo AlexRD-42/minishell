@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.h                                             :+:      :+:    :+:   */
+/*   pseudo_main.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:44:17 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/31 12:23:43 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/11 15:47:22 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,3 +80,9 @@ int	main(int argc, char **argv, char **envp)
 		interactive_shell(&shell);
 	exit(0);
 }
+
+// (echo alguma && (echo coisa)) >> out && echo 1
+// (echo alguma && (echo coisa)) = RETORNO DO MSH
+// argv[1] = '1'
+
+// RETORNO DO MSH >> out && echo 1

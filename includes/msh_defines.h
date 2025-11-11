@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/10 17:12:01 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/11 18:47:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,11 @@
 // Bytes (1 byte)
 # ifndef FT_HDOC_SIZE
 #  define FT_HDOC_SIZE 65536
+# endif
+
+// Bytes (1 byte)
+# ifndef FT_WCARD_SIZE
+#  define FT_WCARD_SIZE 65536
 # endif
 
 // Struct (8/12/16 bytes)

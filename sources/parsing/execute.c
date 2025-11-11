@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/10 17:12:38 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/11 15:12:51 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,13 +88,13 @@ static void	stt_set_fds(t_token *tokens)
 			(current + 1)->type = E_LIMITER;
 			if (!stt_has_quote((current + 1)->ptr, (current + 1)->length))
 				(current + 1)->type |= E_EXPAND;
-			current->fds[0] = heredoc(current + 1);
+			current->fd[0] = heredoc(current + 1);
 		}
 		else if (current->type & (E_REDIR))
 		{
-			current->fds[0] = -1;
-			current->fds[1] = -1;
-			(current + 1)->type = E_FILE;
+			current->fd[0] = -1;
+			current->fd[1] = -1;
+			(current + 1)->type = E_FILE | current->type;
 		}
 		else if (current->type & (E_WORD | E_FILE))
 		{

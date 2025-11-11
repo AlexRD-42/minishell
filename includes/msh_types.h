@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/10 17:14:35 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/11 19:42:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,47 +16,47 @@
 # include <stdint.h>
 # include <stddef.h>
 # include <stdbool.h>
+# include <dirent.h>
 # include "msh_defines.h"
 
-typedef enum e_type
+enum e_type
 {
-	E_UNSET = 0,
-	E_ERROR = 1,
-	E_WORD = 1 << 1,
-	E_OR = 1 << 2,
-	E_AND = 1 << 3,
-	E_PIPE = 1 << 4,
-	E_OPEN_PAREN = 1 << 5,
-	E_CLOSE_PAREN = 1 << 6,
-	E_REDIR_IN = 1 << 7,
-	E_REDIR_OUT = 1 << 8,
-	E_APPND = 1 << 9,
-	E_HRDOC = 1 << 10,
-	E_LIMITER = 1 << 11,
-	E_FILE = 1 << 12,
-	E_EXPAND = 1 << 13,
-	E_END = 1 << 14,
+	E_UNSET = 0u,	// remove
+	E_ERROR = 1u,	
+	E_WORD = 1u << 1,
+	E_OR = 1u << 2,
+	E_AND = 1u << 3,
+	E_PIPE = 1u << 4,
+	E_OPEN_PAREN = 1u << 5,
+	E_CLOSE_PAREN = 1u << 6,
+	E_REDIR_IN = 1u << 7,
+	E_REDIR_OUT = 1u << 8,
+	E_APPND = 1u << 9,
+	E_HRDOC = 1u << 10,
+	E_LIMITER = 1u << 11,
+	E_FILE = 1u << 12,
+	E_EXPAND = 1u << 13,
+	E_STU_END = 1u << 14,
+	E_END = 1u << 15,
 	E_REDIR = E_REDIR_IN | E_REDIR_OUT | E_APPND | E_HRDOC,
 	E_OPERATOR = E_OR | E_AND | E_PIPE,
-	E_STUSEP = E_AND | E_OR | E_PIPE | E_END,
-}	t_type;
+	E_CMD_END = E_AND | E_OR | E_PIPE | E_END
+};
 
 enum e_ascii
 {
-	E_NULL = 0x00,
-	E_CTRL = 0x01,
-	E_SPACE = 0x02,
-	E_SYMBOL = 0x04,
-	E_DIGIT = 0x08,
-	E_UPPER = 0x10,
-	E_LOWER = 0x20,
-	E_LETTER = 0x30,
-	E_ALPHA = 0x38,
-	E_IDENT = 0x40,
-	E_HEX = 0x80
+	E_NULL = 0u,
+	E_CTRL = 1u,
+	E_SPACE = 1u << 1,
+	E_SYMBOL = 1u << 2,
+	E_DIGIT = 1u << 3,
+	E_UPPER = 1u << 4,
+	E_LOWER = 1u << 5,
+	E_IDENT = 1u << 6,
+	E_HEX = 1u << 7,
+	E_LETTER = E_LOWER | E_UPPER,
+	E_ALPHA = E_LOWER | E_UPPER | E_DIGIT
 };
-
-// STU_END: END | OR | AND
 
 typedef struct s_env
 {
@@ -83,7 +83,7 @@ typedef struct s_token
 	union
 	{
 		const char	*ptr;
-		int32_t		fds[2];
+		int32_t		fd[2];
 	};
 	uint32_t	type;
 	uint32_t	length;
