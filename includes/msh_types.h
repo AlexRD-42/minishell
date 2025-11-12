@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/11 19:42:01 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/12 12:33:31 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,14 @@ typedef struct s_env
 	char	data[FT_ENV_SIZE];		// 64kb
 	char	*ptr[FT_ENV_ENTRIES];	// 8kb
 }	t_env;
+
+typedef struct s_argv
+{
+	size_t	count;
+	size_t	offset;
+	char	*data;
+	char	**ptr;
+}	t_argv;
 
 typedef struct s_str
 {

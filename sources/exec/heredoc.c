@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/10 12:38:48 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/11 22:51:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ stt_write_to_pipe(const char *buffer, size_t length)
 
 	if (pipe(fd) == -1)
 	{
-		perror("pipe");
+		perror("msh_pipe: ");
 		return (-1);
 	}
 	ft_write(fd[1], buffer, length);
@@ -74,7 +74,7 @@ int	heredoc(t_token *token)
 
 	if (eof == NULL)
 		return (-1);
-	eof_len = ft_strlen(eof);
+	// eof_len = ft_strlen(token->);
 	bytes_read = read(STDIN_FILENO, buffer, FT_PAGE_SIZE);
 	read_end = buffer + bytes_read * (bytes_read > 0);
 	while (bytes_read > 0 && read_end < buffer + FT_HDOC_SIZE)

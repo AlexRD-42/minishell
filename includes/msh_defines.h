@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/11 18:47:52 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/12 10:50:39 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,16 @@
 // Pointers (8 bytes)
 # ifndef FT_ENV_ENTRIES
 #  define FT_ENV_ENTRIES 1024
+# endif
+
+// Pointers (8 bytes)
+# ifndef FT_ARG_MAX
+#  define FT_ARG_MAX 2048
+# endif
+
+// Bytes (1 byte)
+# ifndef FT_ARG_SIZE
+#  define FT_ARG_SIZE 524288
 # endif
 
 // Bytes (1 byte)
@@ -48,9 +58,5 @@
 #  define FT_TOKEN_MAX 256
 # endif
 
-// Pointers (8 bytes)
-# ifndef FT_ARG_MAX
-#  define FT_ARG_MAX 1024
-# endif
 
 #endif

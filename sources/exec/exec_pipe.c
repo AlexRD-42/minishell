@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   exec_pipe.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/11 20:56:09 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/12 12:50:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ int	exec_cmd(char *cmd, char **argv, char **envp, size_t cmd_length)
 
 // argv indexing needs double checking
 // buffer doesnt get updated in globbing
-int	msh_build_argv(t_token *token, t_env *env, char *buffer, char **argv)
+int	msh_build_argv(t_token *token, t_env *env, t_argv *arg)
 {
 	size_t	i;
 	char	pattern[FT_WCARD_SIZE];

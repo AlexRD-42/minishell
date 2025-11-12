@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipe.c                                             :+:      :+:    :+:   */
+/*   pipex_pipe.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 10:45:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/04 11:13:32 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/11 22:53:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	ft_child(char *cmd, int fd_read, int fd_write, char **envp)
 	close(fd_write);
 	if (dup2_error == -1)
 	{
-		perror("dup2");
+		perror("msh_dup2_child: ");
 		exit(1);
 	}
 	pipe_exec(cmd, envp);
@@ -46,7 +46,7 @@ int	ft_parent(int fd_read, int fd_write)
 	dup2_error = dup2(fd_read, STDIN_FILENO);
 	close(fd_read);
 	if (dup2_error == -1)
-		perror("dup2");
+		perror("msh_dup2_parent: ");
 	if (dup2_error == -1)
 		return (-1);
 	else

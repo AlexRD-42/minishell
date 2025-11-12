@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 11:59:05 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/21 12:36:20 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/11 22:57:47 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
+
+// ft_pipe, ft_open, ft_fork, ft_close, 
 
 // To do: Error handling, set errno (EIO)?
 // Repeats the write until the buffer is fully consumed, and repeats
@@ -40,3 +42,6 @@ ssize_t	ft_write(int fd, const void *buffer, size_t length)
 	}
 	return ((ssize_t) length);
 }
+
+
+

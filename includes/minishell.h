@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/11 20:53:09 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/12 15:31:16 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ int			syntax_check_end(t_token last_token);
 int			syntax_check_start(t_token first_token);
 void		syntax_print_error(t_token token);
 
-char		*expand_word(const char *str, size_t length, t_env *env, char *buffer);
-size_t		expand_dir(const char *pattern, char **argv, char *buffer);
+uint8_t		expand_token(t_token *token, t_env *env, t_argv *arg, size_t count);
+uint8_t		expand_glob(const char *pattern, t_argv *arg, size_t count);
 int			msh_cd(int argc, const char **argv, t_env *env);
 int			msh_pwd(int argc, const char **argv, t_env *env);
 int			msh_exit(int argc, const char **argv, t_env *env);
