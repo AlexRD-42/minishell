@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/12 15:34:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/13 12:37:56 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,10 @@
 // Variable name is defined by all letters until not alphanumeric
 // This name is used to find the var name in ENV
 // Updates str and buffer to the end of their respective copy
+// To do: Create an env helper that returns the value rather than the entry
+// Return: 0) OK, 1) OOM
 static
-void	stt_expand_variable(const char **str, t_argv *arg, t_env *env)
+uint8_t	stt_expand_variable(const char **str, t_argv *arg, t_env *env)
 {
 	size_t		index;
 	size_t		length;
@@ -32,27 +34,31 @@ void	stt_expand_variable(const char **str, t_argv *arg, t_env *env)
 	index = env_find(env, *str, length);
 	*str += length;
 	if (index == SIZE_MAX)
-		return ;
+		return (0);	// Check
 	ptr = env->ptr[index];
 	while (*ptr != 0 && *ptr != '=')
 		ptr++;
+	ptr += *ptr == '=';
 	length = 0;
 	while (ptr[length] != 0)
 		length++;
-	ft_memcpy(arg->data + arg->offset, ptr, length);
+	if (ft_lmcpy(arg->data + arg->offset, ptr, length, arg->end))
+		return (1);
 	arg->offset += length;
+	return (0);
 }
 
+// Returns the interior length of the interval
 static
 size_t	stt_find_interval(const char *str, const char *end)
 {
-	const char	*ostr = str;
+	const char	*ostr = str + (*str == '"' || *str == '\'');
 	char		quote_type;
 
-	if (*str == '"' || *str == '\'')
+	if (ostr != str)
 	{
 		quote_type = *str++;
-		while (*str != quote_type)	// removed str < end because guaranteed to have matching quote
+		while (*str != quote_type)
 			str++;
 	}
 	else
@@ -63,36 +69,40 @@ size_t	stt_find_interval(const char *str, const char *end)
 	return ((size_t)(str - ostr));
 }
 
+// To do: Fix bugs in the length calculation
+// Return: 0) OK, 1) OOM
 static uint8_t
 stt_parse_interval(const char *str, size_t length, t_env *env, t_argv *arg)
 {
-	const char		*end = str + length;
-	const char		*ostr = str;
+	const char	type = (*str == '\'') + ((*str == '"') << 1);
+	const char	*end = str + length;
+	const char	*ostr = str + (type != 0);
 
-	str += *str == '"';
+	str += (type == 2) + (type == 1) * length;
 	while (str < end)
 	{
 		if (*str == '$')
 		{
-			length = (size_t)(str - ostr);
-			ft_memcpy(arg->data + arg->offset, ostr, length);
+			length = (size_t)(str++ - ostr);
+			if (ft_lmcpy(arg->data + arg->offset, ostr, length, arg->end))
+				return (1);
 			arg->offset += length;
-			stt_expand_variable(&str, arg, env);
+			if (stt_expand_variable(&str, arg, env))
+				return (1);
 			ostr = str;
 		}
 		else
 			str++;
 	}
 	length = (size_t)(str - ostr);
-	ft_memcpy(arg->data + arg->offset, ostr, length);
+	if (ft_lmcpy(arg->data + arg->offset, ostr, length, arg->end))
+		return (1);
 	arg->offset += length;
 	return (0);
 }
 
-// Need to fix length issues
-// Needs to check for overflow
-// Expand word already calls expand_glob if necessary
-// Length check isn't a problem for 1 count (max is 256 anyways)
+// Return: 0) OK, 1) OOM
+static
 uint8_t	stt_expand_word(t_token *token, t_env *env, t_argv *arg)
 {
 	const char	*end = token->ptr + token->length;
@@ -102,36 +112,33 @@ uint8_t	stt_expand_word(t_token *token, t_env *env, t_argv *arg)
 	while (str < end)
 	{
 		interval = stt_find_interval(str, end);
-		if (*str == '\'')
-		{
-			ft_memcpy(arg->data + arg->offset, ++str, interval - 1);
-			arg->offset += (interval - 1);
-		}
-		else
-			stt_parse_interval(str, interval, env, arg);
+		if (stt_parse_interval(str, interval, env, arg))
+			return (1);
 		str += interval;
 	}
 	return (0);
 }
 
-// This function expands a token, and globs the result if indicated by the token
-// The count variable serves as both a way of knowing if ptr is out of bounds, and
-// as a way of throwing errors for ambiguous redirects when expanding file names.
-// Saves the final results to arg, and uses a temporary arg_word buffer to store
-// the pattern if necessary.
+/* This function expands a token, and globs the result if indicated by the token
+The count variable serves as both a way of knowing if ptr is out of bounds, and
+as a way of throwing errors for ambiguous redirects when expanding file names.
+Saves the final results to arg, and uses a temporary arg_tmp buffer to store
+the pattern if necessary */
+// Return: 0) OK, 1) OOM, 2) dir function problems, 4) exceeded count
 uint8_t	expand_token(t_token *token, t_env *env, t_argv *arg, size_t count)
 {
-	char			buffer[FT_WCARD_SIZE];
-	t_argv			arg_word;
-	
+	t_argv	*arg_tmp;
+	char	buffer[FT_WCARD_SIZE];
+	uint8_t	rvalue;
+
 	if (token->type & E_EXPAND)
 	{
-		arg_word = (t_argv){0, 0, buffer, NULL};
-		stt_expand_word(token, env, &arg_word);
-		expand_glob(arg_word.data, arg, count);
+		arg_tmp = &(t_argv){0, 0, buffer, NULL, buffer + sizeof(buffer)};
+		rvalue = stt_expand_word(token, env, arg_tmp);
+		if (rvalue == 0)
+			rvalue = expand_glob(buffer, arg, count);
 	}
 	else
-	{
-		stt_expand_word(token, env, arg);
-	}
+		rvalue = stt_expand_word(token, env, arg);
+	return (rvalue);
 }

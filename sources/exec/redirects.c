@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 11:12:50 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/12 15:35:44 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:50:08 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,7 @@
 #include "minishell.h"
 #include "msh_types.h"
 
-// static
-// t_argv	stt_initialize(char *word, char **ptr)
-// {
-// 	t_argv	arg;
-
-// 	arg.data = word;
-// 	arg.ptr = ptr;
-// 	arg.count = 0;
-// 	arg.offset = 0;
-// 	arg.ptr[1] = NULL;
-// 	return (arg);
-// }
-
-static int32_t
+static int32_t	\
 stt_parse_fd(t_token *token, char *str)
 {
 	int		fd;
@@ -54,24 +41,20 @@ stt_parse_fd(t_token *token, char *str)
 	return (fd);
 }
 
-// 0: No problems, 1: dir function failure, 2: Ambiguous redirects, 4: Exceeded memory
+// Return: 0: Ok, 1: dir function, 2: Ambiguous redirects, 4: Out of memory
 static uint8_t
 stt_open(t_token *token, t_env *env)
 {
 	uint8_t	rvalue;
-	char	*ptr[2];
 	char	word[256];
-	t_argv	arg;
 
-	rvalue = 0;
-	arg = (t_argv){0, 0, word, NULL};
-	rvalue = expand_token(token, env, &arg, 1);
+	rvalue = expand_token(token, env, &(t_argv){0, 0, word, NULL, word + sizeof(word)}, 1);
 	if (rvalue >= 2)
 	{
-		ft_write(2, "msh_redirects: Ambiguous or missing redirects\n", 47);
+		ft_write(2, "msh_redirects: Ambiguous or missing redirects\n", 46);
 		return (2);
 	}
-	token->fd[0] = stt_parse_fd(token, ptr[0]);
+	token->fd[0] = stt_parse_fd(token, word);
 	return (0);
 }
 

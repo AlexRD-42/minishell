@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/11 22:51:01 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/13 12:38:43 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,6 @@ stt_write_to_pipe(const char *buffer, size_t length)
 	return (fd[0]);
 }
 
-// Check for UB in execution
-// To check: is \nEOF\0 valid?
-// Needs variable expansion
 int	heredoc(t_token *token)
 {
 	ssize_t		bytes_read;

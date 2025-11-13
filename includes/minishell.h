@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/12 15:31:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:22:15 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ const char	*ft_strchr(const char *str, unsigned char c);
 void		*ft_memmove(void *vdst, const void *vsrc, size_t length);
 void		*ft_memset(void *dst_void, const uint8_t byte, size_t length);
 void		*ft_memcpy(void *restrict vdst, const void *restrict vsrc, size_t length);
+uint8_t		ft_lmcpy(void *restrict vdst, const void *restrict vsrc, size_t length, char *end);
 
 ssize_t		ft_write(int fd, const void *buffer, size_t length);
 

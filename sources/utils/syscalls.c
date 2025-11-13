@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 11:59:05 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/11 22:57:47 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/12 21:51:17 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,3 @@ ssize_t	ft_write(int fd, const void *buffer, size_t length)
 	}
 	return ((ssize_t) length);
 }
-
-
-

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/10 12:37:39 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/13 11:29:04 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,14 @@ size_t	env_find(t_env *env, const char *entry, size_t length)
 	size_t	i;
 	size_t	j;
 
-	if (length == 0)
+	if (length == SIZE_MAX)
 	{
+		length = 0;
 		while (entry[length] != 0 && entry[length] != '=')
 			length++;
 	}
+	if (length == 0)
+		return (SIZE_MAX);
 	i = env->count + (env->count == 0);
 	while (i-- > 0)
 	{
@@ -46,7 +49,7 @@ uint8_t	env_del(t_env *env, const char *entry)
 	size_t	index;
 	size_t	length;
 
-	index = env_find(env, entry, 0);
+	index = env_find(env, entry, SIZE_MAX);
 	if (index == SIZE_MAX)
 		return (1); // Could not find var
 	if (index <= 3)
