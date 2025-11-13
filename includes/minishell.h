@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/13 10:22:15 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/13 14:17:31 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ ssize_t		ft_write(int fd, const void *buffer, size_t length);
 size_t		env_find(t_env *env, const char *entry, size_t length);
 uint8_t		env_del(t_env *env, const char *entry);
 uint8_t		env_init(t_env *env, const char **envp_src);
+uint8_t		env_expand(const char **str, t_argv *arg, t_env *env);
 
 int			tokenize(t_shell *shell, char *input);
 int			token_not_implemented(char **input);
@@ -50,8 +51,7 @@ int			syntax_check_end(t_token last_token);
 int			syntax_check_start(t_token first_token);
 void		syntax_print_error(t_token token);
 
-uint8_t		expand_token(t_token *token, t_env *env, t_argv *arg, size_t count);
-uint8_t		expand_glob(const char *pattern, t_argv *arg, size_t count);
+int			expand_token(t_token *token, t_env *env, t_argv *arg, size_t count);
 int			msh_cd(int argc, const char **argv, t_env *env);
 int			msh_pwd(int argc, const char **argv, t_env *env);
 int			msh_exit(int argc, const char **argv, t_env *env);

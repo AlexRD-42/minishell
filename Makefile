@@ -4,7 +4,7 @@ BUILD_PATH = build
 INC_PATH = includes
 OBJ_PATH = $(BUILD_PATH)/obj
 BIN = $(BUILD_PATH)/$(NAME)
-VPATH = sources sources/utils sources/commands sources/core sources/exec
+VPATH = sources sources/utils sources/env sources/commands sources/core sources/exec sources/history
 
 # Files --------------------------------------- #
 LIBS =

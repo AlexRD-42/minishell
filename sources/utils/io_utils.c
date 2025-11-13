@@ -6,14 +6,14 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 15:50:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/04 10:42:26 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/13 13:12:28 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 
-// Receives and endptr to a buffer guaranteed to hold size of number
+// Receives an endptr to a buffer guaranteed to hold size of number
 char	*ft_itoa_stack(int64_t number, char *ptr)
 {
 	const int8_t	sign = (number >= 0) - (number < 0);

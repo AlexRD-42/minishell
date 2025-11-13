@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/13 12:38:43 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/13 13:30:09 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "minishell.h"
+#include "msh_defines.h"
+#include "msh_types.h"
 
 static inline uint8_t	\
 stt_eof_cmp(const char *str, const char *eof)
@@ -61,26 +63,38 @@ stt_write_to_pipe(const char *buffer, size_t length)
 	return (fd[0]);
 }
 
-int	heredoc(t_token *token)
+static
+int	stt_heredoc(const char *eof, t_argv *arg, t_env *env, bool mode)
 {
 	ssize_t		bytes_read;
 	size_t		eof_len;
-	char		buffer[FT_HDOC_SIZE + FT_PAGE_SIZE];
 	char		*read_end;
-	const char 	*nl_pos = buffer;
+	const char 	*nl_pos = arg->data;
 
-	if (eof == NULL)
-		return (-1);
 	// eof_len = ft_strlen(token->);
-	bytes_read = read(STDIN_FILENO, buffer, FT_PAGE_SIZE);
-	read_end = buffer + bytes_read * (bytes_read > 0);
-	while (bytes_read > 0 && read_end < buffer + FT_HDOC_SIZE)
+	bytes_read = read(STDIN_FILENO, arg->data, FT_PAGE_SIZE);
+	read_end = arg->data + bytes_read * (bytes_read > 0);
+	while (bytes_read > 0 && read_end < arg->data + FT_HDOC_SIZE)
 	{
 		nl_pos = stt_find_eof(nl_pos, eof, read_end, eof_len);
 		if (nl_pos != NULL && stt_eof_cmp(nl_pos, eof) == 1)
-			return (stt_write_to_pipe(buffer, (size_t)(nl_pos - buffer)));
+			return (stt_write_to_pipe(arg->data, (size_t)(nl_pos - arg->data)));
 		bytes_read = read(STDIN_FILENO, read_end, FT_PAGE_SIZE);
 		read_end += bytes_read;
 	}
-	return (-1);
+}
+
+#define FT_EOF_LENGTH 256
+
+int	heredoc(t_token *token, t_env *env)
+{
+	char		buffer[FT_HDOC_SIZE + FT_PAGE_SIZE];
+	char		eof[FT_EOF_LENGTH];
+	t_argv		arg;
+
+	arg = (t_argv){0, 0, eof, NULL, eof + sizeof(eof)};
+	if (expand_token(token, env, &arg, 1))
+		return (-1);
+	arg = (t_argv){0, 0, buffer, NULL, buffer + sizeof(buffer)};
+	return (stt_heredoc(eof, &arg, env, (token->type & E_EXPAND) != 0));
 }
