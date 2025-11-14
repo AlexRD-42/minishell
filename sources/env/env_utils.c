@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/13 11:29:04 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 12:57:55 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ uint8_t	env_del(t_env *env, const char *entry)
 		return (1); // Could not find var
 	if (index <= 3)
 	{
-		ft_memset(env->ptr[index], 0, FT_PATH_MAX);
+		ft_memset(env->ptr[index], 0, FT_PATH_SIZE);
 		return (0);
 	}
 	ptr = env->ptr[index];
@@ -81,15 +81,15 @@ uint8_t	env_copy(t_env *env, const char **envp_src)
 
 	ft_memset(env->data, 0, FT_ENV_SIZE);
 	env->ptr[0] = env->data;
-	env->ptr[1] = env->ptr[0] + FT_PATH_MAX;
-	env->ptr[2] = env->ptr[1] + FT_PATH_MAX;
-	env->ptr[3] = env->ptr[2] + FT_PATH_MAX;
-	env->offset = 4 * FT_PATH_MAX;
+	env->ptr[1] = env->ptr[0] + FT_PATH_SIZE;
+	env->ptr[2] = env->ptr[1] + FT_PATH_SIZE;
+	env->ptr[3] = env->ptr[2] + FT_PATH_SIZE;
+	env->offset = 4 * FT_PATH_SIZE;
 	i = 4;
 	while (envp_src[i] != NULL)
 	{
 		length = ft_strlen(envp_src[i]) + 1;
-		if (length + env->offset > FT_ENV_SIZE || i >= FT_ENV_ENTRIES - 1)
+		if (length + env->offset > FT_ENV_SIZE || i >= FT_ENV_COUNT - 1)
 			return (1);	// Out of memory
 		env->ptr[i] = env->data + env->offset;
 		ft_memcpy(env->ptr[i], envp_src[i], length);

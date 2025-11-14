@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/13 10:23:21 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 12:58:17 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ typedef struct s_env
 	size_t	count;
 	size_t	offset;
 	char	data[FT_ENV_SIZE];		// 64kb
-	char	*ptr[FT_ENV_ENTRIES];	// 8kb
+	char	*ptr[FT_ENV_COUNT];	// 8kb
 }	t_env;
 
 typedef struct s_argv
@@ -74,6 +74,22 @@ typedef struct s_argv
 	char	**ptr;
 	char	*end;
 }	t_argv;
+
+typedef struct s_hst_entry
+{
+	uint32_t start;   // offset into buf
+	uint32_t length;  // length in bytes (not including '\0')
+}	t_hst_entry;
+
+typedef struct s_hst
+{
+	size_t		free;	// free space in bytes
+	size_t		head;	// next write position
+	size_t		first;	// index of oldest entry
+	size_t		count;	// number of valid entries
+	char		data[FT_HST_SIZE];
+	t_hst_entry entries[FT_HST_COUNT];
+}	t_hst;
 
 typedef struct s_str
 {
@@ -112,7 +128,7 @@ typedef struct s_shell
 {
 	char	*input;
 	t_env	env;
-	t_token	tokens[FT_TOKEN_MAX];
+	t_token	tokens[FT_TOKEN_COUNT];
 	bool	mode; // 0 for non_interactive, 1 for interactive
 }	t_shell;
 

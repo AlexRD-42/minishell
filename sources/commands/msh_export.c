@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:55:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/06 22:39:40 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 12:57:55 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ uint8_t	env_add(t_env *env, const char *entry)
 {
 	const size_t	length = ft_strlen(entry) + 1;
 
-	if (env->offset + length > FT_ENV_SIZE || env->count >= FT_ENV_ENTRIES - 1)
+	if (env->offset + length > FT_ENV_SIZE || env->count >= FT_ENV_COUNT - 1)
 		return (1); // Out of memory
 	env->ptr[env->count] = env->data + env->offset;
 	ft_memcpy(env->ptr[env->count], entry, length);

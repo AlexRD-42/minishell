@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   pipex_exec.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 11:23:48 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/04 11:15:54 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 12:58:45 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ size_t	in_place_split(char *cmd, char **buffer)
 	size_t	break_flag;
 
 	i = 0;
-	while (*cmd != 0 && i < (FT_ARG_MAX - 1))
+	while (*cmd != 0 && i < (FT_ARG_COUNT - 1))
 	{
 		while (*cmd == ' ')
 			cmd++;
@@ -87,7 +87,7 @@ static
 int	exec_cmd(char *cmd, char **argv, char **envp, size_t cmd_length)
 {
 	size_t			i;
-	char			buffer[FT_PATH_MAX];
+	char			buffer[FT_PATH_SIZE];
 	const char		*path = find_path(envp);
 	int				error_code;
 
@@ -113,7 +113,7 @@ int	exec_cmd(char *cmd, char **argv, char **envp, size_t cmd_length)
 
 int	pipe_exec(char *cmd, char **envp)
 {
-	char	*argv[FT_ARG_MAX];
+	char	*argv[FT_ARG_COUNT];
 	size_t	i;
 	size_t	cmd_length;
 	int		error_code;

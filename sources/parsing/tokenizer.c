@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:44:17 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/10 17:12:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 12:58:17 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,10 +124,10 @@ int	tokenize(t_shell *shell, char *input)
 	i = 0;
 	while (true)
 	{
-		if (i >= FT_TOKEN_MAX - 1)
+		if (i >= FT_TOKEN_COUNT - 1)
 		{
 			write(2, "too many tokens\n", 16);// ERROR_MSG
-			shell->tokens[FT_TOKEN_MAX - 1].type = E_END;
+			shell->tokens[FT_TOKEN_COUNT - 1].type = E_END;
 			return (-1);
 		}
 		input = stt_get_next_token(&shell->tokens[i], input);

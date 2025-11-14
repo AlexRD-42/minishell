@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 20:51:11 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 12:20:10 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ Check if cwd returns nl
 Check short writes */
 int	msh_pwd(int argc, const char **argv, t_env *env)
 {
-	char	buffer[FT_PATH_MAX];
+	char	buffer[FT_PATH_SIZE];
 
 	(void) argc;
 	(void) argv;
 	(void) env;
-	if (getcwd(buffer, FT_PATH_MAX) == NULL)
+	if (getcwd(buffer, FT_PATH_SIZE) == NULL)
 	{
 		perror("cwd");
 		return (1);

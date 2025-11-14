@@ -19,9 +19,9 @@ env_del(t_env *env, const char *entry)
 	if (array_ptr == NULL)
 		return (1);
 	ptr = *array_ptr;
-	if (ptr < (env->data + 4 * FT_PATH_MAX))
+	if (ptr < (env->data + 4 * FT_PATH_SIZE))
 	{
-		ft_memset(ptr, 0, FT_PATH_MAX);
+		ft_memset(ptr, 0, FT_PATH_SIZE);
 		return (0);
 	}
 	length = ft_strlen(ptr) + 1;
@@ -75,21 +75,21 @@ char	*env_find(t_env *env, const char *str)
 
 int	msh_cd(int argc, const char **argv, t_env *env)
 {
-	char	buffer[FT_PATH_MAX];
+	char	buffer[FT_PATH_SIZE];
 
 	if (argc < 2)
 	{
 		write(STDOUT_FILENO, "\n", 1);
 		return (1);	// Lack of arguments
 	}
-	if (getcwd(buffer, FT_PATH_MAX) == NULL)
+	if (getcwd(buffer, FT_PATH_SIZE) == NULL)
 	{
 		perror("cwd");
 		return (1);
 	}
 	ft_memcpy(env->ptr[1], buffer, ft_strlen(buffer) + 1);
 	chdir(argv[1]);
-	if (getcwd(buffer, FT_PATH_MAX) == NULL)
+	if (getcwd(buffer, FT_PATH_SIZE) == NULL)
 	{
 		perror("cwd");
 		return (1);

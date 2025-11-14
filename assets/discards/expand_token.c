@@ -19,7 +19,7 @@ uint8_t	stt_expand_word(t_token *token, t_env *env, t_argv *arg)
 uint8_t	expand_token(t_token *token, t_env *env, t_argv *arg, size_t count)
 {
 	t_argv	*arg_tmp;
-	char	buffer[FT_WCARD_SIZE];
+	char	buffer[FT_ARG_SIZE];
 	uint8_t	rvalue;
 
 	if (token->type & E_EXPAND)

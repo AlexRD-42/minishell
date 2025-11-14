@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/12 12:50:52 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 12:58:45 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ static
 int	exec_cmd(char *cmd, char **argv, char **envp, size_t cmd_length)
 {
 	size_t			i;
-	char			buffer[FT_PATH_MAX];
+	char			buffer[FT_PATH_SIZE];
 	const char		*path = find_path(envp);
 	int				error_code;
 
@@ -121,7 +121,7 @@ int	exec_cmd(char *cmd, char **argv, char **envp, size_t cmd_length)
 int	msh_build_argv(t_token *token, t_env *env, t_argv *arg)
 {
 	size_t	i;
-	char	pattern[FT_WCARD_SIZE];
+	char	pattern[FT_ARG_SIZE];
 
 	i = 0;
 	while ((token->type & E_CMD_END) == 0)
@@ -144,7 +144,7 @@ int	msh_build_argv(t_token *token, t_env *env, t_argv *arg)
 // Procura primeira word:
 int	pipe_exec(char *cmd, char **envp)
 {
-	char	*argv[FT_ARG_MAX];
+	char	*argv[FT_ARG_COUNT];
 	size_t	i;
 	size_t	cmd_length;
 	int		error_code;

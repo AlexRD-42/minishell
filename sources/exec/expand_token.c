@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/13 14:38:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 12:58:45 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int	stt_expand_glob(const char *pattern, t_argv *arg, size_t count)
 	rvalue = 0;
 	while (rvalue == 0)
 	{
-		if (count == 0 || arg->count > (FT_ARG_MAX - 1))
+		if (count == 0 || arg->count > (FT_ARG_COUNT - 1))
 		{
 			rvalue = 8;
 			break ;
@@ -139,7 +139,7 @@ the pattern if necessary*/
 int	expand_token(t_token *token, t_env *env, t_argv *arg, size_t count)
 {
 	t_argv		*arg_ptr;
-	char		buffer[FT_WCARD_SIZE];
+	char		buffer[FT_ARG_SIZE];
 	const char	*str = token->ptr;
 	const char	*end = token->ptr + token->length;
 	size_t		interval;

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/13 13:30:09 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 12:31:14 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	stt_heredoc(const char *eof, t_argv *arg, t_env *env, bool mode)
 	// eof_len = ft_strlen(token->);
 	bytes_read = read(STDIN_FILENO, arg->data, FT_PAGE_SIZE);
 	read_end = arg->data + bytes_read * (bytes_read > 0);
-	while (bytes_read > 0 && read_end < arg->data + FT_HDOC_SIZE)
+	while (bytes_read > 0 && read_end < arg->data + FT_PIPE_SIZE)
 	{
 		nl_pos = stt_find_eof(nl_pos, eof, read_end, eof_len);
 		if (nl_pos != NULL && stt_eof_cmp(nl_pos, eof) == 1)
@@ -88,7 +88,7 @@ int	stt_heredoc(const char *eof, t_argv *arg, t_env *env, bool mode)
 
 int	heredoc(t_token *token, t_env *env)
 {
-	char		buffer[FT_HDOC_SIZE + FT_PAGE_SIZE];
+	char		buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
 	char		eof[FT_EOF_LENGTH];
 	t_argv		arg;
 
