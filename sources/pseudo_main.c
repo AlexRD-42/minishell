@@ -15,57 +15,41 @@
 #include <unistd.h>
 #include "minishell.h"
 
-int	g_status;
+#define PROMPT "msh: "
 
-void	non_interactive_shell(t_shell *shell)
+void	non_interactive_shell(t_shell *shell, t_token *tokens)
 {
-
+	
 }
-// 1. Display prompt
-// 2. Read user input into shell->input
-// 3. Dont continue if shell->input is empty
-// 4.1 Add input to history
-// 4.2 tokenize input
-// 4.3 Parse tokens
-// 4.4 Execute
-// 4.5? Clean struct
 
-void	handle_sigint_prompt(int sig)
+void	print_prompt(void)
 {
-	(void)sig;
-	g_status = 130; // same as Bash
-	write(STDOUT_FILENO, "\n", 1);
+	write(1, PROMPT, ft_strlen(PROMPT));
 }
 
 void	interactive_shell(t_shell *shell)
 {
+	char	line[FT_PAGE_SIZE];
+	ssize_t	n;
+
+	setup_signals();
 	while (1)
 	{
-		ft_write(STDOUT_FILENO, PROMPT, ft_strlen(PROMPT));
-		if (read_intput(shell) == -1)
+		print_prompt();
+		setup_terminal();
+		n = read_input(shell->history, &line, sizeof(line));
+		restore_terminal_config();
+		if (n == -1)
+		{
+			write(STDOUT_FILENO, "exit\n", 5);
 			break ;
-		if (!shell->input[0])
+		}
+		if (!line[0])
 			continue ;
-		/* add to history*/
-		if (tokenize(shell) == -1)
+		hst_add_entry(line, n, &shell->history);
+		if (tokenize(&shell, line) == -1)
 			continue ;
 		execute(shell);
-	}
-}
-// To check errors from isatty() AND to check if we need non_interactive_shell
-// isatty returns 1 if the passed FD is an open fd referring to a terminal;
-void	init_shell(t_shell *shell, int argc, char **argv, char **envp)
-{
-	shell->envp = envp;
-	if (isatty(STDIN_FILENO))
-		shell->non_interactive = false;
-	else
-	{
-		shell->non_interactive = true;
-		if (argc > 1)
-			shell->input = argv;
-		else
-			shell->input = NULL; 
 	}
 }
 
@@ -73,16 +57,14 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
 
-	init_shell(&shell, argc, argv, envp);
-	if (shell.non_interactive)
-		non_interactive_shell(&shell);
-	else
+	(void)argc;
+	(void)argc;
+	ft_memset(&shell, 0, sizeof(shell));
+	env_init(&shell.env, envp);
+	//shlvl();
+	if (isatty(STDIN_FILENO))
 		interactive_shell(&shell);
+	else
+		non_interactive_shell(&shell, NULL);
 	exit(0);
 }
-
-// (echo alguma && (echo coisa)) >> out && echo 1
-// (echo alguma && (echo coisa)) = RETORNO DO MSH
-// argv[1] = '1'
-
-// RETORNO DO MSH >> out && echo 1

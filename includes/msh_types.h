@@ -87,6 +87,7 @@ typedef struct s_hst
 	size_t		head;	// next write position
 	size_t		first;	// index of oldest entry
 	size_t		count;	// number of valid entries
+	size_t		current; //current line we're changing on read_input
 	char		data[FT_HST_SIZE];
 	t_hst_entry entries[FT_HST_COUNT];
 }	t_hst;
@@ -126,10 +127,9 @@ typedef struct s_token_small
 
 typedef struct s_shell
 {
-	char	*input;
 	t_env	env;
 	t_token	tokens[FT_TOKEN_COUNT];
-	bool	mode; // 0 for non_interactive, 1 for interactive
+	t_hst	history;
 }	t_shell;
 
 typedef int (*builtin_fn)(int argc, const char **argv, t_env *env);
