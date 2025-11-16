@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 14:06:04 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 17:09:56 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,10 @@
 
 // Return: 0) EOF, 1) MATCH, 2) NO MATCH, -1) OOM, -2) readdir error
 static
-int	stt_directory_read(DIR *dir_stream, const char *pattern, t_argv *arg)
+int	stt_directory_read(DIR *dir_stream, const char *pattern, t_vecp *vec)
 {
 	size_t			length;
 	struct dirent	*dir_entry;
-	char			*ptr;
 
 	errno = 0;
 	dir_entry = readdir(dir_stream);
@@ -38,26 +37,25 @@ int	stt_directory_read(DIR *dir_stream, const char *pattern, t_argv *arg)
 	if (ft_strwcmp(dir_entry->d_name, pattern) == 1)
 	{
 		length = ft_strlen(dir_entry->d_name) + 1;
-		ptr = arg->data + arg->offset;
-		if (ft_lmcpy(ptr, dir_entry->d_name, length, arg->end))
+		if (ft_lmcpy(vec->wptr, dir_entry->d_name, length, vec->end))
 			return (-1);
-		arg->ptr[arg->count++] = ptr;
-		arg->offset += length;
+		vec->ptr[vec->count++] = vec->wptr;
+		vec->wptr += length;
 		return (1);
 	}
 	return (2);
 }
 
 // This function reads from a directory, compares against pattern with wildcard matching and 
-// saves up to count entries inside the buffer supplied by arg
-// This function does not null terminate
-// Return: 0) EOF, 1) At Least 1 Match -1) OOM, -2) dir function problems, -4) exceeded count
+// saves up to EOF entries inside the buffer supplied by arg
+// Return: >=0) Number of matches until EOF
+// Return:	-1) OOM, -2) dir function problems, -4) exceeded count
 static
-int	stt_expand_glob(const char *pattern, t_argv *arg, size_t count)
+ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 {
-	DIR				*dir_stream;
-	int				rvalue;
-	const size_t	max_count = count;
+	size_t	count;
+	DIR		*dir_stream;
+	ssize_t	rvalue;
 
 	dir_stream = opendir(".");
 	if (dir_stream == NULL)
@@ -65,49 +63,49 @@ int	stt_expand_glob(const char *pattern, t_argv *arg, size_t count)
 		perror("msh_opendir: ");
 		return (-2);
 	}
-	rvalue = (arg->count + 1 >= FT_ARG_COUNT);
+	count = 0;
+	rvalue = (vec->count + 1 >= vec->max_count);
 	rvalue = (rvalue == 0) - (rvalue << 2);
 	while (rvalue > 0)
 	{
-		rvalue = stt_directory_read(dir_stream, pattern, arg);
-		if ((count == 0 && rvalue == 1) || arg->count > (FT_ARG_COUNT - 1))
+		rvalue = stt_directory_read(dir_stream, pattern, vec);
+		if (vec->count + 1 >= vec->max_count)
 			rvalue = -4;
-		count -= (rvalue == 1);
+		count += (rvalue == 1);
 	}
 	if (closedir(dir_stream) < 0)
 		perror("msh_closedir: ");
-	return (rvalue + (rvalue == 0 && max_count != count));
+	return (rvalue + (ssize_t)((rvalue == 0) * count));
 }
 
 // Needs a better name
 // Parses the string and performs variable expansion
 // saving the results in a separate buffer supplied by argv
 // Return: 0) OK, -1) OOM;
-int	parse_interval(const char *str, const char *end, t_env *env, t_argv *arg)
+int	parse_interval(t_buf src, t_env *env, t_buf *dst)
 {
-	const char	*ostr = str;
 	size_t		length;
 
-	while (str < end)
+	while (src.wptr < src.end)
 	{
-		if (*str == '$')
+		if (*src.wptr == '$')
 		{
-			length = (size_t)(str - ostr);
-			if (ft_lmcpy(arg->data + arg->offset, ostr, length, arg->end))
+			length = (size_t)(src.wptr - src.optr);
+			if (ft_lmcpy(dst->wptr, src.optr, length, dst->end))
 				return (-1);
-			arg->offset += length;
-			str = env_expand(str, end, arg, env);
-			if (str == NULL)
+			dst->wptr += length;
+			src.wptr = env_expand(src, dst, env);
+			if (src.wptr == NULL)
 				return (-1);
-			ostr = str;
+			src.optr = src.wptr;
 		}
 		else
-			str++;
+			src.wptr++;
 	}
-	length = (size_t)(str - ostr);
-	if (ft_lmcpy(arg->data + arg->offset, ostr, length, arg->end))
+	length = (size_t)(src.wptr - src.optr);
+	if (ft_lmcpy(dst->wptr, src.optr, length, dst->end))
 		return (-1);
-	arg->offset += length;
+	dst->wptr += length;
 	return (0);
 }
 
@@ -115,61 +113,62 @@ int	parse_interval(const char *str, const char *end, t_env *env, t_argv *arg)
 // Finds the interior length of the string between quotes, and copies it literally
 // if its a single quote, or performs variable expansion if it isnt
 // Return: NULL) OOM, !NULL) OK
-static const
-char	*stt_find_interval(const char *str, const char *end, t_env *env, t_argv *arg)
+static
+char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst)
 {
-	const char	qtype = *str;
-	const char	*ostr = str;
+	const char	qtype = *src.wptr;
+	const char	quoted = (qtype == '"' || qtype == '\'');
 	size_t		length;
 
-	if ((qtype == '"' || qtype == '\''))
+	if (quoted)
 	{
-		ostr = ++str;
-		while (str < end && *str != qtype)
-			str++;
+		src.optr = ++src.wptr;
+		while (src.wptr < src.end && *src.wptr != qtype)
+			src.wptr++;
 	}
 	else
-		while (str < end && *str != '"' && *str != '\'')
-			str++;
-	length = (size_t)(str - ostr);
+		while (src.wptr < src.end && *src.wptr != '"' && *src.wptr != '\'')
+			src.wptr++;
+	length = (size_t)(src.wptr - src.optr);
 	if (qtype == '\'')
 	{
-		if (ft_lmcpy(arg->data + arg->offset, ostr, length, arg->end))
+		if (ft_lmcpy(dst->wptr, src.optr, length, dst->end))
 			return (NULL);
-		arg->offset += length;
+		dst->wptr += length;
 	}
-	else if (parse_interval(ostr, ostr + length, env, arg))
+	else if (parse_interval((t_buf){src.optr, src.wptr, src.optr}, env, dst))
 		return (NULL);
-	return (str + (str < end));
+	return (src.wptr + (src.wptr < src.end && quoted));
 }
 
-// Return: 0) OK, -1) OOM, -2) dir function problems, -4) exceeded count;
+// Return: >=0) OK, -1) OOM, -2) dir function problems, -4) exceeded count;
 /* This function expands a token, and globs the result if indicated by the token
 The count variable serves as both a way of knowing if ptr is out of bounds, and
 as a way of throwing errors for ambiguous redirects when expanding file names;
 Saves the final results to arg, and uses a temporary arg_tmp buffer to store
 the pattern if necessary*/
-int	expand_token(t_token *token, t_env *env, t_argv *arg, size_t count)
+ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec)
 {
-	t_argv		*arg_ptr;
-	char		buffer[FT_ARG_SIZE];
-	const char	*str = token->ptr;
-	const char	*end = token->ptr + token->length;
+	t_buf	*dst;
+	t_buf	src;
+	char	buffer[FT_ARG_SIZE];	// Limit for one argument
 
+	src = (t_buf){token->ptr, token->ptr + token->length, token->ptr};
 	if (token->type & E_EXPAND)
-		arg_ptr = &(t_argv){0, 0, buffer, NULL, buffer + sizeof(buffer)};
+		dst = &(t_buf){buffer, buffer + sizeof(buffer), buffer};
 	else
-		arg_ptr = arg;
-	while (str < end)
+		dst = &vec->buf;
+	while (src.wptr < src.end)
 	{
-		str = stt_find_interval(str, end, env, arg_ptr);
-		if (str == NULL)
+		src.wptr = stt_find_interval(src, env, dst);
+		if (src.wptr == NULL)
 			return (-1);
+		src.optr = src.wptr;
 	}
-	if (arg_ptr->data + arg_ptr->offset + 1 > arg_ptr->end)
+	if (dst->wptr + 1 > dst->end)
 		return (-1);
-	arg_ptr->data[arg_ptr->offset++] = 0;
+	*(dst->wptr++) = 0;
 	if ((token->type & E_EXPAND))
-		return (stt_expand_glob(buffer, arg, count));
-	return (0);
+		return (stt_expand_glob(buffer, vec));
+	return (1);
 }

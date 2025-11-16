@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 14:03:50 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 19:44:30 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,21 +64,16 @@ enum e_ascii
 	E_ALPHA = E_LOWER | E_UPPER | E_DIGIT
 };
 
-typedef struct s_env
-{
-	size_t	count;
-	size_t	offset;
-	char	data[FT_ENV_SIZE];	// 64kb
-	char	*ptr[FT_ENV_COUNT];	// 8kb
-}	t_env;
-
+// General use buffer (24 bytes)
 typedef struct s_buf
 {
-	char		*wptr;
-	char *const	optr;
-	char *const	end;
+	char	*optr;	// Origin pointer (ideally const)
+	char	*end;	// End Pointer (ideally const)
+	char	*wptr;	// Write pointer (next write position of the buffer)
 }	t_buf;
 
+// General use buffer array of pointers (48 bytes)
+// Anonymous struct should mirror t_buf exactly
 typedef struct s_vecp
 {
 	union
@@ -86,23 +81,15 @@ typedef struct s_vecp
 		t_buf	buf;
 		struct
 		{
-			char		*wptr;
-			char *const	optr;
-			char *const	end;
+			char	*optr;
+			char	*end;
+			char	*wptr;
 		};
 	};
 	size_t	count;
+	size_t	max_count;
 	char	**ptr;
 }	t_vecp;
-
-typedef struct s_argv
-{
-	size_t	count;
-	size_t	offset;
-	char	*data;
-	char	**ptr;
-	char	*end;
-}	t_argv;
 
 typedef struct s_hst_entry
 {
@@ -110,24 +97,25 @@ typedef struct s_hst_entry
 	uint32_t length;  // length in bytes (not including '\0')
 }	t_hst_entry;
 
+// Ideally should be vecp too but fuck that
 typedef struct s_hst
 {
-	size_t		free;	// free space in bytes
-	size_t		head;	// next write position
-	size_t		first;	// index of oldest entry
-	size_t		count;	// number of valid entries
-	size_t		current; //current line we're changing on read_input
+	size_t		free;		// free space in bytes
+	size_t		head;		// next write position
+	size_t		first;		// index of oldest entry
+	size_t		count;		// number of valid entries
+	size_t		current;	// current line we're changing on read_input
 	char		data[FT_HST_SIZE];
 	t_hst_entry entries[FT_HST_COUNT];
 }	t_hst;
 
 typedef struct s_str
 {
-	const char	*ptr;
+	char	*ptr;
 	union
 	{
-		const char	*end;
-		size_t		length;
+		char	*end;
+		size_t	length;
 	};
 }	t_str;
 
@@ -147,27 +135,17 @@ typedef struct s_token
 {
 	union
 	{
-		const char	*ptr;
-		int32_t		fd[2];
+		char	*ptr;
+		int32_t	fd[2];
 	};
 	uint32_t	type;
 	uint32_t	length;
 }	t_token;
 
-// Precisa do ponteiro inicial para manter referencia do offset. Ex:
-// char *optr = posicao da str do primeiro token;
-// depois pra usar o token, seria *(optr + offset);
-typedef struct s_token_small
-{
-	uint32_t	offset;
-	uint16_t	type;
-	uint16_t	length;
-}	t_token_small;
-
 typedef struct s_shell
 {
 	char	*input;
-	t_env	env;
+	t_vecp	env;
 	t_token	tokens[FT_TOKEN_COUNT];
 	t_hst	history;
 }	t_shell;

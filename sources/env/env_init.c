@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 12:40:45 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/14 15:48:40 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 19:45:07 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,26 +17,26 @@
 // first 16kb are reserved for PATH, PWD, OLDPWD and TBD
 // What if envp is null?
 static
-uint8_t	env_copy(t_env *env, const char **envp_src)
+uint8_t	env_copy(t_vecp *env, const char **envp_src)
 {
 	size_t	i;
 	size_t	length;
 
-	ft_memset(env->data, 0, FT_ENV_SIZE);
-	env->ptr[0] = env->data;
+	ft_memset(env->optr, 0, FT_ENV_SIZE);
+	env->ptr[0] = env->optr;
 	env->ptr[1] = env->ptr[0] + FT_PATH_SIZE;
 	env->ptr[2] = env->ptr[1] + FT_PATH_SIZE;
 	env->ptr[3] = env->ptr[2] + FT_PATH_SIZE;
-	env->offset = 4 * FT_PATH_SIZE;
+	env->wptr = env->ptr[3] + FT_PATH_SIZE;
 	i = 4;
 	while (envp_src[i] != NULL)
 	{
 		length = ft_strlen(envp_src[i]) + 1;
-		if (length + env->offset > FT_ENV_SIZE || i >= FT_ENV_COUNT - 1)
+		if (env->wptr + length > env->end || i >= env->max_count - 1)
 			return (1);	// Out of memory
-		env->ptr[i] = env->data + env->offset;
+		env->ptr[i] = env->wptr;
 		ft_memcpy(env->ptr[i], envp_src[i], length);
-		env->offset += length;
+		env->wptr += length;
 		i++;
 	}
 	env->count = i;
@@ -47,7 +47,8 @@ uint8_t	env_copy(t_env *env, const char **envp_src)
 // Copies an env to the arena in t_env, and moves path, pwd, oldpwd
 // to the first 16kb (reserved for them)
 // Needs to increment SHLVL (just call export later)
-uint8_t	env_init(t_env *env, const char **envp_src)
+// Length check?
+uint8_t	env_init(t_vecp *env, const char **envp_src)
 {
 	size_t	i;
 

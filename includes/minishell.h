@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 12:44:21 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 19:39:44 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ int			ft_lmcpy(void *restrict vdst, const void *restrict vsrc, size_t length, ch
 
 ssize_t		ft_write(int fd, const void *buffer, size_t length);
 
-size_t		env_find(t_env *env, const char *entry, size_t length);
-char		*env_get_entry(t_env *env, const char *entry, size_t var_length[2]);
-uint8_t		env_del(t_env *env, const char *entry);
-uint8_t		env_init(t_env *env, const char **envp_src);
-const char	*env_expand(const char *str, const char *end, t_argv *arg, t_env *env);
+size_t		env_find(t_vecp *env, const char *entry, size_t length);
+char		*env_get_entry(t_vecp *env, const char *entry, size_t var_length[2]);
+uint8_t		env_del(t_vecp *env, const char *entry);
+uint8_t		env_init(t_vecp *env, const char **envp_src);
+char		*env_expand(t_buf src, t_buf *dst, t_vecp *env);
 int			tokenize(t_shell *shell, char *input);
 int			token_not_implemented(char **input);
 void		token_word_handler(t_token *token, char **input);
@@ -53,15 +53,15 @@ int			syntax_check_end(t_token last_token);
 int			syntax_check_start(t_token first_token);
 void		syntax_print_error(t_token token);
 
-int			expand_token(t_token *token, t_env *env, t_argv *arg, size_t count);
-int			parse_interval(const char *str, const char *end, t_env *env, t_argv *arg);
+ssize_t		expand_token(t_token *token, t_vecp *env, t_vecp *vec);
+int			parse_interval(t_buf src, t_vecp *env, t_buf *dst);
 
-int			msh_cd(int argc, const char **argv, t_env *env);
-int			msh_pwd(int argc, const char **argv, t_env *env);
-int			msh_exit(int argc, const char **argv, t_env *env);
-int			msh_unset(int argc, const char **argv, t_env *env);
-int			msh_env(int argc, const char **argv, t_env *env);
-int			msh_export(int argc, const char **argv, t_env *env);
-int			msh_echo(int argc, const char **argv, t_env *env);
+int			msh_cd(int argc, const char **argv, t_vecp *env);
+int			msh_pwd(int argc, const char **argv, t_vecp *env);
+int			msh_exit(int argc, const char **argv, t_vecp *env);
+int			msh_unset(int argc, const char **argv, t_vecp *env);
+int			msh_env(int argc, const char **argv, t_vecp *env);
+int			msh_export(int argc, const char **argv, t_vecp *env);
+int			msh_echo(int argc, const char **argv, t_vecp *env);
 
 #endif

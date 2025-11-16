@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 13:25:44 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 19:45:20 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,20 +86,19 @@ size_t	stt_read_input(const char *eof, char *buffer)
 }
 
 // To do: better error handling
-int	heredoc(t_token *token, t_env *env)
+int	heredoc(t_token *token, t_vecp *env)
 {
 	char	buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
 	char	aux_buffer[FT_PIPE_SIZE];
 	char	eof[FT_NAME_MAX];
 	size_t	length;
-	t_argv	arg;
+	t_buf	buf;
 
-	arg = (t_argv){0, 0, eof, NULL, eof + sizeof(eof)};
-	if (expand_token(token, env, &arg, 1))
+	buf = (t_buf){eof, eof + sizeof(eof), eof};
+	if (expand_token(token, env, &(t_vecp){{buf}, 0, 1, NULL}))
 		return (-1);
 	length = stt_read_input(eof, buffer);
-	arg = (t_argv){0, 0, aux_buffer, NULL, aux_buffer + sizeof(aux_buffer)};
-	if (parse_interval(buffer, buffer + length, env, &arg))
+	if (parse_interval(buffer, buffer + length, env, ))
 		return (-1);
 	return (stt_write_to_pipe(aux_buffer, arg.offset));
 }

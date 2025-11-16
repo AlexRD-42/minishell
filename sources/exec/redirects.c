@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 11:12:50 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 13:50:21 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 15:19:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ stt_open(t_token *token, t_env *env)
 	uint8_t	rvalue;
 	char	word[256];
 
-	rvalue = expand_token(token, env, &(t_argv){0, 0, word, NULL, word + sizeof(word)}, 1);
+	rvalue = expand_token(token, env, , 1);
 	if (rvalue >= 2)
 	{
 		ft_write(2, "msh_redirects: Ambiguous or missing redirects\n", 46);

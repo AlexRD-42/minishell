@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 13:58:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 19:32:50 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 // Attempts to find the entry string in Env vars
 // Searches backwards to delete reserved vars last
-size_t	env_find(t_env *env, const char *entry, size_t length)
+size_t	env_find(t_vecp *env, const char *entry, size_t length)
 {
 	size_t	i;
 	size_t	j;
@@ -43,7 +43,7 @@ size_t	env_find(t_env *env, const char *entry, size_t length)
 	return (SIZE_MAX);
 }
 
-char	*env_get_entry(t_env *env, const char *entry, size_t vlength[2])
+char	*env_get_entry(t_vecp *env, const char *entry, size_t vlength[2])
 {
 	size_t	index;
 	char	*ptr;
@@ -70,7 +70,7 @@ char	*env_get_entry(t_env *env, const char *entry, size_t vlength[2])
 	return (ptr);
 }
 
-uint8_t	env_del(t_env *env, const char *entry)
+uint8_t	env_del(t_vecp *env, const char *entry)
 {
 	char	*ptr;
 	size_t	index;
@@ -86,8 +86,8 @@ uint8_t	env_del(t_env *env, const char *entry)
 	}
 	ptr = env->ptr[index];
 	length = ft_strlen(ptr) + 1;
-	env->offset -= length;
-	ft_memmove(ptr, ptr + length, env->offset - (size_t)(ptr - env->data));
+	env->wptr -= length;
+	ft_memmove(ptr, ptr + length, (size_t)(env->wptr - ptr));	// This needs checking
 	while (index < env->count - 1)
 	{
 		env->ptr[index] = env->ptr[index + 1] - length;
@@ -101,30 +101,30 @@ uint8_t	env_del(t_env *env, const char *entry)
 extern int	g_signal;
 
 // Handles solo $ and ?
-static const
-char	*stt_expand_type(const char *str, const char *end, t_argv *arg)
+static
+char	*stt_expand_type(t_buf src, t_buf *dst)
 {
 	char		*ptr;
 	char		buffer[32];
 	size_t		length;
 
-	str += str < end && *str == '$';
-	if (str < end && *str == '?')
+	src.wptr += src.wptr < src.end && *src.wptr == '$';
+	if (src.wptr < src.end && *src.wptr == '?')
 	{
 		ptr = ft_itoa_stack(g_signal, buffer + sizeof(buffer));
 		length = ft_strlen(ptr);
-		if (ft_lmcpy(arg->data + arg->offset, ptr, length, arg->end))
+		if (ft_lmcpy(dst->wptr, ptr, length, dst->end))
 			return (NULL);
-		arg->offset += length;
-		return (str + 1);
+		dst->wptr += length;
+		return (src.wptr + 1);
 	}
-	else if (str >= end || (ft_ascii(*str) & E_IDENT) == 0)
+	else if (src.wptr >= src.end || (ft_ascii(*src.wptr) & E_IDENT) == 0)
 	{
-		if (arg->data + arg->offset + 1 > arg->end)
+		if (dst->wptr + 1 > dst->end)
 			return (NULL);
-		arg->data[arg->offset++] = '$';
+		*(dst->wptr++) = '$';
 	}
-	return (str);
+	return (src.wptr);
 }
 
 // Variable name is defined by all letters until not alphanumeric
@@ -132,22 +132,22 @@ char	*stt_expand_type(const char *str, const char *end, t_argv *arg)
 // Updates str and buffer to the end of their respective copy
 // To do: Create an env helper that returns the value rather than the entry
 // Return: NULL) OOM, !NULL) OK
-const char	*env_expand(const char *str, const char *end, t_argv *arg, t_env *env)
+char	*env_expand(t_buf src, t_buf *dst, t_vecp *env)
 {
 	size_t		index;
 	size_t		length;
 	const char	*ptr;
 
-	length = arg->offset;
-	str = stt_expand_type(str, end, arg);
-	if (str == NULL || length != arg->offset)
-		return (str);
-	ptr = str;
-	while (str < end && (ft_ascii(*str) & E_IDENT))
-		str++;
-	index = env_find(env, ptr, (size_t)(str - ptr));
+	ptr = dst->wptr;
+	src.wptr = stt_expand_type(src, dst);
+	if (src.wptr == NULL || ptr != dst->wptr)
+		return (src.wptr);
+	ptr = src.wptr;
+	while (src.wptr < src.end && (ft_ascii(*src.wptr) & E_IDENT))
+		src.wptr++;
+	index = env_find(env, ptr, (size_t)(src.wptr - ptr));
 	if (index == SIZE_MAX)
-		return (str);
+		return (src.wptr);
 	ptr = env->ptr[index];
 	while (*ptr != 0 && *ptr != '=')
 		ptr++;
@@ -155,8 +155,8 @@ const char	*env_expand(const char *str, const char *end, t_argv *arg, t_env *env
 	length = 0;
 	while (ptr[length] != 0)
 		length++;
-	if (ft_lmcpy(arg->data + arg->offset, ptr, length, arg->end))
+	if (ft_lmcpy(dst->wptr, ptr, length, dst->end))
 		return (NULL);
-	arg->offset += length;
-	return (str);
+	dst->wptr += length;
+	return (src.wptr);
 }
