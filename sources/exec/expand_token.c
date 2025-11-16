@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/14 12:58:45 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 14:06:04 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "minishell.h"
 #include "msh_types.h"
 
-// Return: 0) OK, 1) OOM, 2) EOF, 4) readdir error
+// Return: 0) EOF, 1) MATCH, 2) NO MATCH, -1) OOM, -2) readdir error
 static
 int	stt_directory_read(DIR *dir_stream, const char *pattern, t_argv *arg)
 {
@@ -28,96 +28,77 @@ int	stt_directory_read(DIR *dir_stream, const char *pattern, t_argv *arg)
 
 	errno = 0;
 	dir_entry = readdir(dir_stream);
-	if (dir_entry == NULL)
+	if (dir_entry == NULL && errno == 0)
+		return (0);
+	else if (dir_entry == NULL)
 	{
-		if (errno != 0)
-			perror("msh_readdir: ");
-		return (((errno != 0) << 1) + 2);
+		perror("msh_readdir: ");
+		return (-2);
 	}
 	if (ft_strwcmp(dir_entry->d_name, pattern) == 1)
 	{
 		length = ft_strlen(dir_entry->d_name) + 1;
 		ptr = arg->data + arg->offset;
 		if (ft_lmcpy(ptr, dir_entry->d_name, length, arg->end))
-			return (1);
+			return (-1);
 		arg->ptr[arg->count++] = ptr;
 		arg->offset += length;
+		return (1);
 	}
-	return (0);
+	return (2);
 }
 
 // This function reads from a directory, compares against pattern with wildcard matching and 
 // saves up to count entries inside the buffer supplied by arg
 // This function does not null terminate
-// Return: 0) OK, 1) OOM, 2) EOF, 4) dir function problems, 8) exceeded count
+// Return: 0) EOF, 1) At Least 1 Match -1) OOM, -2) dir function problems, -4) exceeded count
 static
 int	stt_expand_glob(const char *pattern, t_argv *arg, size_t count)
 {
-	DIR		*dir_stream;
-	int		rvalue;
+	DIR				*dir_stream;
+	int				rvalue;
+	const size_t	max_count = count;
 
 	dir_stream = opendir(".");
 	if (dir_stream == NULL)
 	{
 		perror("msh_opendir: ");
-		return (4);
+		return (-2);
 	}
-	rvalue = 0;
-	while (rvalue == 0)
+	rvalue = (arg->count + 1 >= FT_ARG_COUNT);
+	rvalue = (rvalue == 0) - (rvalue << 2);
+	while (rvalue > 0)
 	{
-		if (count == 0 || arg->count > (FT_ARG_COUNT - 1))
-		{
-			rvalue = 8;
-			break ;
-		}
 		rvalue = stt_directory_read(dir_stream, pattern, arg);
-		count--;
+		if ((count == 0 && rvalue == 1) || arg->count > (FT_ARG_COUNT - 1))
+			rvalue = -4;
+		count -= (rvalue == 1);
 	}
 	if (closedir(dir_stream) < 0)
 		perror("msh_closedir: ");
-	return (rvalue);
+	return (rvalue + (rvalue == 0 && max_count != count));
 }
 
-static // Returns the interior length of the interval
-size_t	stt_find_interval(const char *str, const char *end)
-{
-	const char	*ostr = str + (*str == '"' || *str == '\'');
-	char		quote_type;
-
-	if (ostr != str)
-	{
-		quote_type = *str++;
-		while (*str != quote_type)
-			str++;
-	}
-	else
-	{
-		while (str < end && *str != '"' && *str != '\'')
-			str++;
-	}
-	return ((size_t)(str - ostr));
-}
-
+// Needs a better name
+// Parses the string and performs variable expansion
+// saving the results in a separate buffer supplied by argv
 // Return: 0) OK, -1) OOM;
-// To do: Fix bugs in the length calculation
-static int
-stt_parse_interval(const char *str, size_t length, t_env *env, t_argv *arg)
+int	parse_interval(const char *str, const char *end, t_env *env, t_argv *arg)
 {
-	const char	type = (*str == '\'') + ((*str == '"') << 1);
-	const char	*end = str + length;
-	const char	*ostr = str + (type != 0);
+	const char	*ostr = str;
+	size_t		length;
 
-	str += (type == 2) + (type == 1) * length;
 	while (str < end)
 	{
 		if (*str == '$')
 		{
-			length = (size_t)(str++ - ostr);
+			length = (size_t)(str - ostr);
 			if (ft_lmcpy(arg->data + arg->offset, ostr, length, arg->end))
-				return (1);
+				return (-1);
 			arg->offset += length;
-			if (env_expand(&str, arg, env))
-				return (1);
+			str = env_expand(str, end, arg, env);
+			if (str == NULL)
+				return (-1);
 			ostr = str;
 		}
 		else
@@ -125,9 +106,41 @@ stt_parse_interval(const char *str, size_t length, t_env *env, t_argv *arg)
 	}
 	length = (size_t)(str - ostr);
 	if (ft_lmcpy(arg->data + arg->offset, ostr, length, arg->end))
-		return (1);
+		return (-1);
 	arg->offset += length;
 	return (0);
+}
+
+// Needs a better name
+// Finds the interior length of the string between quotes, and copies it literally
+// if its a single quote, or performs variable expansion if it isnt
+// Return: NULL) OOM, !NULL) OK
+static const
+char	*stt_find_interval(const char *str, const char *end, t_env *env, t_argv *arg)
+{
+	const char	qtype = *str;
+	const char	*ostr = str;
+	size_t		length;
+
+	if ((qtype == '"' || qtype == '\''))
+	{
+		ostr = ++str;
+		while (str < end && *str != qtype)
+			str++;
+	}
+	else
+		while (str < end && *str != '"' && *str != '\'')
+			str++;
+	length = (size_t)(str - ostr);
+	if (qtype == '\'')
+	{
+		if (ft_lmcpy(arg->data + arg->offset, ostr, length, arg->end))
+			return (NULL);
+		arg->offset += length;
+	}
+	else if (parse_interval(ostr, ostr + length, env, arg))
+		return (NULL);
+	return (str + (str < end));
 }
 
 // Return: 0) OK, -1) OOM, -2) dir function problems, -4) exceeded count;
@@ -142,7 +155,6 @@ int	expand_token(t_token *token, t_env *env, t_argv *arg, size_t count)
 	char		buffer[FT_ARG_SIZE];
 	const char	*str = token->ptr;
 	const char	*end = token->ptr + token->length;
-	size_t		interval;
 
 	if (token->type & E_EXPAND)
 		arg_ptr = &(t_argv){0, 0, buffer, NULL, buffer + sizeof(buffer)};
@@ -150,15 +162,14 @@ int	expand_token(t_token *token, t_env *env, t_argv *arg, size_t count)
 		arg_ptr = arg;
 	while (str < end)
 	{
-		interval = stt_find_interval(str, end);
-		if (stt_parse_interval(str, interval, env, arg_ptr))
+		str = stt_find_interval(str, end, env, arg_ptr);
+		if (str == NULL)
 			return (-1);
-		str += interval;
 	}
-	if ((token->type & E_EXPAND) && arg->offset < sizeof(buffer))
-	{
-		buffer[arg->offset++] = 0;
+	if (arg_ptr->data + arg_ptr->offset + 1 > arg_ptr->end)
+		return (-1);
+	arg_ptr->data[arg_ptr->offset++] = 0;
+	if ((token->type & E_EXPAND))
 		return (stt_expand_glob(buffer, arg, count));
-	}
 	return (0);
 }

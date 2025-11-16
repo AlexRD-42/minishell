@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/14 13:06:12 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/15 13:35:48 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,11 @@
 // Bytes (1 byte) (Kernel = 128 KB)
 # ifndef FT_ARG_SIZE
 #  define FT_ARG_SIZE 131072
+# endif
+
+// Bytes (1 byte) (Kernel = 256 bytes)
+# ifndef FT_NAME_MAX
+#  define FT_NAME_MAX 256
 # endif
 
 // --- Variables ------------------

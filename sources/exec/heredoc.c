@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/14 12:31:14 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 13:25:44 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,21 +31,23 @@ stt_eof_cmp(const char *str, const char *eof)
 	return (*eof == 0 && (*str == 0 || *str == '\n'));
 }
 
-static const char	\
-*stt_find_eof(const char *str, const char *eof, const char *end, size_t eof_len)
+static uint8_t	\
+stt_find_eof(const char **line_ptr, const char *end, const char *eof, size_t eof_len)
 {
-	const char	*nl_pos = NULL;
+	const char	*ptr = *line_ptr;
 
 	end -= eof_len;
-	while (str < end)
+	while (ptr < end)
 	{
-		nl_pos = str++;
-		if (stt_eof_cmp(nl_pos, eof) == 1)
-			break ;
-		while (str < end && *str != '\n')
-			str++;
+		*line_ptr = ptr;
+		if (stt_eof_cmp(ptr, eof) == 1)
+			return (1);
+		else
+			ptr++;
+		while (ptr < end && *ptr != '\n')
+			ptr++;
 	}
-	return (nl_pos);
+	return (0);
 }
 
 static int	\
@@ -64,37 +66,40 @@ stt_write_to_pipe(const char *buffer, size_t length)
 }
 
 static
-int	stt_heredoc(const char *eof, t_argv *arg, t_env *env, bool mode)
+size_t	stt_read_input(const char *eof, char *buffer)
 {
-	ssize_t		bytes_read;
-	size_t		eof_len;
-	char		*read_end;
-	const char 	*nl_pos = arg->data;
+	ssize_t			bytes_read;
+	char			*wptr;
+	const size_t	eof_len = ft_strlen(eof);
+	const char 		*line_ptr = buffer;
 
-	// eof_len = ft_strlen(token->);
-	bytes_read = read(STDIN_FILENO, arg->data, FT_PAGE_SIZE);
-	read_end = arg->data + bytes_read * (bytes_read > 0);
-	while (bytes_read > 0 && read_end < arg->data + FT_PIPE_SIZE)
+	bytes_read = read(STDIN_FILENO, buffer, FT_PAGE_SIZE);
+	wptr = buffer + bytes_read * (bytes_read > 0);
+	while (bytes_read > 0 && wptr < buffer + FT_PIPE_SIZE)
 	{
-		nl_pos = stt_find_eof(nl_pos, eof, read_end, eof_len);
-		if (nl_pos != NULL && stt_eof_cmp(nl_pos, eof) == 1)
-			return (stt_write_to_pipe(arg->data, (size_t)(nl_pos - arg->data)));
-		bytes_read = read(STDIN_FILENO, read_end, FT_PAGE_SIZE);
-		read_end += bytes_read;
+		if (stt_find_eof(&line_ptr, wptr, eof, eof_len) == 1)
+			return ((size_t)(line_ptr - buffer));
+		bytes_read = read(STDIN_FILENO, wptr, FT_PAGE_SIZE);
+		wptr += bytes_read;
 	}
+	return (SIZE_MAX);
 }
 
-#define FT_EOF_LENGTH 256
-
+// To do: better error handling
 int	heredoc(t_token *token, t_env *env)
 {
-	char		buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
-	char		eof[FT_EOF_LENGTH];
-	t_argv		arg;
+	char	buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
+	char	aux_buffer[FT_PIPE_SIZE];
+	char	eof[FT_NAME_MAX];
+	size_t	length;
+	t_argv	arg;
 
 	arg = (t_argv){0, 0, eof, NULL, eof + sizeof(eof)};
 	if (expand_token(token, env, &arg, 1))
 		return (-1);
-	arg = (t_argv){0, 0, buffer, NULL, buffer + sizeof(buffer)};
-	return (stt_heredoc(eof, &arg, env, (token->type & E_EXPAND) != 0));
+	length = stt_read_input(eof, buffer);
+	arg = (t_argv){0, 0, aux_buffer, NULL, aux_buffer + sizeof(aux_buffer)};
+	if (parse_interval(buffer, buffer + length, env, &arg))
+		return (-1);
+	return (stt_write_to_pipe(aux_buffer, arg.offset));
 }

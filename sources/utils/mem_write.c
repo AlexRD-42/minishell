@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:35:52 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/13 10:22:28 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 11:20:43 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,8 @@ void	\
 	return (vdst);
 }
 
-uint8_t	ft_lmcpy\
+// Return: 0) Ok, -1) OOM
+int	ft_lmcpy\
 (void *restrict vdst, const void *restrict vsrc, size_t length, char *end)
 {
 	unsigned char		*restrict dst;
@@ -99,7 +100,7 @@ uint8_t	ft_lmcpy\
 	if ((uintptr_t)(dst + length) > (uintptr_t) end)
 	{
 		write(2, "msh_memcpy: Out of memory\n", 26);
-		return (1);
+		return (-1);
 	}
 	while (length > 0)
 	{

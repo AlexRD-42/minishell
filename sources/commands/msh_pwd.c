@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/14 12:20:10 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 13:33:42 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,11 @@
 
 /* pwd - prints the name of current/working directory
 uses getcwd to determine the current path
-Using getcwd might introduce mallocs to the code
-To do: error handling (stt function maybe)
-Check if cwd returns nl
-Check short writes */
+Using getcwd might introduce mallocs to the code */
 int	msh_pwd(int argc, const char **argv, t_env *env)
 {
 	char	buffer[FT_PATH_SIZE];
+	size_t	length;
 
 	(void) argc;
 	(void) argv;
@@ -33,11 +31,9 @@ int	msh_pwd(int argc, const char **argv, t_env *env)
 		perror("cwd");
 		return (1);
 	}
-	if (ft_write(STDOUT_FILENO, buffer, ft_strlen(buffer)) < 0)
-	{
-		perror("pwd");
+	length = ft_strlen(buffer);
+	buffer[length] = '\n';
+	if (ft_write(STDOUT_FILENO, buffer, length + 1) < 0)
 		return (1);
-	}
-	write(STDOUT_FILENO, "\n", 1);
 	return (0);
 }

@@ -6,44 +6,52 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:07:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/10/18 10:48:37 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/15 20:51:03 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <unistd.h>
-#include <stdlib.h>
+#include <stdio.h>
+#include "minishell.h"
 
-#ifndef PAGE_SIZE
-# define PAGE_SIZE 4096
-#endif
-
-static
-ssize_t	stt_read(int fd, char *buffer, size_t buffer_size, size_t *end)
+// Read (with wptr) IF ptr >= wptr, and break if wptr + read_size > buffer_size
+// scan with ptr until a new line is found or until ptr >= wptr
+ssize_t	stt_read(int fd, char *ptr, t_buf *buffer, size_t read_size)
 {
-	static size_t	read_end = 0;
-	size_t			read_size;
-
-	read_size = buffer_size - *end;
-	if (read_size <= 0)
+	ssize_t	bytes_read;
+	
+	if (ptr < buffer->wptr)
+		return (buffer->wptr - ptr);
+	else if (buffer->wptr + read_size >= buffer->end)
 		return (-1);
-	if (*end >= read_end)
-		return (read(fd, buffer + *end, read_size));
-	return (1);
+	bytes_read = read(fd, buffer->wptr, read_size);
+	if (bytes_read < 0)
+	{
+		perror("msh_read: ");
+		return (-1);
+	}
+	buffer->wptr += (size_t) bytes_read;
+	*(buffer->wptr++) = 0; 
+	return (bytes_read);
 }
 
-// You send a buffer[64k], you receive a char *ptr to the start of the next new line
-// Just alter the last /n to be a 0. Upon entry, the null terminator is changed back to \n
-// If you exceed the buffer, what happens
-char	*get_next_line(int fd, char *buffer, size_t buffer_size, size_t *end)
+char	*get_next_line(int fd, t_buf *buffer, size_t read_size)
 {
-	ssize_t			bytes_read;
+	char	*ptr;
+	char	*start;
 
-	if (buffer[*end] == 0 && *end != 0)
-	while (*end < buffer_size)
+	start = buffer->nl_ptr;
+	ptr = buffer->nl_ptr + 1;
+	while (stt_read(fd, ptr, buffer, read_size) > 0)
 	{
-		bytes_read = read(fd, buffer + *end, PAGE_SIZE);
-		*end += (size_t) bytes_read;
-		
+		while (*ptr != 0 && *ptr != '\n')
+			ptr++;
+		if (*ptr == '\n')
+		{
+			buffer->nl_ptr = ptr + 1;
+			return (start);
+		}
 	}
+	return (NULL);
 }

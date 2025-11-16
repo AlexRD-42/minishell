@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 11:12:50 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/13 10:50:08 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 13:50:21 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,17 @@
 #include "msh_types.h"
 
 static int32_t	\
-stt_parse_fd(t_token *token, char *str)
+stt_parse_fd(const uint32_t type, const char *str)
 {
 	int		fd;
 	int32_t	flags;
 
 	flags = O_RDONLY;
-	if ((token->type & E_REDIR_IN) == 0)
+	if ((type & E_REDIR_IN) == 0)
 	{
-		if (token->type & E_APPND)
+		if (type & E_APPND)
 			flags = O_WRONLY | O_CREAT | O_APPEND;
-		else if (token->type & E_REDIR_OUT)
+		else if (type & E_REDIR_OUT)
 			flags = O_WRONLY | O_CREAT | O_TRUNC;
 		fd = open(str, flags, 0644);
 	}
@@ -54,7 +54,7 @@ stt_open(t_token *token, t_env *env)
 		ft_write(2, "msh_redirects: Ambiguous or missing redirects\n", 46);
 		return (2);
 	}
-	token->fd[0] = stt_parse_fd(token, word);
+	token->fd[0] = stt_parse_fd(token->type, word);
 	return (0);
 }
 

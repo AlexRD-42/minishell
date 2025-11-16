@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/14 12:57:55 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 13:58:22 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,33 @@ size_t	env_find(t_env *env, const char *entry, size_t length)
 	return (SIZE_MAX);
 }
 
+char	*env_get_entry(t_env *env, const char *entry, size_t vlength[2])
+{
+	size_t	index;
+	char	*ptr;
+	size_t	i;
+	size_t	j;
+
+	j = 0;
+	while (ft_ascii(entry[j]) & E_IDENT)
+		j++;
+	vlength[0] = j;
+	vlength[1] = 0;
+	index = env_find(env, entry, j);
+	if (index == SIZE_MAX)
+		return (NULL);
+	ptr = env->ptr[index];
+	i = 0;
+	while (ptr[i] != 0 && ptr[i] != '=')
+		i++;
+	ptr += i + (ptr[i] == '=');
+	i = 0;
+	while (ptr[i] != 0)
+		i++;
+	vlength[1] = i;
+	return (ptr);
+}
+
 uint8_t	env_del(t_env *env, const char *entry)
 {
 	char	*ptr;
@@ -71,65 +98,65 @@ uint8_t	env_del(t_env *env, const char *entry)
 	return (0);
 }
 
-// first 16kb are reserved for PATH, PWD, OLDPWD and TBD
-// What if envp is null?
-static
-uint8_t	env_copy(t_env *env, const char **envp_src)
-{
-	size_t	i;
-	size_t	length;
+extern int	g_signal;
 
-	ft_memset(env->data, 0, FT_ENV_SIZE);
-	env->ptr[0] = env->data;
-	env->ptr[1] = env->ptr[0] + FT_PATH_SIZE;
-	env->ptr[2] = env->ptr[1] + FT_PATH_SIZE;
-	env->ptr[3] = env->ptr[2] + FT_PATH_SIZE;
-	env->offset = 4 * FT_PATH_SIZE;
-	i = 4;
-	while (envp_src[i] != NULL)
+// Handles solo $ and ?
+static const
+char	*stt_expand_type(const char *str, const char *end, t_argv *arg)
+{
+	char		*ptr;
+	char		buffer[32];
+	size_t		length;
+
+	str += str < end && *str == '$';
+	if (str < end && *str == '?')
 	{
-		length = ft_strlen(envp_src[i]) + 1;
-		if (length + env->offset > FT_ENV_SIZE || i >= FT_ENV_COUNT - 1)
-			return (1);	// Out of memory
-		env->ptr[i] = env->data + env->offset;
-		ft_memcpy(env->ptr[i], envp_src[i], length);
-		env->offset += length;
-		i++;
+		ptr = ft_itoa_stack(g_signal, buffer + sizeof(buffer));
+		length = ft_strlen(ptr);
+		if (ft_lmcpy(arg->data + arg->offset, ptr, length, arg->end))
+			return (NULL);
+		arg->offset += length;
+		return (str + 1);
 	}
-	env->count = i;
-	env->ptr[i] = NULL;
-	return (0);
+	else if (str >= end || (ft_ascii(*str) & E_IDENT) == 0)
+	{
+		if (arg->data + arg->offset + 1 > arg->end)
+			return (NULL);
+		arg->data[arg->offset++] = '$';
+	}
+	return (str);
 }
 
-// Copies an env to the arena in t_env, and moves path, pwd, oldpwd
-// to the first 16kb (reserved for them)
-// Needs to increment SHLVL (just call export later)
-uint8_t	env_init(t_env *env, const char **envp_src)
+// Variable name is defined by all letters until not alphanumeric
+// This name is used to find the var name in ENV
+// Updates str and buffer to the end of their respective copy
+// To do: Create an env helper that returns the value rather than the entry
+// Return: NULL) OOM, !NULL) OK
+const char	*env_expand(const char *str, const char *end, t_argv *arg, t_env *env)
 {
-	size_t	i;
+	size_t		index;
+	size_t		length;
+	const char	*ptr;
 
-	if (envp_src == NULL)
-		return (1);
-	env_copy(env, envp_src);
-	i = env_find(env, "PATH", 4);
-	if (i != SIZE_MAX)
-		ft_memcpy(env->ptr[0], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	i = env_find(env, "PWD", 3);
-	if (i != SIZE_MAX)
-		ft_memcpy(env->ptr[1], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	i = env_find(env, "OLDPWD", 6);
-	if (i != SIZE_MAX)
-		ft_memcpy(env->ptr[2], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	// Need to implement export properly for SHLVL
-	env_del(env, "PATH");
-	env_del(env, "PWD");
-	env_del(env, "OLDPWD");
-	return (0);
-}
-
-int	main(int argc, const char **argv, const char **envp)
-{
-	t_shell	shell;
-	
-	env_copy(&shell.env, envp);
+	length = arg->offset;
+	str = stt_expand_type(str, end, arg);
+	if (str == NULL || length != arg->offset)
+		return (str);
+	ptr = str;
+	while (str < end && (ft_ascii(*str) & E_IDENT))
+		str++;
+	index = env_find(env, ptr, (size_t)(str - ptr));
+	if (index == SIZE_MAX)
+		return (str);
+	ptr = env->ptr[index];
+	while (*ptr != 0 && *ptr != '=')
+		ptr++;
+	ptr += *ptr == '=';
+	length = 0;
+	while (ptr[length] != 0)
+		length++;
+	if (ft_lmcpy(arg->data + arg->offset, ptr, length, arg->end))
+		return (NULL);
+	arg->offset += length;
+	return (str);
 }

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:55:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/03 20:50:32 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/14 13:34:40 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	msh_unset(int argc, const char **argv, t_env *env)
 	i = 1;
 	while (argv[i] != NULL)
 	{
-		rvalue += (env_del(env, argv[i], 0) != SIZE_MAX);
+		rvalue += (env_del(env, argv[i]) != 0);
 		i++;
 	}
 	return (rvalue);
