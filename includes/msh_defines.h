@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/15 13:35:48 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/17 17:18:21 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,15 +39,15 @@
 #  define FT_NAME_MAX 256
 # endif
 
+// Bytes (1 byte) (Kernel = 2 MB)
+# ifndef FT_ARG_MAX
+#  define FT_ARG_MAX 2097152
+# endif
+
 // --- Variables ------------------
 // Pointers (8 bytes)
 # ifndef FT_ARG_COUNT
 #  define FT_ARG_COUNT 2048
-# endif
-
-// Bytes (1 byte) (Kernel = 2 MB)
-# ifndef FT_ARG_MAX
-#  define FT_ARG_MAX 2097152
 # endif
 
 // --- Persistent Storage ---------

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 20:37:38 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/17 15:25:02 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,8 +156,17 @@ typedef struct s_shell
 {
 	char	*input;
 	t_vecp	env;
-	t_token	tokens[FT_TOKEN_COUNT];
+	t_token	*tokens;
 	t_hst	history;
 }	t_shell;
+
+typedef struct t_memory
+{
+	char		hst_block[FT_HST_SIZE];
+	t_hst_entry hst_ptr[FT_HST_COUNT];
+	char		env_block[FT_ENV_SIZE];
+	char 		*env_ptr[FT_ENV_COUNT];
+	t_token		token_block[FT_TOKEN_COUNT];
+}	t_memory;
 
 #endif
