@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 17:09:56 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 20:09:02 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 // Parses the string and performs variable expansion
 // saving the results in a separate buffer supplied by argv
 // Return: 0) OK, -1) OOM;
-int	parse_interval(t_buf src, t_env *env, t_buf *dst)
+int	parse_interval(t_buf src, t_vecp *env, t_buf *dst)
 {
 	size_t		length;
 
@@ -114,7 +114,7 @@ int	parse_interval(t_buf src, t_env *env, t_buf *dst)
 // if its a single quote, or performs variable expansion if it isnt
 // Return: NULL) OOM, !NULL) OK
 static
-char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst)
+char	*stt_find_interval(t_buf src, t_vecp *env, t_buf *dst)
 {
 	const char	qtype = *src.wptr;
 	const char	quoted = (qtype == '"' || qtype == '\'');
@@ -147,7 +147,7 @@ The count variable serves as both a way of knowing if ptr is out of bounds, and
 as a way of throwing errors for ambiguous redirects when expanding file names;
 Saves the final results to arg, and uses a temporary arg_tmp buffer to store
 the pattern if necessary*/
-ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec)
+ssize_t	expand_token(t_token *token, t_vecp *env, t_vecp *vec)
 {
 	t_buf	*dst;
 	t_buf	src;

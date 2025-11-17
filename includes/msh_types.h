@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 19:44:30 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/16 20:37:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,16 @@ typedef struct s_hst
 	char		data[FT_HST_SIZE];
 	t_hst_entry entries[FT_HST_COUNT];
 }	t_hst;
+
+typedef union u_fd
+{
+	int32_t	ptr[2];
+	struct
+	{
+		int32_t	in;
+		int32_t	out;
+	};
+}	t_fd;
 
 typedef struct s_str
 {

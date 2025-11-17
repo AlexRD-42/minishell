@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 19:45:20 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/17 11:29:40 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,53 +20,32 @@
 #include "msh_defines.h"
 #include "msh_types.h"
 
-static inline uint8_t	\
-stt_eof_cmp(const char *str, const char *eof)
-{
-	while (*str == *eof && *eof != 0)
-	{
-		str++;
-		eof++;
-	}
-	return (*eof == 0 && (*str == 0 || *str == '\n'));
-}
-
 static uint8_t	\
 stt_find_eof(const char **line_ptr, const char *end, const char *eof, size_t eof_len)
 {
-	const char	*ptr = *line_ptr;
+	const char	*str = *line_ptr;
+	size_t		i;
 
 	end -= eof_len;
-	while (ptr < end)
+	while (str < end)
 	{
-		*line_ptr = ptr;
-		if (stt_eof_cmp(ptr, eof) == 1)
+		i = 0;
+		*line_ptr = str;
+		while (str[i] == eof[i] && i < eof_len)
+			i++;
+		if ((i == eof_len) && (str[i] == 0 || str[i] == '\n'))
 			return (1);
-		else
-			ptr++;
-		while (ptr < end && *ptr != '\n')
-			ptr++;
+		str++;
+		while (str < end && *str != '\n')
+			str++;
 	}
 	return (0);
 }
 
-static int	\
-stt_write_to_pipe(const char *buffer, size_t length)
-{
-	int	fd[2];
-
-	if (pipe(fd) == -1)
-	{
-		perror("msh_pipe: ");
-		return (-1);
-	}
-	ft_write(fd[1], buffer, length);
-	close(fd[1]);
-	return (fd[0]);
-}
-
+// Truncate or error? And do we null terminate?
+// Maybe error on read, but silent truncation on overflow
 static
-size_t	stt_read_input(const char *eof, char *buffer)
+size_t	stt_read_eof(const char *eof, char *buffer)
 {
 	ssize_t			bytes_read;
 	char			*wptr;
@@ -85,20 +64,39 @@ size_t	stt_read_input(const char *eof, char *buffer)
 	return (SIZE_MAX);
 }
 
-// To do: better error handling
-int	heredoc(t_token *token, t_vecp *env)
+int	stt_heredoc(const char *eof, t_vecp *env, t_fd fd)
 {
 	char	buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
 	char	aux_buffer[FT_PIPE_SIZE];
-	char	eof[FT_NAME_MAX];
 	size_t	length;
-	t_buf	buf;
 
+	length = stt_read_input(eof, buffer);
+	if (length == SIZE_MAX)
+		return (-1);
+	if (parse_interval(buffer, buffer + length, env, ))
+		return (-1);
+	ft_write(fd.out, buffer, length);
+	close(fd.out);
+	return (fd.in);
+}
+
+// To do: better error handling
+// Uses up to 256k of stack memory (can be reduced to 128k if we call expand_token)
+// In a function that doesnt have the big buffers
+int	heredoc(t_token *token, t_vecp *env)
+{
+	char	eof[FT_NAME_MAX];
+	t_buf	buf;
+	t_fd	fd;
+
+	if (pipe(fd.ptr) == -1)
+	{
+		perror("msh_pipe: ");
+		return (-1);
+	}
 	buf = (t_buf){eof, eof + sizeof(eof), eof};
 	if (expand_token(token, env, &(t_vecp){{buf}, 0, 1, NULL}))
 		return (-1);
-	length = stt_read_input(eof, buffer);
-	if (parse_interval(buffer, buffer + length, env, ))
-		return (-1);
+	stt_heredoc(eof, env);
 	return (stt_write_to_pipe(aux_buffer, arg.offset));
 }
