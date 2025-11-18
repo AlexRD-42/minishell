@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:31:56 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/11 14:07:50 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/18 11:58:05 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ char	*ft_strfind(const char *str, const char *charset, uint8_t ref)
 // 0x02: Space, 0x04 Symbols, 0x08: Digits
 // 0x10: UPPER CASE, 0x20: lower case
 // 0x40: _ + upper + lower + digits, 0x80: Hex
+// To do: inline this
 uint8_t	ft_ascii(const char c)
 {
 	static const uint8_t	ltable[256] = {

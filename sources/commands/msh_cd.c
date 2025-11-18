@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/14 22:08:33 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/18 12:43:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include "minishell.h"
 
+// Remember the prefix PWD= (check if needed)
 int	msh_cd(t_argv *argv, t_env *env)
 {
 	if (argc < 2)

@@ -5,68 +5,71 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/13 12:40:45 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 19:45:07 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/11/17 11:58:26 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/11/18 17:42:25 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdint.h>
-#include <stddef.h>
 #include "minishell.h"
+#include "msh_defines.h"
+#include "msh_types.h"
+#include "msh_test.h"
+#include <stddef.h>
+#include <stdint.h>
 
-// first 16kb are reserved for PATH, PWD, OLDPWD and TBD
-// What if envp is null?
-static
-uint8_t	env_copy(t_vecp *env, const char **envp_src)
+// If length is size_max, it will be calculated
+// The length return is the envp index
+char	*envx_find(t_env *env, const char *entry, size_t length, size_t *index)
 {
 	size_t	i;
-	size_t	length;
+	size_t	j;
 
-	ft_memset(env->optr, 0, FT_ENV_SIZE);
-	env->ptr[0] = env->optr;
-	env->ptr[1] = env->ptr[0] + FT_PATH_SIZE;
-	env->ptr[2] = env->ptr[1] + FT_PATH_SIZE;
-	env->ptr[3] = env->ptr[2] + FT_PATH_SIZE;
-	env->wptr = env->ptr[3] + FT_PATH_SIZE;
-	i = 4;
-	while (envp_src[i] != NULL)
+	if (length == SIZE_MAX)
 	{
-		length = ft_strlen(envp_src[i]) + 1;
-		if (env->wptr + length > env->end || i >= env->max_count - 1)
-			return (1);	// Out of memory
-		env->ptr[i] = env->wptr;
-		ft_memcpy(env->ptr[i], envp_src[i], length);
-		env->wptr += length;
+		length = 0;
+		while (ft_ascii(entry[length]) & E_IDENT)
+				length++;
+	}
+	if (length == 0)
+		return (NULL);
+	i = 0;
+	while (i < env->count)
+	{
+		j = 0;
+		while (j < length && env->ptr[i][j] == entry[j])
+			j++;
+		if (j == length && env->ptr[i][j] == '=')
+		{
+			if (index != NULL)
+				*index = i;
+			return (env->ptr[i]);
+		}
 		i++;
 	}
-	env->count = i;
-	env->ptr[i] = NULL;
-	return (0);
+	return (NULL);
 }
 
-// Copies an env to the arena in t_env, and moves path, pwd, oldpwd
-// to the first 16kb (reserved for them)
-// Needs to increment SHLVL (just call export later)
-// Length check?
-uint8_t	env_init(t_vecp *env, const char **envp_src)
+// Return: >= 0 on success
+// Return: -1 OOM, 
+// env.metadata could be a variable that contains info on blocks
+ssize_t	envx_init(t_memory *mem, t_env *env, const char **envp)
 {
-	size_t	i;
+	const char	*entry;
 
-	if (envp_src == NULL)
-		return (1);
-	env_copy(env, envp_src);
-	i = env_find(env, "PATH", 4);
-	if (i != SIZE_MAX)
-		ft_memcpy(env->ptr[E_PATH], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	i = env_find(env, "PWD", 3);
-	if (i != SIZE_MAX)
-		ft_memcpy(env->ptr[E_PWD], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	i = env_find(env, "OLDPWD", 6);
-	if (i != SIZE_MAX)
-		ft_memcpy(env->ptr[E_OLDPWD], env->ptr[i], ft_strlen(env->ptr[i]) + 1);
-	// Need to implement export properly for SHLVL
-	env_del(env, "PATH");
-	env_del(env, "PWD");
-	env_del(env, "OLDPWD");
-	return (0);
+	env->metadata = mem->metadata;
+	env->optr = mem->env_block;
+	env->count = 0;
+	env->max_count = FT_ENV_COUNT;
+	env->ptr = mem->env_ptr;
+	ft_memset(env->optr, 0, FT_ENV_SIZE);
+	ft_memset(env->metadata, 0, FT_ENV_COUNT);	// Careful
+	while (envp[env->count] != NULL)	// no guard for env->count, env_add responsability
+	{
+		entry = envp[env->count];
+		if (envx_add(env, entry, 0))
+			return (-1);
+		env->count++;
+	}
+	env->ptr[env->count] = NULL;
+	return ((ssize_t) env->count);
 }

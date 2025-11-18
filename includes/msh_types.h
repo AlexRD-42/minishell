@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/17 15:25:02 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/18 15:59:31 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,21 +122,13 @@ typedef union u_fd
 typedef struct s_str
 {
 	char	*ptr;
-	union
-	{
-		char	*end;
-		size_t	length;
-	};
+	size_t	length;
 }	t_str;
 
 typedef struct s_kstr
 {
 	const char	*ptr;
-	union
-	{
-		const char	*end;
-		size_t		length;
-	};
+	size_t		length;
 }	t_kstr;
 
 // Melhor manter como uint32_t, porque mantem o alinhamento de 16 bytes
@@ -164,6 +156,7 @@ typedef struct t_memory
 {
 	char		hst_block[FT_HST_SIZE];
 	t_hst_entry hst_ptr[FT_HST_COUNT];
+	char		metadata[FT_ENV_COUNT];
 	char		env_block[FT_ENV_SIZE];
 	char 		*env_ptr[FT_ENV_COUNT];
 	t_token		token_block[FT_TOKEN_COUNT];

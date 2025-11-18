@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:47:20 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 19:32:50 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/18 10:42:33 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,23 @@
 #include <unistd.h>
 #include "minishell.h"
 #include "msh_defines.h"
+
+// TO DO:
+// If its reserved, it needs to go back to the appropriate slot
+// WTFF export VAR+=suffix
+uint8_t	env_add(t_env *env, const char *entry)
+{
+	const size_t	length = ft_strlen(entry) + 1;
+
+	if (env->offset + length > FT_ENV_SIZE || env->count >= FT_ENV_COUNT - 1)
+		return (1); // Out of memory
+	env->ptr[env->count] = env->data + env->offset;
+	ft_memcpy(env->ptr[env->count], entry, length);
+	env->offset += length;
+	env->count++;
+	env->ptr[env->count] = NULL;
+	return (0);
+}
 
 // Attempts to find the entry string in Env vars
 // Searches backwards to delete reserved vars last
