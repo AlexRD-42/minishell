@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 18:44:53 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/18 21:30:23 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,18 @@
 
 size_t	mark_for_deletion(char *ptr, t_env *env)
 {
-	size_t	start;
-	size_t	meta_index;
-	char	*metadata;
+	size_t			start;
+	size_t			meta_index;
+	char			*metadata;
+	const size_t	max_count = env->max_count;
 
 	metadata = env->metadata;
 	meta_index = (size_t)(ptr - env->optr) / BLOCK_SIZE;
 	start = meta_index;
-	metadata[meta_index++] = 0;
-	while (meta_index < env->count && meta_index >= 2)
+	metadata[meta_index++] = E_META_FREE;
+	while (meta_index < max_count && metadata[meta_index] >= E_META_USED)
 	{
-		metadata[meta_index] = 0;
+		metadata[meta_index] = E_META_FREE;
 		meta_index++;
 	}
 	return (meta_index - start);	// Blocks freed

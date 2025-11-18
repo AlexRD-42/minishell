@@ -22,7 +22,7 @@ typedef struct s_env
 {
 	char	*optr;
 	size_t	count;
-	size_t	max_count;
+	size_t	max_count;	// max_count needs to match max_blocks
 	char	*metadata;
 	char	**ptr;
 }	t_env;
@@ -40,6 +40,14 @@ typedef struct t_quad
 	size_t	c;
 	size_t	d;
 }	t_quad;
+
+enum e_meta
+{
+	E_META_FREE = 0u,
+	E_META_HEAD = 1u,
+	E_META_USED = 2u,
+	E_META_RESERVED = 4u
+};
 
 #define BLOCK_SIZE 64
 

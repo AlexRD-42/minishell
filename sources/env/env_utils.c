@@ -1,0 +1,105 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/18 21:18:21 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/11/18 21:47:23 by adeimlin         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include "minishell.h"
+#include "msh_test.h"
+
+// If length is 0, it will be calculated
+char	*envx_find(t_env *env, const char *entry, size_t length, size_t *index)
+{
+	size_t	i;
+	size_t	j;
+
+	if (length == 0)
+		while (ft_ascii(entry[length]) & E_IDENT)
+			length++;
+	i = env->count * (length == 0);
+	while (i < env->count)
+	{
+		j = 0;
+		while (j < length && env->ptr[i][j] == entry[j])
+			j++;
+		if (j == length && env->ptr[i][j] == '=')
+		{
+			if (index != NULL)
+				*index = i;
+			return (env->ptr[i]);
+		}
+		i++;
+	}
+	return (NULL);
+}
+
+extern int	g_signal;
+// Needs update
+
+// Handles solo $ and ?
+static
+char	*stt_expand_type(t_buf src, t_buf *dst)
+{
+	char		*ptr;
+	char		buffer[32];
+	size_t		length;
+
+	src.wptr += src.wptr < src.end && *src.wptr == '$';
+	if (src.wptr < src.end && *src.wptr == '?')
+	{
+		ptr = ft_itoa_stack(g_signal, buffer + sizeof(buffer));
+		length = ft_strlen(ptr);
+		if (ft_lmcpy(dst->wptr, ptr, length, dst->end))
+			return (NULL);
+		dst->wptr += length;
+		return (src.wptr + 1);
+	}
+	else if (src.wptr >= src.end || (ft_ascii(*src.wptr) & E_IDENT) == 0)
+	{
+		if (dst->wptr + 1 > dst->end)
+			return (NULL);
+		*(dst->wptr++) = '$';
+	}
+	return (src.wptr);
+}
+
+// Variable name is defined by all letters until not alphanumeric
+// This name is used to find the var name in ENV
+// Updates str and buffer to the end of their respective copy
+// To do: Create an env helper that returns the value rather than the entry
+// Return: NULL) OOM, !NULL) OK
+char	*envx_expand(t_buf src, t_buf *dst, t_env *env)
+{
+	size_t		length;
+	const char	*ptr;
+
+	ptr = dst->wptr;
+	src.wptr = stt_expand_type(src, dst);
+	if (src.wptr == NULL || ptr != dst->wptr)
+		return (src.wptr);
+	ptr = src.wptr;
+	while (src.wptr < src.end && (ft_ascii(*src.wptr) & E_IDENT))
+		src.wptr++;
+	ptr = envx_find(env, ptr, (size_t)(src.wptr - ptr), NULL);
+	if (ptr == NULL)
+		return (src.wptr);
+	while (*ptr != 0 && *ptr != '=')
+		ptr++;
+	ptr += *ptr == '=';
+	length = 0;
+	while (ptr[length] != 0)
+		length++;
+	if (ft_lmcpy(dst->wptr, ptr, length, dst->end))
+		return (NULL);
+	dst->wptr += length;
+	return (src.wptr);
+}

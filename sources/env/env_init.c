@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 11:58:26 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 17:42:25 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/18 21:41:58 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,44 +17,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// If length is size_max, it will be calculated
-// The length return is the envp index
-char	*envx_find(t_env *env, const char *entry, size_t length, size_t *index)
-{
-	size_t	i;
-	size_t	j;
-
-	if (length == SIZE_MAX)
-	{
-		length = 0;
-		while (ft_ascii(entry[length]) & E_IDENT)
-				length++;
-	}
-	if (length == 0)
-		return (NULL);
-	i = 0;
-	while (i < env->count)
-	{
-		j = 0;
-		while (j < length && env->ptr[i][j] == entry[j])
-			j++;
-		if (j == length && env->ptr[i][j] == '=')
-		{
-			if (index != NULL)
-				*index = i;
-			return (env->ptr[i]);
-		}
-		i++;
-	}
-	return (NULL);
-}
-
 // Return: >= 0 on success
 // Return: -1 OOM, 
 // env.metadata could be a variable that contains info on blocks
 ssize_t	envx_init(t_memory *mem, t_env *env, const char **envp)
 {
 	const char	*entry;
+	size_t		length;
 
 	env->metadata = mem->metadata;
 	env->optr = mem->env_block;
@@ -66,7 +35,8 @@ ssize_t	envx_init(t_memory *mem, t_env *env, const char **envp)
 	while (envp[env->count] != NULL)	// no guard for env->count, env_add responsability
 	{
 		entry = envp[env->count];
-		if (envx_add(env, entry, 0))
+		length = ft_strlen(entry);
+		if (envx_add((t_kstr){entry, length}, env))
 			return (-1);
 		env->count++;
 	}

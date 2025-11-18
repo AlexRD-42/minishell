@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 15:24:01 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 18:31:54 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/18 21:47:53 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,69 +15,117 @@
 #include <stdbool.h>
 
 #include "minishell.h"
+#include "msh_defines.h"
 #include "msh_test.h"
 
 static
-char	*stt_assign_blocks(char *metadata, char *optr, size_t meta_index, t_wpair block)
+char	*stt_assign_blocks(t_env *env, size_t meta_index, size_t lower, size_t upper)
 {
 	size_t	i;
+	char	*metadata;
 
+	metadata = env->metadata;
 	i = meta_index;
-	metadata[i++] = 1;
-	while (i < block.lower)
+	lower += i;
+	upper += i;
+	metadata[i++] = E_META_HEAD;
+	while (i < lower)
 	{
-		metadata[i] = 2;
+		metadata[i] = E_META_USED;
 		i++;
 	}
-	while (i < block.upper)
+	while (i < upper)
 	{
-		metadata[i] = 4;
+		metadata[i] = E_META_RESERVED;
 		i++;
 	}
-	return (optr + meta_index * BLOCK_SIZE);
+	return (env->optr + meta_index * BLOCK_SIZE);
 }
 
-// To do:
 static
-ssize_t	stt_compact_blocks()
+size_t	stt_find_space(char *metadata, size_t max_count, size_t lower, size_t *out)
 {
-	
+	size_t	i;
+	size_t	blocks_free;
+	size_t	upper;
+
+	upper = 4 * lower;
+	*out = 0;
+	while (upper >= lower)
+	{
+		i = 0;
+		while (i < max_count)
+		{
+			blocks_free = 0;
+			while (i < max_count && metadata[i] == 0 && blocks_free++ < upper)
+				i++;
+			if (blocks_free >= upper)
+			{
+				*out = upper;
+				return (i - blocks_free);
+			}
+			i++;
+		}
+		upper >>= 1;
+	}
+	return (SIZE_MAX);
+}
+
+static
+void	stt_update_ptrs(char *optr, char **envp, size_t count)
+{
+	size_t	i;
+	char	*wptr;
+
+	i = 0;
+	wptr = optr;
+	while (i < count)
+	{
+		envp[i++] = wptr;
+		wptr += (1 + (ft_strlen(wptr) + 1) / BLOCK_SIZE) * BLOCK_SIZE;
+	}
+	envp[i] = NULL;	
+}
+
+static
+void	stt_compact(t_env *env)
+{
+	size_t	i;
+	size_t	length;
+	size_t	num_blocks;
+	size_t	meta_index;
+	char	buffer[FT_ENV_SIZE];
+
+	i = 0;
+	meta_index = 0;
+	ft_memset(env->metadata, 0, FT_ENV_COUNT);
+	while (i < env->count)
+	{
+		length = ft_strlen(env->ptr[i]) + 1;
+		ft_memcpy(buffer + meta_index * BLOCK_SIZE, env->ptr[i], length);
+		num_blocks = 1 + length / BLOCK_SIZE;
+		stt_assign_blocks(env, meta_index, num_blocks, num_blocks);
+		meta_index += num_blocks;
+		i++;
+	}
+	ft_memcpy(env->optr, buffer, meta_index * BLOCK_SIZE);
+	stt_update_ptrs(env->optr, env->ptr, env->count);
 }
 
 // Assign blocks, calls free if necessary
 char	*request_blocks(t_env *env, size_t bytes)
 {
-	size_t			i;
-	size_t			free_index;
-	size_t			blocks_free;
-	t_wpair			block;
-	char			*metadata;
+	size_t			meta_index;
+	const size_t	lower = 1 + bytes / BLOCK_SIZE;
+	size_t			upper;
 
-	block.lower = 1 + bytes / BLOCK_SIZE;
-	block.upper = 4 * block.lower;
-	metadata = env->metadata;
-	while (block.upper >= block.lower)
+	meta_index = stt_find_space(env->metadata, env->max_count, lower, &upper);
+	if (meta_index == SIZE_MAX)
 	{
-		i = 0;
-		while (i < env->count)
-		{
-			blocks_free = 0;
-			free_index = i;
-			while (blocks_free < block.upper && metadata[i] == 0)
-			{
-				blocks_free++;
-				i++;
-			}
-			if (blocks_free == block.upper)
-				return (stt_assign_blocks(metadata, env->optr, free_index, block));
-		}
-		block.upper >>= 1;
+		stt_compact(env);
+		meta_index = stt_find_space(env->metadata, env->max_count, lower, &upper);
+		if (meta_index == SIZE_MAX)
+			return (NULL);
 	}
-	// Call compact then retry
-	return (NULL);
-}
-
-int	main(int argc, char **argv, char **envp)
-{
-	
+	return (stt_assign_blocks(env, meta_index, lower, upper));
 }
