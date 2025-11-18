@@ -1,34 +1,49 @@
+#include <unistd.h>
 #include <termios.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <string.h>
 #include <stdio.h>
-#include "../../includes/minishell.h"
+
+#define FT_LINE_MAX 4096
+#define FT_HST_SIZE 65536
+#define FT_HST_COUNT 1024
+#define PROMPT "msh: "
+
+int g_signal = 0;
+#define FT_SIGINT 2
+#define FT_SIGWINCH 1
+
 #include "read_input.h"
 
-int	g_signal;
-
-static struct termios	g_original_term;
-
-void	save_terminal_config(void)
+void handle_sigint(int sig)
 {
-	tcgetattr(STDIN_FILENO, &g_original_term);
+    (void)sig;
+    g_signal |= FT_SIGINT;
 }
 
-void	restore_terminal_config(void)
+void handle_sigwinch(int sig)
 {
-	tcsetattr(STDIN_FILENO, TCSANOW, &g_original_term);
+    (void)sig;
+    g_signal |= FT_SIGWINCH;
 }
 
-void	setup_terminal(void)
-{
-	struct termios	new_term;
+#include <signal.h>
 
-	save_terminal_config();
-	new_term = g_original_term;
-	
-	new_term.c_lflag &= ~(ICANON | ECHO);
-	
-	new_term.c_cc[VMIN] = 1;
-	new_term.c_cc[VTIME] = 0;
-	tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
+void setup_signals(void)
+{
+    struct sigaction sa;
+    
+    sa.sa_handler = handle_sigint;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction(SIGINT, &sa, NULL);
+    
+    sa.sa_handler = handle_sigwinch;
+    sa.sa_flags = SA_RESTART;
+    sigaction(SIGWINCH, &sa, NULL);
+    
+    signal(SIGQUIT, SIG_IGN);
 }
 
 static
@@ -104,19 +119,44 @@ size_t	hst_add_entry(const char *str, size_t length, t_hst *hst)
 	return (hst->count);
 }
 
-int main()
+int main(void)
 {
-	t_shell shell;
-	char	line[4096];
-	size_t	n;
-
-	setup_terminal();
-	n = read_input(&shell.history, (char **)&line, sizeof(line));
-	restore_terminal_config();
-	if (n == -1)
-		write(STDOUT_FILENO, "exit\n", 5);
-	if (!line[0])
-		write(STDOUT_FILENO, "empty\n", 6);
-	hst_add_entry(line, n, &shell.history);
-	printf("%s", line);
+    t_hst history;
+    char line_buffer[FT_LINE_MAX];
+    int len;
+    
+    memset(&history, 0, sizeof(t_hst));
+    history.free = FT_HST_SIZE;
+    
+    setup_signals();
+    
+    write(STDOUT_FILENO, "Minishell Test\n", 15);
+    write(STDOUT_FILENO, "Digite 'exit' para sair\n\n", 26);
+    
+    while (1)
+    {
+        write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
+        
+        len = read_input(line_buffer, &history);
+        
+        if (len == -1)
+        {
+            write(STDOUT_FILENO, "exit\n", 5);
+            break;
+        }
+        
+        if (len == 0)
+            continue;
+        
+        if (strncmp(line_buffer, "exit", 4) == 0)
+            break;
+        
+        hst_add_entry(line_buffer, len, &history);
+        
+        write(STDOUT_FILENO, "Você digitou: ", 15);
+        write(STDOUT_FILENO, line_buffer, len);
+        write(STDOUT_FILENO, "\n", 1);
+    }
+    
+    return (0);
 }

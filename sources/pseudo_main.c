@@ -36,9 +36,7 @@ void	interactive_shell(t_shell *shell)
 	while (1)
 	{
 		print_prompt();
-		setup_terminal();
 		n = read_input(shell->history, &line, sizeof(line));
-		restore_terminal_config();
 		if (n == -1)
 		{
 			write(STDOUT_FILENO, "exit\n", 5);
