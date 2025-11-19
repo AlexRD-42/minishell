@@ -1,19 +1,21 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   process_key.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/18 20:57:33 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/18 20:57:48 by feazeved         ###   ########.fr       */
-/*                                                                            */
+/* process_key.c                                      :+:      :+:    :+:   */
 /* ************************************************************************** */
 
 #include "read_input.h"
+#include "unistd.h"
 
 int	stt_finalize_line(t_line_editor *data)
 {
+	size_t total_len = data->prompt.length + data->line.length;
+	int end_row = total_len / data->screen_cols;
+	int cur_row = (data->prompt.length + data->cursor_pos) / data->screen_cols;
+	
+	while (cur_row < end_row)
+	{
+		write(STDOUT_FILENO, "\033[B", 3);
+		cur_row++;
+	}
 	write(STDOUT_FILENO, "\n", 1);
 	data->line.ptr[data->line.length] = '\0';
 	return (1);
@@ -31,9 +33,12 @@ int	stt_handle_printable_char(t_line_editor *data, char c)
 		data->line.length++;
 		data->cursor_pos++;
 		write(STDOUT_FILENO, &c, 1);
+		if ((data->prompt.length + data->cursor_pos) % data->screen_cols == 0)
+			write(STDOUT_FILENO, "\n\r", 2);
 		update_cursor_position(data);
 		return (0);
 	}
+	stt_cursor_home(data);
 	i = data->line.length;
 	while (i > data->cursor_pos)
 	{
@@ -42,16 +47,8 @@ int	stt_handle_printable_char(t_line_editor *data, char c)
 	}
 	data->line.ptr[data->cursor_pos] = c;
 	data->line.length++;
-	write(STDOUT_FILENO, data->line.ptr + data->cursor_pos,
-          data->line.length - data->cursor_pos);
 	data->cursor_pos++;
-	i = data->cursor_pos;
-    while (i < data->line.length)
-    {
-        write(STDOUT_FILENO, "\b", 1);
-        i++;
-    }
-	update_cursor_position(data);
+	redraw_line(data);
 	return (0);
 }
 
@@ -64,11 +61,12 @@ int	stt_handle_backspace(t_line_editor *data)
 	if (data->cursor_pos == data->line.length)
 	{
 		data->line.length--;
-		data->cursor_pos--;
 		data->line.ptr[data->line.length] = '\0';
-		redraw_line(data);
+		move_cursor_left(data);
+		write(STDOUT_FILENO, " \b", 2);
 		return (0);
 	}
+	stt_cursor_home(data);
 	i = data->cursor_pos - 1;
 	while (i < data->line.length - 1)
 	{
@@ -77,11 +75,11 @@ int	stt_handle_backspace(t_line_editor *data)
 	}
 	data->line.length--;
 	data->cursor_pos--;
+	data->line.ptr[data->line.length] = '\0';
 	redraw_line(data);
 	return (0);
 }
 
-// Return: 0) coninue reading,  -1) control + D on empty line,  1) final line
 int	process_key(t_line_editor *data, char c)
 {
 	if (c >= 32 && c < 127)
@@ -94,7 +92,7 @@ int	process_key(t_line_editor *data, char c)
 		return (handle_arrows(data));
 	if (c == 4 && data->line.length == 0)
 	{
-		data->line.length = -1;
+		data->line.length = 0;	// -1?
 		return (-1);
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 10:38:33 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 15:31:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@
 // --- Persistent Storage ---------
 // Struct (16 bytes)
 # ifndef FT_TOKEN_COUNT
-#  define FT_TOKEN_COUNT 1024
+#  define FT_TOKEN_COUNT 4096
 # endif
 
 // Pointers (8 bytes)

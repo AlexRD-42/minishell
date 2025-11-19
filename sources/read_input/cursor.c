@@ -3,93 +3,50 @@
 /*                                                        :::      ::::::::   */
 /*   cursor.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/18 20:54:06 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/18 20:54:17 by feazeved         ###   ########.fr       */
+/*   Created: 2025/11/19 15:39:31 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/11/19 20:44:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include "read_input.h"
+#include "msh_types.h"
+#include "msh_utils.h"
 
-static int	stt_ft_itoa_stack(int64_t number, char *buf)
+static
+void	rep_cmd(size_t count, const char cmd)
 {
-	const int8_t	sign = (number >= 0) - (number < 0);
-	char			temp[32];
-	int				i;
-	int				j;
+	char	num_ptr[32];
+	char	buffer[32];
+	char	*ptr;
+	char	*buffer_ptr;
 
-	number *= sign;
-	i = 0;
-	if (number < 0)
-		number = -number;
-	if (number == 0)
-		temp[i++] = '0';
-	while (number > 0)
-	{
-		temp[i++] = (number % 10) + '0';
-		number /= 10;
-	}
-	if (sign == -1)
-		temp[i++] = '-';
-	j = 0;
-	while (i > 0)
-		buf[j++] = temp[--i];
-	buf[j] = '\0';
-	return (j);
-}
-
-void	\
-move_cursor_to_position(t_line_editor *data, int target_y, int target_x)
-{
-	char	buf_y[12];
-	char	buf_x[12];
-	int		len_y;
-	int		len_x;
-
-	len_y = stt_ft_itoa_stack(target_y + 1, buf_y);
-	len_x = stt_ft_itoa_stack(target_x + 1, buf_x);
-	write(STDOUT_FILENO, "\033[", 2);
-	write(STDOUT_FILENO, buf_y, len_y);
-	write(STDOUT_FILENO, ";", 1);
-	write(STDOUT_FILENO, buf_x, len_x);
-	write(STDOUT_FILENO, "H", 1);
-}
-
-void	update_cursor_position(t_line_editor *data)
-{
-	size_t	total_pos;
-
-	total_pos = data->prompt.length + data->cursor_pos;
-	data->cursor_y = total_pos / data->screen_cols;
-	data->cursor_x = total_pos % data->screen_cols;
-}
-
-void	redraw_from_cursor(t_line_editor *data)
-{
-	size_t	chars_after;
-	size_t	i;
-
-	chars_after = data->line.length - data->cursor_pos;
-	write(STDOUT_FILENO, data->line.ptr + data->cursor_pos, chars_after);
-	write(STDOUT_FILENO, " ", 1);
-	i = 0;
-	while (i <= chars_after)
-	{
-		write(STDOUT_FILENO, "\b", 1);
-		i++;
-	}
+	buffer_ptr = buffer;
+	*buffer_ptr++ = '\033';
+	*buffer_ptr++ = '[';
+	ptr = ft_itoa_stack((int64_t) count, num_ptr);
+	while (*ptr != 0)
+		*buffer_ptr++ = *ptr++;
+	*buffer_ptr = cmd;
+	write(STDOUT_FILENO, buffer, (size_t)(buffer - buffer_ptr));
 }
 
 void	redraw_line(t_line_editor *data)
 {
-	int	i;
+	size_t	total_len;
+	int		end_row;
+	int		target_row;
 
-	write(STDOUT_FILENO, "\033[H\033[J", 6);
-	// Reescrever prompt + linha
+	write(STDOUT_FILENO, "\033[0J", 4);
 	write(STDOUT_FILENO, data->prompt.ptr, data->prompt.length);
 	write(STDOUT_FILENO, data->line.ptr, data->line.length);
-	// Reposicionar cursor
-	update_cursor_position(data);
-	move_cursor_to_position(data, data->cursor_y, data->cursor_x);
+	total_len = data->prompt.length + data->line.length;
+	end_row = total_len / data->screen_cols;
+	target_row = data->cursor_y;
+	rep_cmd((size_t)(end_row - target_row), 'A');
+	write(STDOUT_FILENO, "\r", 1);
+	if (data->cursor_x > 0)
+		rep_cmd(data->cursor_x, 'C');
 }

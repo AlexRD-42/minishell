@@ -4,12 +4,13 @@ BUILD_PATH = build
 INC_PATH = includes
 OBJ_PATH = $(BUILD_PATH)/obj
 BIN = $(BUILD_PATH)/$(NAME)
-VPATH = sources sources/utils sources/env sources/commands sources/core sources/exec sources/history
+VPATH = sources sources/utils sources/env sources/commands sources/core sources/exec sources/history \
+sources/read_input sources/history
 
 # Files --------------------------------------- #
 LIBS =
 SRCS = mem_read.c mem_write.c str_read.c str_write.c io_utils.c syscalls.c \
-test.c
+main.c history.c cursor.c handle_arrows.c process_key.c read_input.c utils_read_input.c
 # exec.c heredoc.c main.c pipe.c
 # msh_cd.c msh_dispatch.c msh_echo.c msh_env.c msh_exit.c msh_export.c msh_pwd.c msh_unset.c
 

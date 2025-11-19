@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 12:58:51 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 18:45:34 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,8 @@ typedef struct s_hst
 	size_t		head;		// next write position
 	size_t		first;		// index of oldest entry
 	size_t		count;		// number of valid entries
-	size_t		current;	// current line we're changing on read_input
-	char		data[FT_HST_SIZE];
-	t_hst_entry entries[FT_HST_COUNT];
+	char		*data;
+	t_hst_entry *entries;
 }	t_hst;
 
 typedef union u_fd

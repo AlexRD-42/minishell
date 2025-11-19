@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 12:22:55 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 15:44:13 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,5 +49,10 @@ char	*env_find(const char *entry, size_t length, size_t *index, t_env *env);
 char	*env_expand(t_buf src, t_buf *dst, t_env *env);
 char	*allocate_blocks(t_env *env, size_t bytes);
 size_t	mark_for_deletion(char *ptr, t_env *env);
+
+// HST
+size_t	hst_add_entry(const char *str, size_t length, t_hst *hst);
+size_t	hst_read(size_t index, char *buffer, const t_hst *hst);
+
 
 #endif
