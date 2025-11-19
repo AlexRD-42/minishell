@@ -22,7 +22,7 @@ stt_init_line_editor(t_line_editor *data, char *buffer, t_hst *hist)
 	data->line.ptr = buffer;
 	data->line.length = 0;
 	data->cursor_pos = 0;
-	data->prompt.kptr = PROMPT;
+	data->prompt.ptr = PROMPT;
 	data->prompt.length = ft_strlen(PROMPT);
 	data->history = hist;
 	data->hist_current = hist->count;

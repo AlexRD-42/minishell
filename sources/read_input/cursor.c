@@ -12,7 +12,7 @@
 
 #include "read_input.h"
 
-int	stt_ft_itoa_stack(int64_t number, char *buf)
+static int	stt_ft_itoa_stack(int64_t number, char *buf)
 {
 	const int8_t	sign = (number >= 0) - (number < 0);
 	char			temp[32];
@@ -71,7 +71,7 @@ void	redraw_from_cursor(t_line_editor *data)
 	size_t	i;
 
 	chars_after = data->line.length - data->cursor_pos;
-	write(STDOUT_FILENO, data->line.kptr + data->cursor_pos, chars_after);
+	write(STDOUT_FILENO, data->line.ptr + data->cursor_pos, chars_after);
 	write(STDOUT_FILENO, " ", 1);
 	i = 0;
 	while (i <= chars_after)
@@ -85,16 +85,11 @@ void	redraw_line(t_line_editor *data)
 {
 	int	i;
 
-	write(STDOUT_FILENO, "\r\033[J", 4);
-	write(STDOUT_FILENO, data->prompt.kptr, data->prompt.length);
-	write(STDOUT_FILENO, data->line.kptr, data->line.length);
+	write(STDOUT_FILENO, "\033[H\033[J", 6);
+	// Reescrever prompt + linha
+	write(STDOUT_FILENO, data->prompt.ptr, data->prompt.length);
+	write(STDOUT_FILENO, data->line.ptr, data->line.length);
+	// Reposicionar cursor
 	update_cursor_position(data);
-	write(STDOUT_FILENO, "\r", 1);
-	i = 0;
-	while (i < data->prompt.length + data->cursor_pos)
-    {
-        write(STDOUT_FILENO, "\033[C", 3);
-        i++;
-    }
-	update_cursor_position(data);
+	move_cursor_to_position(data, data->cursor_y, data->cursor_x);
 }

@@ -15,47 +15,19 @@
 
 int	move_cursor_left(t_line_editor *data)
 {
-	int	old_y;
-	int	i;
-
 	if (data->cursor_pos == 0)
 		return (0);
 	data->cursor_pos--;
-	old_y = data->cursor_y;
-	update_cursor_position(data);
-	if (data->cursor_y != old_y)
-	{
-		write(STDOUT_FILENO, "\033[A", 3);
-		if (data->cursor_x > 0)
-		{
-			i = 0;
-			while (i++ < data->screen_cols)
-				write(STDOUT_FILENO, "\033[1G", 4);
-		}
-		else
-			write(STDOUT_FILENO, "\r", 1);
-	}
-	else
-		write(STDOUT_FILENO, "\033[D", 3);
+	redraw_line(data);
 	return (0);
 }
 
 int	move_cursor_right(t_line_editor *data)
 {
-	int	old_y;
-
 	if (data->cursor_pos >= data->line.length)
 		return (0);
 	data->cursor_pos++;
-	old_y = data->cursor_y;
-	update_cursor_position(data);
-	if (data->cursor_y != old_y)
-	{
-		write(STDOUT_FILENO, "\033[B", 3);
-		write(STDOUT_FILENO, "\r", 1);
-	}
-	else
-		write(STDOUT_FILENO, "\033[C", 3);
+	redraw_line(data);
 	return (0);
 }
 
@@ -120,9 +92,9 @@ int	handle_arrows(t_line_editor *data)
 
 	if (read_key(&seq[0]) != 1)
 		return (0);
-	if (read_key(&seq[1]) != 1)
-		return (0);
 	if (seq[0] != '[')
+		return (0);
+	if (read_key(&seq[1]) != 1)
 		return (0);
 	if (seq[1] == 'A')
 		return (stt_history_prev(data));

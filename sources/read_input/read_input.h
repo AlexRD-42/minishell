@@ -36,7 +36,7 @@ typedef struct s_line_editor
 {
 	struct termios	old_terminal;
 	t_str			line;
-	t_str			prompt;
+	t_kstr			prompt;
 	int				screen_rows;
 	int				screen_cols;
 	int				cursor_x;
@@ -58,5 +58,6 @@ void	redraw_from_cursor(t_line_editor *data);
 int		move_cursor_right(t_line_editor *data);
 int		move_cursor_left(t_line_editor *data);
 size_t	hst_read(size_t index, char *buffer, const t_hst *hst);
+void	move_cursor_to_position(t_line_editor *data, int target_y, int target_x);
 
 #endif
