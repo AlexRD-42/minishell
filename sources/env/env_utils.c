@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 21:18:21 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 21:47:23 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:10:51 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "minishell.h"
-#include "msh_test.h"
+#include "msh_utils.h"
 
 // If length is 0, it will be calculated
-char	*envx_find(t_env *env, const char *entry, size_t length, size_t *index)
+char	*env_find(const char *entry, size_t length, size_t *index, t_env *env)
 {
 	size_t	i;
 	size_t	j;
@@ -77,7 +77,7 @@ char	*stt_expand_type(t_buf src, t_buf *dst)
 // Updates str and buffer to the end of their respective copy
 // To do: Create an env helper that returns the value rather than the entry
 // Return: NULL) OOM, !NULL) OK
-char	*envx_expand(t_buf src, t_buf *dst, t_env *env)
+char	*env_expand(t_buf src, t_buf *dst, t_env *env)
 {
 	size_t		length;
 	const char	*ptr;
@@ -89,7 +89,7 @@ char	*envx_expand(t_buf src, t_buf *dst, t_env *env)
 	ptr = src.wptr;
 	while (src.wptr < src.end && (ft_ascii(*src.wptr) & E_IDENT))
 		src.wptr++;
-	ptr = envx_find(env, ptr, (size_t)(src.wptr - ptr), NULL);
+	ptr = env_find(ptr, (size_t)(src.wptr - ptr), NULL, env);
 	if (ptr == NULL)
 		return (src.wptr);
 	while (*ptr != 0 && *ptr != '=')

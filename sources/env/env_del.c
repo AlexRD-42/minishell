@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 21:30:23 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:04:51 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <stdbool.h>
 
 #include "minishell.h"
-#include "msh_test.h"
 
 size_t	mark_for_deletion(char *ptr, t_env *env)
 {
@@ -25,7 +24,7 @@ size_t	mark_for_deletion(char *ptr, t_env *env)
 	const size_t	max_count = env->max_count;
 
 	metadata = env->metadata;
-	meta_index = (size_t)(ptr - env->optr) / BLOCK_SIZE;
+	meta_index = (size_t)(ptr - env->optr) / FT_BLOCK_SIZE;
 	start = meta_index;
 	metadata[meta_index++] = E_META_FREE;
 	while (meta_index < max_count && metadata[meta_index] >= E_META_USED)
@@ -36,14 +35,13 @@ size_t	mark_for_deletion(char *ptr, t_env *env)
 	return (meta_index - start);	// Blocks freed
 }
 
-// val, val1, val2, null
-size_t	envx_del(t_env *env, const char *entry)
+size_t	env_del(const char *entry, t_env *env)
 {
 	char	*ptr;
 	size_t	index;
 	size_t	blocks_freed;
 
-	ptr = envx_find(env, entry, SIZE_MAX, &index);
+	ptr = env_find(entry, 0, &index, env);
 	if (ptr == NULL)
 		return (SIZE_MAX);
 	blocks_freed = mark_for_deletion(ptr, env);

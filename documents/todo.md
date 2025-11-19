@@ -15,6 +15,9 @@ b = 4 * str[1] > 32 && < 64
 The size of the LUT is manageable (32 * 32 = 1024), and could even grow to be 32k for 3 letter matches
 To avoid constant checks for length, we always pad the source string with at least 8 bytes of zeroes
 
+# (Extra): Env Function 
+Could make it so there is a function that requests new blocks
+Something like (ptr, env, size), to isolate the functions from mark for deletion
 
 # Investigate:
 

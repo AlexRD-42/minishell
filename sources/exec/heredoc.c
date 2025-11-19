@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/17 11:29:40 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:12:18 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ size_t	stt_read_eof(const char *eof, char *buffer)
 	return (SIZE_MAX);
 }
 
-int	stt_heredoc(const char *eof, t_vecp *env, t_fd fd)
+int	stt_heredoc(const char *eof, t_env *env, t_fd fd)
 {
 	char	buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
 	char	aux_buffer[FT_PIPE_SIZE];
@@ -83,7 +83,7 @@ int	stt_heredoc(const char *eof, t_vecp *env, t_fd fd)
 // To do: better error handling
 // Uses up to 256k of stack memory (can be reduced to 128k if we call expand_token)
 // In a function that doesnt have the big buffers
-int	heredoc(t_token *token, t_vecp *env)
+int	heredoc(t_token *token, t_env *env)
 {
 	char	eof[FT_NAME_MAX];
 	t_buf	buf;

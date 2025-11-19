@@ -6,24 +6,22 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 11:59:05 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 21:31:26 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 10:34:58 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
-#include <unistd.h>
-#include <stdio.h>
+#include <string.h>
 #include <fcntl.h>
 #include <errno.h>
-
+#include "msh_utils.h"
+#include "msh_defines.h"
 
 // To do: Error handling, set errno (EIO)?
 // To do: Same for open, close and other utils
 // Repeats the write until the buffer is fully consumed, and repeats
 // The write when a signal interrupts it.
-#define FT_SYSCALL_RETRIES 16
-
 ssize_t	ft_write(int fd, const void *buffer, size_t length)
 {
 	ssize_t			bytes_written;
@@ -42,17 +40,31 @@ ssize_t	ft_write(int fd, const void *buffer, size_t length)
 			ptr += (size_t) bytes_written;
 		}
 		else if (errno != EINTR || bytes_written == 0 || i >= FT_SYSCALL_RETRIES)
-		{
-			perror("msh_write: ");
-			return (-1);
-		}
+			return (ft_error("msh_write: ", -1));
 		else
 			i++;
 	}
 	return ((ssize_t) length);
 }
 
-// Returns -2 on OOM
+// % 512 is just to make extra sure of no buffer overflows
+ssize_t	ft_error(const char *prefix, ssize_t rvalue)
+{
+	char			buffer[1024];
+	const char		*error_str = strerror(errno);
+	const size_t	prefix_length = ft_strlen(prefix) % 512;
+	const size_t	error_length = ft_strlen(error_str) % 512;
+	size_t			total_length;
+
+	ft_memcpy(buffer, prefix, prefix_length);
+	ft_memcpy(buffer + prefix_length, error_str, error_length);
+	total_length = prefix_length + error_length;
+	buffer[total_length++] = '\n';
+	ft_write(STDERR_FILENO, buffer, total_length);
+	return (rvalue);
+}
+
+// Returns -1 on OOM
 ssize_t	ft_read(int fd, void *buffer, void *end, size_t read_size)
 {
 	ssize_t	bytes_read;
@@ -74,29 +86,26 @@ ssize_t	ft_read(int fd, void *buffer, void *end, size_t read_size)
 			ptr += (size_t) bytes_read;
 		}
 		else if (errno != EINTR || bytes_read == 0 || i >= FT_SYSCALL_RETRIES)
-			return (perror("msh_read: "), -1);
+			return (ft_error("msh_read: ", -1));
 		else
 			i++;
 	}
 	return ((ssize_t) ptr - (ssize_t) buffer);
 }
 
-int	ft_open(const char *path, int flags, mode_t mode)
-{
-	int		fd;
-	size_t	retries;
+// int	ft_open(const char *path, int flags, mode_t mode)
+// {
+// 	int		fd;
+// 	size_t	retries;
 
-	retries = 0;
-	while (1)
-	{
-		fd = open(path, flags, mode);
-		if (fd >= 0)
-			return (fd);
-		if (errno != EINTR || retries >= FT_SYSCALL_RETRIES)
-		{
-			perror("msh_open: ");
-			return (-1);
-		}
-		retries++;
-	}
-}
+// 	retries = 0;
+// 	while (1)
+// 	{
+// 		fd = open(path, flags, mode);
+// 		if (fd >= 0)
+// 			return (fd);
+// 		if (errno != EINTR || retries >= FT_SYSCALL_RETRIES)
+// 			return (ft_error("msh_open: ", -1));
+// 		retries++;
+// 	}
+// }

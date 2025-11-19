@@ -6,16 +6,17 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 11:58:26 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 21:41:58 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:49:11 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include "minishell.h"
 #include "msh_defines.h"
 #include "msh_types.h"
-#include "msh_test.h"
-#include <stddef.h>
-#include <stdint.h>
+#include "msh_utils.h"
 
 // Return: >= 0 on success
 // Return: -1 OOM, 
@@ -36,7 +37,7 @@ ssize_t	envx_init(t_memory *mem, t_env *env, const char **envp)
 	{
 		entry = envp[env->count];
 		length = ft_strlen(entry);
-		if (envx_add((t_kstr){entry, length}, env))
+		if (env_add((t_kstr){entry, length}, SIZE_MAX, 0, env))
 			return (-1);
 		env->count++;
 	}

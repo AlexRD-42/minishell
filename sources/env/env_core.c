@@ -6,17 +6,16 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 15:24:01 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 21:47:53 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:59:34 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-
 #include "minishell.h"
 #include "msh_defines.h"
-#include "msh_test.h"
+#include "msh_utils.h"
 
 static
 char	*stt_assign_blocks(t_env *env, size_t meta_index, size_t lower, size_t upper)
@@ -39,7 +38,7 @@ char	*stt_assign_blocks(t_env *env, size_t meta_index, size_t lower, size_t uppe
 		metadata[i] = E_META_RESERVED;
 		i++;
 	}
-	return (env->optr + meta_index * BLOCK_SIZE);
+	return (env->optr + meta_index * FT_BLOCK_SIZE);
 }
 
 static
@@ -82,7 +81,7 @@ void	stt_update_ptrs(char *optr, char **envp, size_t count)
 	while (i < count)
 	{
 		envp[i++] = wptr;
-		wptr += (1 + (ft_strlen(wptr) + 1) / BLOCK_SIZE) * BLOCK_SIZE;
+		wptr += (1 + (ft_strlen(wptr) + 1) / FT_BLOCK_SIZE) * FT_BLOCK_SIZE;
 	}
 	envp[i] = NULL;	
 }
@@ -102,21 +101,21 @@ void	stt_compact(t_env *env)
 	while (i < env->count)
 	{
 		length = ft_strlen(env->ptr[i]) + 1;
-		ft_memcpy(buffer + meta_index * BLOCK_SIZE, env->ptr[i], length);
-		num_blocks = 1 + length / BLOCK_SIZE;
+		ft_memcpy(buffer + meta_index * FT_BLOCK_SIZE, env->ptr[i], length);
+		num_blocks = 1 + length / FT_BLOCK_SIZE;
 		stt_assign_blocks(env, meta_index, num_blocks, num_blocks);
 		meta_index += num_blocks;
 		i++;
 	}
-	ft_memcpy(env->optr, buffer, meta_index * BLOCK_SIZE);
+	ft_memcpy(env->optr, buffer, meta_index * FT_BLOCK_SIZE);
 	stt_update_ptrs(env->optr, env->ptr, env->count);
 }
 
 // Assign blocks, calls free if necessary
-char	*request_blocks(t_env *env, size_t bytes)
+char	*allocate_blocks(t_env *env, size_t bytes)
 {
 	size_t			meta_index;
-	const size_t	lower = 1 + bytes / BLOCK_SIZE;
+	const size_t	lower = 1 + bytes / FT_BLOCK_SIZE;
 	size_t			upper;
 
 	meta_index = stt_find_space(env->metadata, env->max_count, lower, &upper);

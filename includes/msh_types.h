@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 15:59:31 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 10:37:05 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,51 +18,14 @@
 # include <stdbool.h>
 # include "msh_defines.h"
 
-enum e_type
+typedef struct s_env
 {
-	E_UNSET = 0u,	// remove
-	E_ERROR = 1u,	
-	E_WORD = 1u << 1,
-	E_OR = 1u << 2,
-	E_AND = 1u << 3,
-	E_PIPE = 1u << 4,
-	E_OPEN_PAREN = 1u << 5,
-	E_CLOSE_PAREN = 1u << 6,
-	E_REDIR_IN = 1u << 7,
-	E_REDIR_OUT = 1u << 8,
-	E_APPND = 1u << 9,
-	E_HRDOC = 1u << 10,
-	E_LIMITER = 1u << 11,
-	E_FILE = 1u << 12,
-	E_EXPAND = 1u << 13,
-	E_STU_END = 1u << 14,
-	E_END = 1u << 15,
-	E_REDIR = E_REDIR_IN | E_REDIR_OUT | E_APPND | E_HRDOC,
-	E_OPERATOR = E_OR | E_AND | E_PIPE,
-	E_CMD_END = E_AND | E_OR | E_PIPE | E_END
-};
-
-enum e_env_index
-{
-	E_PATH = 0u,
-	E_PWD = 1u,
-	E_OLDPWD = 2u
-};
-
-enum e_ascii
-{
-	E_NULL = 0u,
-	E_CTRL = 1u,
-	E_SPACE = 1u << 1,
-	E_SYMBOL = 1u << 2,
-	E_DIGIT = 1u << 3,
-	E_UPPER = 1u << 4,
-	E_LOWER = 1u << 5,
-	E_IDENT = 1u << 6,
-	E_HEX = 1u << 7,
-	E_LETTER = E_LOWER | E_UPPER,
-	E_ALPHA = E_LOWER | E_UPPER | E_DIGIT
-};
+	char	*optr;
+	size_t	count;
+	size_t	max_count;	// max_count needs to match max_blocks
+	char	*metadata;
+	char	**ptr;
+}	t_env;
 
 // General use buffer (24 bytes)
 typedef struct s_buf

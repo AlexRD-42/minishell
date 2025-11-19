@@ -6,17 +6,17 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 10:25:12 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:11:30 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 #include <dirent.h>
-#include <stdio.h>
 #include <errno.h>
 #include "minishell.h"
 #include "msh_types.h"
+#include "msh_utils.h"
 
 // Return: 0) EOF, 1) MATCH, 2) NO MATCH, -1) OOM, -2) readdir error
 static
@@ -30,10 +30,7 @@ int	stt_directory_read(DIR *dir_stream, const char *pattern, t_vecp *vec)
 	if (dir_entry == NULL && errno == 0)
 		return (0);
 	else if (dir_entry == NULL)
-	{
-		perror("msh_readdir: ");
-		return (-2);
-	}
+		return (ft_error("msh_readdir: ", -2));
 	if (ft_strwcmp(dir_entry->d_name, pattern) == 1)
 	{
 		length = ft_strlen(dir_entry->d_name) + 1;
@@ -59,10 +56,7 @@ ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 
 	dir_stream = opendir(".");
 	if (dir_stream == NULL)
-	{
-		perror("msh_opendir: ");
-		return (-2);
-	}
+		return (ft_error("msh_opendir: ", -2));
 	count = 0;
 	rvalue = (vec->count + 1 >= vec->max_count);
 	rvalue = (rvalue == 0) - (rvalue << 2);
@@ -74,7 +68,7 @@ ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 		count += (rvalue == 1);
 	}
 	if (closedir(dir_stream) < 0)
-		perror("msh_closedir: ");
+		ft_error("msh_closedir: ", 0);
 	return (rvalue + (ssize_t)((rvalue == 0) * count));
 }
 
@@ -82,7 +76,7 @@ ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 // Parses the string and performs variable expansion
 // saving the results in a separate buffer supplied by argv
 // Return: 0) OK, -1) OOM;
-int	parse_interval(t_buf src, t_vecp *env, t_buf *dst)
+int	parse_interval(t_buf src, t_env *env, t_buf *dst)
 {
 	size_t		length;
 
@@ -114,7 +108,7 @@ int	parse_interval(t_buf src, t_vecp *env, t_buf *dst)
 // if its a single quote, or performs variable expansion if it isnt
 // Return: NULL) OOM, !NULL) OK
 static
-char	*stt_find_interval(t_buf src, t_vecp *env, t_buf *dst)
+char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst)
 {
 	const char	qtype = *src.wptr;
 	const char	quoted = (qtype == '"' || qtype == '\'');
@@ -147,7 +141,7 @@ The count variable serves as both a way of knowing if ptr is out of bounds, and
 as a way of throwing errors for ambiguous redirects when expanding file names;
 Saves the final results to arg, and uses a temporary arg_tmp buffer to store
 the pattern if necessary*/
-ssize_t	expand_token(t_token *token, t_vecp *env, t_vecp *vec)
+ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec)
 {
 	t_buf	*dst;
 	t_buf	src;

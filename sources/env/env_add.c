@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:43 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 21:49:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:57:39 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "minishell.h"
-#include "msh_test.h"
+#include "msh_utils.h"
 
 static
 size_t	stt_get_blocks_used(t_env *env, const char *ptr)
@@ -25,22 +25,27 @@ size_t	stt_get_blocks_used(t_env *env, const char *ptr)
 	const size_t	count = env->max_count;
 
 	metadata = env->metadata;
-	meta_index = (size_t)(ptr - env->optr) / BLOCK_SIZE;
+	meta_index = (size_t)(ptr - env->optr) / FT_BLOCK_SIZE;
 	i = meta_index + (metadata[meta_index] == E_META_HEAD);
 	while (i < count && metadata[i] >= E_META_USED)
 		i++;
 	return (i - meta_index);
 }
 
-int	envx_replace(t_str old_entry, t_kstr new_entry, size_t index, t_env *env)
+static
+int	stt_replace(t_str old_entry, t_kstr new_entry, size_t index, t_env *env)
 {
-	const size_t	blocks_needed = 1 + (1 + new_entry.length / BLOCK_SIZE);
-	const size_t	blocks_used = stt_get_blocks_used(env, old_entry.ptr);
-	char			*wptr;
+	size_t	blocks_needed;
+	size_t	blocks_used;
+	char	*wptr;
 
+	while (new_entry.ptr[new_entry.length] != 0)
+		new_entry.length++;
+	blocks_needed = 1 + (1 + new_entry.length / FT_BLOCK_SIZE);
+	blocks_used = stt_get_blocks_used(env, old_entry.ptr);
 	if (blocks_needed > blocks_used)
 	{
-		wptr = request_blocks(env, new_entry.length + 1);
+		wptr = allocate_blocks(env, new_entry.length + 1);
 		if (wptr == NULL)
 			return (-1);
 		mark_for_deletion(old_entry.ptr, env);	// Always after request for memcpy
@@ -54,31 +59,41 @@ int	envx_replace(t_str old_entry, t_kstr new_entry, size_t index, t_env *env)
 
 // Adding substr to entry
 // Check if substr received is past =
-int	envx_append(t_str str, t_kstr substr, size_t index, t_env *env)
+static
+int	stt_append(t_str old_entry, t_kstr new_entry, size_t index, t_env *env)
 {
-	const size_t	total_size = str.length + substr.length + 1;
-	const size_t	blocks_used = stt_get_blocks_used(env, str.ptr);
-	const size_t	blocks_needed = 1 + total_size / BLOCK_SIZE;
-	char			*wptr;
+	size_t	total_size;
+	size_t	blocks_used;
+	size_t	blocks_needed;
+	char	*wptr;
 
+	while (new_entry.ptr[new_entry.length] != 0)
+		new_entry.length++;
+	total_size = old_entry.length + new_entry.length + 1;
+	blocks_used = stt_get_blocks_used(env, old_entry.ptr);
+	blocks_needed = 1 + total_size / FT_BLOCK_SIZE;
 	if (blocks_needed > blocks_used)
 	{
-		wptr = request_blocks(env, total_size);
+		wptr = allocate_blocks(env, total_size);
 		if (wptr == NULL)
 			return (-1);	// OOM
-		mark_for_deletion(str.ptr, env);		// Prevents aliasing if its after
-		str.ptr = ft_memcpy(wptr, str.ptr, str.length);
-		env->ptr[index] = str.ptr;	// Reassigns pointer to new block
+		mark_for_deletion(old_entry.ptr, env);		// Prevents aliasing if its after
+		old_entry.ptr = ft_memcpy(wptr, old_entry.ptr, old_entry.length);
+		env->ptr[index] = old_entry.ptr;	// Reassigns pointer to new block
 	}
-	ft_memcpy(str.ptr + str.length, substr.ptr, substr.length + 1);
+	old_entry.ptr += old_entry.length;
+	ft_memcpy(old_entry.ptr, new_entry.ptr, new_entry.length + 1);
 	return (0);
 }
 
-int	envx_add(t_kstr new_entry, t_env *env)
+static
+int	stt_add(t_kstr new_entry, t_env *env)
 {
 	char	*wptr;
 
-	wptr = request_blocks(env, new_entry.length + 1);
+	while (new_entry.ptr[new_entry.length] != 0)
+		new_entry.length++;
+	wptr = allocate_blocks(env, new_entry.length + 1);
 	if (wptr == NULL)
 		return (-1);
 	ft_memcpy(wptr, new_entry.ptr, new_entry.length + 1);
@@ -87,35 +102,24 @@ int	envx_add(t_kstr new_entry, t_env *env)
 	return (0);
 }
 
-// -1) OOM
-// V lower V upper (length)
-// variable=value
-// 0: New Entry, 1: Overwrite, 2) Error, 3) Append
-// Check without =
-int	mshx_export(const char *entry, t_env *env)
+// New_entry string should contain the length of the variable name
+// Unless it is strictly 
+// Index == SIZE_MAX means the variable does not exist in ENV
+int	env_add(t_kstr new_entry, size_t index, bool append, t_env *env)
 {
-	t_str		env_entry;
-	size_t		name_length;
-	size_t		var_length;
-	size_t		index;
-	size_t		type;
+	t_str		old_entry;
 
-	name_length = 0;
-	while (entry[name_length] != 0 && entry[name_length] != '=')
-		name_length++;
-	type = (name_length > 1) && (entry[name_length] == '=')	&& entry[name_length - 1] == '+';
-	env_entry.ptr = envx_find(env, entry, name_length - type, &index);
-	name_length += (entry[name_length] == '=');
-	var_length = 0;
-	while (entry[name_length + var_length] != 0)
-		var_length++;
-	type = (env_entry.ptr != NULL) + (type << 1);
-	if (type == 2)
+	if (index == SIZE_MAX && append == 0)
+		return (stt_add(new_entry, env));
+	else if (index == SIZE_MAX)
 		return (-1);
-	if (type == 0)
-		return (envx_add((t_kstr){entry, var_length + name_length}, env));
-	env_entry.length = ft_strlen(env_entry.ptr);
-	if (type == 3)
-		return (envx_append(env_entry, (t_kstr){entry + name_length, var_length}, index, env));
-	return (envx_replace(env_entry, (t_kstr){entry, name_length + var_length}, index, env));
+	old_entry.ptr = env->ptr[index];
+	old_entry.length = ft_strlen(old_entry.ptr);
+	if (append == 1)
+	{
+		new_entry.ptr += new_entry.length + (*new_entry.ptr == '+');
+		new_entry.ptr += (*new_entry.ptr == '=');
+		return (stt_append(old_entry, new_entry, index, env));
+	}
+	return (stt_replace(old_entry, new_entry, index, env));
 }

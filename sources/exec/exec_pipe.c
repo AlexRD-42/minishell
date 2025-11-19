@@ -6,11 +6,11 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/15 22:55:41 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:22:33 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "msh_defines.h"
+
 #include <linux/limits.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -18,6 +18,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "minishell.h"
+#include "msh_utils.h"
+#include "msh_defines.h"
 #include "msh_types.h"
 
 // Attemps to execute the command through the different paths offered
