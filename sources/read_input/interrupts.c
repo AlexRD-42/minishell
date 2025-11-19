@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 17:37:38 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 19:23:33 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 21:06:31 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,15 +47,15 @@ int	setup_signals(void)
 	return (0);
 }
 
-int	get_window_size(int *rows, int *cols)
+int	get_window_size(t_pos *screen)
 {
 	struct winsize	ws;
 
 	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0)
 		return (ft_error("msh: ioctl", strerror(errno), -1));
 	g_signal = 0;
-	*cols = ws.ws_col;
-	*rows = ws.ws_row;
+	screen->col = ws.ws_col;
+	screen->row = ws.ws_row;
 	return (0);
 }
 

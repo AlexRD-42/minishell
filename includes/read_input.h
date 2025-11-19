@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/15 21:35:15 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/19 19:57:57 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 21:20:37 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,11 @@ int		setup_signals(void);
 
 char	read_key(char *c);
 int		rd_handle_sigint(t_line_editor *data);
-int		get_window_size(int *rows, int *cols);
-int		process_key(t_line_editor *data, char c);
+int		get_window_size(t_pos *screen);
+int		process_key(t_line_editor *data, char c, t_hst *hst);
 int		handle_arrows(t_line_editor *data, t_hst *hst);
 void	redraw_line(t_line_editor *data);
-
+int		move_cursor_left(t_line_editor *data);
+int		move_cursor_right(t_line_editor *data);
+void	rep_cmd(size_t count, const char cmd);
 #endif

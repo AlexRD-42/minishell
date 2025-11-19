@@ -9,8 +9,8 @@ sources/read_input sources/history
 
 # Files --------------------------------------- #
 LIBS =
-SRCS = mem_read.c mem_write.c str_read.c str_write.c io_utils.c syscalls.c \
-main.c history.c cursor.c handle_arrows.c process_key.c read_input.c utils_read_input.c
+SRCS = mem_read.c mem_write.c str_read.c str_write.c str_cmp.c io_utils.c syscalls.c \
+main.c history.c cursor.c handle_arrows.c process_key.c interrupts.c
 # exec.c heredoc.c main.c pipe.c
 # msh_cd.c msh_dispatch.c msh_echo.c msh_env.c msh_exit.c msh_export.c msh_pwd.c msh_unset.c
 

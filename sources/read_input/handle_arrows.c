@@ -9,13 +9,13 @@
 
 int	move_cursor_left(t_line_editor *data)
 {
-	if (data->cursor_pos == 0)
+	if (data->cursor_pos == 0 || data->cursor.row == 0)
 		return (0);
 	if (data->cursor.col == 0)
 	{
 		write(STDOUT_FILENO, "\033[A", 3);
-		write(STDOUT_FILENO, "\033[999C", 6);	// Hardcode
-		data->cursor.col = data->screen.col;
+		rep_cmd(data->screen.col - 1, 'C');
+		data->cursor.col = data->screen.col - 1;
 		data->cursor.row -= (data->cursor.row != 0);
 	}
 	else
@@ -35,12 +35,12 @@ int	move_cursor_right(t_line_editor *data)
 	{
 		write(STDOUT_FILENO, "\033[B", 3);
 		write(STDOUT_FILENO, "\r", 1);
-		data->cursor.col += 1;
-		data->cursor.row = 0;
+		data->cursor.col = 0;
+		data->cursor.row += 1;
 	}
 	else
 	{
-		data->cursor.row += 1;
+		data->cursor.col += 1;
 		write(STDOUT_FILENO, "\033[C", 3);
 	}
 	data->cursor_pos++;

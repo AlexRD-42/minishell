@@ -8,8 +8,8 @@
 int	stt_finalize_line(t_line_editor *data)
 {
 	size_t total_len = data->prompt.length + data->line.length;
-	int end_row = total_len / data->screen_cols;
-	int cur_row = (data->prompt.length + data->cursor_pos) / data->screen_cols;
+	int end_row = total_len / data->screen.col;
+	int cur_row = (data->prompt.length + data->cursor_pos) / data->screen.col;
 	
 	while (cur_row < end_row)
 	{
@@ -33,12 +33,12 @@ int	stt_handle_printable_char(t_line_editor *data, char c)
 		data->line.length++;
 		data->cursor_pos++;
 		write(STDOUT_FILENO, &c, 1);
-		if ((data->prompt.length + data->cursor_pos) % data->screen_cols == 0)
+		if ((data->prompt.length + data->cursor_pos) % data->screen.col == 0)
 			write(STDOUT_FILENO, "\n\r", 2);
-		update_cursor_position(data);
+		// update_cursor_position(data);
 		return (0);
 	}
-	stt_cursor_home(data);
+	// stt_cursor_home(data);
 	i = data->line.length;
 	while (i > data->cursor_pos)
 	{
@@ -66,7 +66,7 @@ int	stt_handle_backspace(t_line_editor *data)
 		write(STDOUT_FILENO, " \b", 2);
 		return (0);
 	}
-	stt_cursor_home(data);
+	// stt_cursor_home(data);
 	i = data->cursor_pos - 1;
 	while (i < data->line.length - 1)
 	{
@@ -80,7 +80,7 @@ int	stt_handle_backspace(t_line_editor *data)
 	return (0);
 }
 
-int	process_key(t_line_editor *data, char c)
+int	process_key(t_line_editor *data, char c, t_hst *hst)
 {
 	if (c >= 32 && c < 127)
 		return (stt_handle_printable_char(data, c));
@@ -89,7 +89,7 @@ int	process_key(t_line_editor *data, char c)
 	if (c == 127 || c == 8)
 		return (stt_handle_backspace(data));
 	if (c == 27)
-		return (handle_arrows(data));
+		return (handle_arrows(data, hst));
 	if (c == 4 && data->line.length == 0)
 	{
 		data->line.length = 0;	// -1?

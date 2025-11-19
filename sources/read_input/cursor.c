@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 15:39:31 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 20:44:01 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 21:20:33 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "msh_types.h"
 #include "msh_utils.h"
 
-static
+
 void	rep_cmd(size_t count, const char cmd)
 {
 	char	num_ptr[32];
@@ -29,8 +29,8 @@ void	rep_cmd(size_t count, const char cmd)
 	ptr = ft_itoa_stack((int64_t) count, num_ptr);
 	while (*ptr != 0)
 		*buffer_ptr++ = *ptr++;
-	*buffer_ptr = cmd;
-	write(STDOUT_FILENO, buffer, (size_t)(buffer - buffer_ptr));
+	*buffer_ptr++ = cmd;
+	write(STDOUT_FILENO, buffer, (size_t)(buffer_ptr - buffer));
 }
 
 void	redraw_line(t_line_editor *data)
@@ -43,10 +43,10 @@ void	redraw_line(t_line_editor *data)
 	write(STDOUT_FILENO, data->prompt.ptr, data->prompt.length);
 	write(STDOUT_FILENO, data->line.ptr, data->line.length);
 	total_len = data->prompt.length + data->line.length;
-	end_row = total_len / data->screen_cols;
-	target_row = data->cursor_y;
+	end_row = total_len / data->screen.col;
+	target_row = data->cursor.row;
 	rep_cmd((size_t)(end_row - target_row), 'A');
 	write(STDOUT_FILENO, "\r", 1);
-	if (data->cursor_x > 0)
-		rep_cmd(data->cursor_x, 'C');
+	if (data->cursor.col > 0)
+		rep_cmd(data->cursor.col, 'C');
 }
