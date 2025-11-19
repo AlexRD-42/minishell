@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 10:37:05 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:58:51 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,19 +36,9 @@ typedef struct s_buf
 }	t_buf;
 
 // General use buffer array of pointers (48 bytes)
-// Anonymous struct should mirror t_buf exactly
 typedef struct s_vecp
 {
-	union
-	{
-		t_buf	buf;
-		struct
-		{
-			char	*optr;
-			char	*end;
-			char	*wptr;
-		};
-	};
+	t_buf	buf;
 	size_t	count;
 	size_t	max_count;
 	char	**ptr;

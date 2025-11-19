@@ -1,9 +1,17 @@
+# (BUG):
+Wildcard matching considers asterisks within quotes if one asterisk was valid within an argument
+
+Ex: abc*"t*"d 		-> abc*t*d
+when it should be	-> abc*t\*d
+
 
 # Implement an FD LIMIT
  to avoid having to deal with FD MAX
 
 # (Extra):
 - Change HST to use ptrs and vecp
+
+# (Extra): buffered putstr with newline
 
 # (Extra): Multi-char LUT
 stt_token_finder char checks go from ASCII 32 (0x20) to 64 (0x40)

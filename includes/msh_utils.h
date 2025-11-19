@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 10:12:28 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 10:24:51 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:37:53 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,5 @@ int			ft_lmcpy(void *restrict vdst, const void *restrict vsrc, size_t length, ch
 
 // Wrappers
 ssize_t		ft_write(int fd, const void *buffer, size_t length);
-ssize_t		ft_error(const char *prefix, ssize_t rvalue);
+ssize_t		ft_error(const char *prefix, const char *error_str, ssize_t rvalue);
 ssize_t		ft_read(int fd, void *buffer, void *end, size_t read_size);

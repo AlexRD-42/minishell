@@ -6,15 +6,15 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 17:14:47 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/14 12:58:03 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:27:56 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <unistd.h>
-#include "minishell.h"
+#include "msh_types.h"
+#include "msh_utils.h"
 
 static
 void	stt_hst_write(const char *str, size_t length, t_hst *hst)
@@ -87,9 +87,4 @@ size_t	hst_add_entry(const char *str, size_t length, t_hst *hst)
 	stt_hst_free(length, hst);
 	stt_hst_write(str, length, hst);
 	return (hst->count);
-}
-
-int	main(int argc, char **argv, char **envp)
-{
-	t_hst hst = {.free = FT_HST_SIZE};
 }

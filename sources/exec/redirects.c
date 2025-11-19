@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 11:12:50 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 15:19:52 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 13:18:34 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include "minishell.h"
 #include "msh_types.h"
+#include "msh_utils.h"
 
 static int32_t	\
 stt_parse_fd(const uint32_t type, const char *str)
@@ -41,21 +42,22 @@ stt_parse_fd(const uint32_t type, const char *str)
 	return (fd);
 }
 
-// Return: 0: Ok, 1: dir function, 2: Ambiguous redirects, 4: Out of memory
-static uint8_t
+// Return: >=0: Ok, -1) OOM, -2) dir function, -4) Ambiguous redirects
+static ssize_t
 stt_open(t_token *token, t_env *env)
 {
-	uint8_t	rvalue;
+	ssize_t		rvalue;
 	char	word[256];
+	char	*ptr[1];
+	t_buf	buf;
 
-	rvalue = expand_token(token, env, , 1);
-	if (rvalue >= 2)
-	{
-		ft_write(2, "msh_redirects: Ambiguous or missing redirects\n", 46);
-		return (2);
-	}
-	token->fd[0] = stt_parse_fd(token->type, word);
-	return (0);
+	buf = (t_buf){word, word + sizeof(word), word};
+	rvalue = expand_token(token, env, &(t_vecp){buf, 0, 1, ptr});
+	if (rvalue >= 0)
+		token->fd[0] = stt_parse_fd(token->type, word);
+	else if (rvalue == -4)
+		return (ft_error("msh_redirects: Ambiguous redirects", "\n", rvalue));
+	return (rvalue);
 }
 
 void	open_files(t_token *tokens, t_env *env)

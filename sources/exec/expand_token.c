@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 12:11:30 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/19 13:17:11 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 #include <stddef.h>
 #include <dirent.h>
 #include <errno.h>
+#include <string.h>
 #include "minishell.h"
 #include "msh_types.h"
 #include "msh_utils.h"
 
-// Return: 0) EOF, 1) MATCH, 2) NO MATCH, -1) OOM, -2) readdir error
+// BUG: Wildcard matching considers asterisks within quotes if one asterisk was outside
+// Return: 0) EOF, 1) MATCH, 2) NO MATCH, -1) OOM, -2) readdir error (P)
 static
 int	stt_directory_read(DIR *dir_stream, const char *pattern, t_vecp *vec)
 {
@@ -30,23 +32,23 @@ int	stt_directory_read(DIR *dir_stream, const char *pattern, t_vecp *vec)
 	if (dir_entry == NULL && errno == 0)
 		return (0);
 	else if (dir_entry == NULL)
-		return (ft_error("msh_readdir: ", -2));
+		return (ft_error("msh_readdir: ", strerror(errno), -2));
 	if (ft_strwcmp(dir_entry->d_name, pattern) == 1)
 	{
 		length = ft_strlen(dir_entry->d_name) + 1;
-		if (ft_lmcpy(vec->wptr, dir_entry->d_name, length, vec->end))
+		if (ft_lmcpy(vec->buf.wptr, dir_entry->d_name, length, vec->buf.end))
 			return (-1);
-		vec->ptr[vec->count++] = vec->wptr;
-		vec->wptr += length;
+		vec->ptr[vec->count++] = vec->buf.wptr;
+		vec->buf.wptr += length;
 		return (1);
 	}
 	return (2);
 }
 
 // This function reads from a directory, compares against pattern with wildcard matching and 
-// saves up to EOF entries inside the buffer supplied by arg
+// saves up to EOF entries inside the buffer supplied by arg.
 // Return: >=0) Number of matches until EOF
-// Return:	-1) OOM, -2) dir function problems, -4) exceeded count
+// Return:	-1) OOM (P), -2) dir function problems (P), -4) exceeded count
 static
 ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 {
@@ -56,7 +58,7 @@ ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 
 	dir_stream = opendir(".");
 	if (dir_stream == NULL)
-		return (ft_error("msh_opendir: ", -2));
+		return (ft_error("msh_opendir: ", strerror(errno), -2));
 	count = 0;
 	rvalue = (vec->count + 1 >= vec->max_count);
 	rvalue = (rvalue == 0) - (rvalue << 2);
@@ -68,7 +70,7 @@ ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 		count += (rvalue == 1);
 	}
 	if (closedir(dir_stream) < 0)
-		ft_error("msh_closedir: ", 0);
+		ft_error("msh_closedir: ", strerror(errno), 0);
 	return (rvalue + (ssize_t)((rvalue == 0) * count));
 }
 
