@@ -6,33 +6,36 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/18 12:43:19 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 19:51:42 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <linux/limits.h>
 #include <unistd.h>
 #include <stdio.h>
 #include "minishell.h"
+#include "msh_defines.h"
+#include "msh_utils.h"
 
 // Remember the prefix PWD= (check if needed)
-int	msh_cd(t_argv *argv, t_env *env)
+int	msh_cd(t_vecp *argv, t_env *env)
 {
-	if (argc < 2)
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		return (1);	// Lack of arguments
-	}
-	if (getcwd(env->ptr[E_OLDPWD], FT_PATH_SIZE) == NULL)
-	{
-		perror("cwd");
-		return (1);
-	}
-	chdir(argv[1]);
-	if (getcwd(env->ptr[E_PWD], FT_PATH_SIZE) == NULL)
-	{
-		perror("cwd");
-		return (1);
-	}
+	size_t	buffer[(FT_PATH_SIZE * 2) / sizeof(size_t)];
+	char	*ptr;
+
+	if (argv->count < 2)
+		return (ft_error("", "", 1));
+	if (argv->count > 2)
+		return (ft_error("msh_cd: too many arguments", "", 1));
+	buffer[0] = 17245115378846799;
+	ptr = (char *) buffer;
+	if (getcwd(ptr + 8, (FT_PATH_SIZE * 2)) == NULL)
+		return (ft_error("msh_cd: ", NULL, 1));
+	if (env_export(ptr, env))
+		return (ft_error("msh_cd: out of memory", NULL, 1));
+	chdir(argv->ptr[1]);
+	if (getcwd(ptr + 8, (FT_PATH_SIZE * 2)) == NULL)
+		return (ft_error("msh_cd: ", NULL, 1));
+	if (env_export(ptr + 3, env))
+		return (ft_error("msh_cd: out of memory", NULL, 1));
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 16:18:45 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 18:23:51 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void	signal_handler(int sig);
 
 // BUILT-INS
 int 	msh_dispatch(t_vecp *argv, t_env *env);
+uint8_t	msh_is_builtin(const char *str);
 int		msh_cd(t_env *env);
 int		msh_pwd(void);
 int		msh_exit(void);
@@ -58,6 +59,5 @@ size_t	mark_for_deletion(char *ptr, t_env *env);
 // HST
 size_t	hst_add_entry(const char *str, size_t length, t_hst *hst);
 size_t	hst_read(size_t index, char *buffer, const t_hst *hst);
-
 
 #endif

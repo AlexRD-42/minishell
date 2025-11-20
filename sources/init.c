@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 10:04:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 14:07:02 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 19:56:04 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,13 @@ static
 size_t	stt_env_copy(t_env *env, const char **envp)
 {
 	const char	*entry;
-	size_t		length;
 
 	ft_memset(env->optr, 0, FT_ENV_SIZE);
 	ft_memset(env->metadata, 0, FT_ENV_COUNT);	// Careful
 	while (envp[env->count] != NULL)	// no guard for env->count, env_add responsability
 	{
 		entry = envp[env->count];
-		length = ft_strlen(entry);
-		if (env_add((t_kstr){entry, length}, SIZE_MAX, 0, env))
+		if (env_add(entry, env))
 			return (SIZE_MAX);
 		env->count++;
 	}
