@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 10:12:28 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 12:37:53 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 13:59:30 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ size_t		ft_strlcat(char *dst, const char *src, size_t dst_size);
 int32_t		ft_strncmp(const char *str1, const char *str2, size_t length);
 int32_t		ft_strwcmp(const char *str, const char *pattern);
 
+int64_t		ft_atoi(const char *str);
 char		*ft_itoa_stack(int64_t number, char *ptr);
 uint8_t		ft_ascii(const char c);
 
@@ -34,5 +35,5 @@ int			ft_lmcpy(void *restrict vdst, const void *restrict vsrc, size_t length, ch
 
 // Wrappers
 ssize_t		ft_write(int fd, const void *buffer, size_t length);
-ssize_t		ft_error(const char *prefix, const char *error_str, ssize_t rvalue);
+ssize_t		ft_error(const char *prefix, const char *suffix, ssize_t rvalue);
 ssize_t		ft_read(int fd, void *buffer, void *end, size_t read_size);

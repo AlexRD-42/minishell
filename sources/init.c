@@ -1,36 +1,48 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   interrupts.c                                       :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/19 17:37:38 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 14:00:52 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/11/20 10:04:54 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/11/20 14:00:14 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <termios.h>
-#include <sys/ioctl.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
 #include <signal.h>
-#include <string.h>
-#include <errno.h>
-
+#include <termios.h>
 #include "minishell.h"
 #include "msh_utils.h"
-#include "read_input.h"
 
-extern volatile sig_atomic_t g_signal; 
-
-void	signal_handler(int sig)
+// Return: !SIZE_MAX) Env Count, SIZE_MAX) OOM
+static
+size_t	stt_env_copy(t_env *env, const char **envp)
 {
-	g_signal = sig;
+	const char	*entry;
+	size_t		length;
+
+	ft_memset(env->optr, 0, FT_ENV_SIZE);
+	ft_memset(env->metadata, 0, FT_ENV_COUNT);	// Careful
+	while (envp[env->count] != NULL)	// no guard for env->count, env_add responsability
+	{
+		entry = envp[env->count];
+		length = ft_strlen(entry);
+		if (env_add((t_kstr){entry, length}, SIZE_MAX, 0, env))
+			return (SIZE_MAX);
+		env->count++;
+	}
+	env->ptr[env->count] = NULL;
+	return (env->count);
 }
 
 // All processes have default actions for signals received
 // You can override this action by registering a handler (registering SIG_IGN)
-int	setup_signals(void)
+static
+int	stt_setup_signals(void)
 {
 	struct sigaction	sigmain;
 
@@ -47,23 +59,14 @@ int	setup_signals(void)
 	return (0);
 }
 
-int	get_window_size(t_pos *screen)
+// Are signals relevant to non-tty mode?
+int	msh_init(t_memory *mem, t_shell *msh, const char **envp)
 {
-	struct winsize	ws;
-
-	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0)
-		return (ft_error("msh: ioctl", NULL, -1));
-	g_signal = 0;
-	screen->col = ws.ws_col;
-	screen->row = ws.ws_row;
-	return (0);
-}
-
-int	rd_handle_sigint(t_line_editor *data)
-{
-	write(STDOUT_FILENO, "^C\n", 3);
-	data->line.ptr[0] = '\0';
-	g_signal = 0;
-	data->line.length = 0;
+	*msh->hst = (t_hst){FT_HST_SIZE, 0, 0, 0, mem->hst_block, mem->hst_ptr};
+	*msh->env = (t_env){0, FT_ENV_COUNT, mem->meta_block, mem->env_block, mem->env_ptr};
+	if (stt_setup_signals())
+		return (-1);
+	if (stt_env_copy(msh->env, envp) == SIZE_MAX)
+		return (-2);	// OOM
 	return (0);
 }

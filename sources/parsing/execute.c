@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/11 15:12:51 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 11:59:51 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,8 @@ char	*stt_has_quote(const char *str, size_t length)
 	return (NULL);
 }
 
-static int	stt_expand_asterisk(char *str, size_t length)
+static
+int	stt_expand_asterisk(char *str, size_t length)
 {
 	const char	*end = str + length;
 	char		quote;
@@ -102,16 +103,17 @@ static void	stt_set_fds(t_token *tokens)
 	}
 }
 
-int	execute(t_shell *shell)
+// Weird returns
+int	execute(t_shell *shell, t_token *tokens)
 {
 	t_token	*current;
 	int		return_value;
 
-	if (shell->tokens[0].type & (E_END))
+	if (tokens[0].type & (E_END))
 		return ;
-	stt_set_fds(shell->tokens);
-	current = stt_findstu_sep(shell->tokens);
-	return_value = exec_stu(shell->tokens);
+	stt_set_fds(tokens);
+	current = stt_findstu_sep(tokens);
+	return_value = exec_stu(tokens);
 	if (current->type & E_END)
 		return (return_value);
 	while (current->type & (E_AND | E_OR))

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 11:59:05 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 12:46:33 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 14:01:08 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ ssize_t	ft_write(int fd, const void *buffer, size_t length)
 			ptr += (size_t) bytes_written;
 		}
 		else if (errno != EINTR || bytes_written == 0 || i >= FT_SYSCALL_RETRIES)
-			return (ft_error("msh_write: ", strerror(errno), -1));
+			return (ft_error("msh_write: ", NULL, -1));
 		else
 			i++;
 	}
@@ -48,15 +48,20 @@ ssize_t	ft_write(int fd, const void *buffer, size_t length)
 }
 
 // % 512 is just to make extra sure of no buffer overflows
-ssize_t	ft_error(const char *prefix, const char *error_str, ssize_t rvalue)
+// If suffix is NULL, suffix becomes strerror(errno)
+// Otherwise just send ""
+ssize_t	ft_error(const char *prefix, const char *suffix, ssize_t rvalue)
 {
 	char			buffer[1024];
 	const size_t	prefix_length = ft_strlen(prefix) % 512;
-	const size_t	error_length = ft_strlen(error_str) % 512;
+	size_t			error_length;
 	size_t			total_length;
 
 	ft_memcpy(buffer, prefix, prefix_length);
-	ft_memcpy(buffer + prefix_length, error_str, error_length);
+	if (suffix == NULL)
+		suffix = strerror(errno);
+	error_length = ft_strlen(suffix) % 512;
+	ft_memcpy(buffer + prefix_length, suffix, error_length);
 	total_length = prefix_length + error_length;
 	buffer[total_length++] = '\n';
 	ft_write(STDERR_FILENO, buffer, total_length);
@@ -85,7 +90,7 @@ ssize_t	ft_read(int fd, void *buffer, void *end, size_t read_size)
 			ptr += (size_t) bytes_read;
 		}
 		else if (errno != EINTR || bytes_read == 0 || i >= FT_SYSCALL_RETRIES)
-			return (ft_error("msh_read: ", strerror(errno), -1));
+			return (ft_error("msh_read: ", NULL, -1));
 		else
 			i++;
 	}

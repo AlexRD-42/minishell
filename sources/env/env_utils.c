@@ -6,15 +6,18 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 21:18:21 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 12:10:51 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 13:48:49 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <signal.h>
 #include "minishell.h"
 #include "msh_utils.h"
+
+extern volatile sig_atomic_t g_signal;
 
 // If length is 0, it will be calculated
 char	*env_find(const char *entry, size_t length, size_t *index, t_env *env)
@@ -41,9 +44,6 @@ char	*env_find(const char *entry, size_t length, size_t *index, t_env *env)
 	}
 	return (NULL);
 }
-
-extern int	g_signal;
-// Needs update
 
 // Handles solo $ and ?
 static
@@ -102,4 +102,26 @@ char	*env_expand(t_buf src, t_buf *dst, t_env *env)
 		return (NULL);
 	dst->wptr += length;
 	return (src.wptr);
+}
+
+// Assumes entry name is SHLVL=
+// -1) OOM
+int	env_add_shlvl(t_env *env)
+{
+	char	buffer[64];
+	char	*ptr;
+	char	*env_entry;
+	size_t	index;
+	int64_t	level;
+
+	env_entry = env_find("SHLVL", 5, &index, env);
+	if (env_entry == NULL)
+		return (env_add((t_kstr){"SHLVL=1", 5}, index, 0, env));
+	level = ft_atoi(env_entry + 6) % 128;
+	if (level <= 0)
+		level = 1;
+	ptr = ft_itoa_stack(level, buffer);
+	ptr -= 6;
+	ft_memcpy(ptr, "SHLVL=", 6);
+	return (env_add((t_kstr){ptr, 5}, index, 0, env));
 }

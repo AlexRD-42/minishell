@@ -6,11 +6,12 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:44:17 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/14 12:58:17 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 12:52:44 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_utils.h"
 
 static const
 char	*stt_token_quote_handler(t_token *token, const char *end, char quote)
@@ -32,9 +33,9 @@ char	*stt_token_quote_handler(t_token *token, const char *end, char quote)
 // 	static const uint8_t	lut[256] = {
 // ['\t'] = 1, ['\n'] = 1, ['\v'] = 1, ['\f'] = 1, ['\r'] = 1};
 static
-size_t	stt_token_word_handler(t_token *token, char *str)
+size_t	stt_token_word_handler(t_token *token, const char *str)
 {
-	char		*start;
+	const char		*start;
 	char		*lookup_table;
 	const char	*end;
 	char		quote;
@@ -61,7 +62,7 @@ size_t	stt_token_word_handler(t_token *token, char *str)
 }
 
 static
-size_t	stt_token_finder(t_token *token, char *str)
+size_t	stt_token_finder(t_token *token, const char *str)
 {
 	if ((str[0] == '&' && str[1] != '&') || (str[0] == ';')
 		|| (str[0] == '>' && str[1] == '>' && str[2] == '>')
@@ -90,12 +91,11 @@ size_t	stt_token_finder(t_token *token, char *str)
 	return (1 + ((token->type & (E_APPND | E_HRDOC | E_AND | E_OR)) != 0));
 }
 
-static
-char	*stt_get_next_token(t_token *token, char *str)
+static const
+char	*stt_get_next_token(t_token *token, const char *str)
 {
-	char	*ostr;
+	const char	*ostr = str;
 
-	ostr = str;
 	while (*str == ' ' || (*str >= 9 && *str <= 13))
 		str++;
 	if (*str == 0 || *str == '#')
@@ -117,27 +117,27 @@ char	*stt_get_next_token(t_token *token, char *str)
 	return (str + token->length);
 }
 
-int	tokenize(t_shell *shell, char *input)
+size_t	tokenize(t_token *tokens, const char *input)
 {
-	size_t	i;
+	size_t	count;
 
-	i = 0;
+	count = 0;
 	while (true)
 	{
-		if (i >= FT_TOKEN_COUNT - 1)
+		if (count >= FT_TOKEN_COUNT - 1)
 		{
-			write(2, "too many tokens\n", 16);// ERROR_MSG
-			shell->tokens[FT_TOKEN_COUNT - 1].type = E_END;
-			return (-1);
+			write(2, "too many tokens\n", 16);			// ERROR_MSG
+			tokens[FT_TOKEN_COUNT - 1].type = E_END;
+			return (SIZE_MAX);
 		}
-		input = stt_get_next_token(&shell->tokens[i], input);
-		if (shell->tokens[i].type == E_END)
+		input = stt_get_next_token(tokens + count, input);
+		if (tokens[count].type == E_END)
 			break ;
-		if (shell->tokens[i].type == E_ERROR)
-			return (-1);
-		i++;
+		if (tokens[count].type == E_ERROR)			// ?
+			return (SIZE_MAX);
+		count++;
 	}
-	if (i && syntax_validation(shell, 0) == -1)
-		return (-1);
-	return (i);
+	if (count != 0 && syntax_validation(tokens) == -1)	// Why count != 0?
+		return (SIZE_MAX);
+	return (count);
 }

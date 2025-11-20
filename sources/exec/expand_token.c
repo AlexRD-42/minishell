@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 13:17:11 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 14:00:22 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <dirent.h>
 #include <errno.h>
-#include <string.h>
+#include <unistd.h>
 #include "minishell.h"
 #include "msh_types.h"
 #include "msh_utils.h"
@@ -32,7 +32,7 @@ int	stt_directory_read(DIR *dir_stream, const char *pattern, t_vecp *vec)
 	if (dir_entry == NULL && errno == 0)
 		return (0);
 	else if (dir_entry == NULL)
-		return (ft_error("msh_readdir: ", strerror(errno), -2));
+		return (ft_error("msh_readdir: ", NULL, -2));
 	if (ft_strwcmp(dir_entry->d_name, pattern) == 1)
 	{
 		length = ft_strlen(dir_entry->d_name) + 1;
@@ -58,7 +58,7 @@ ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 
 	dir_stream = opendir(".");
 	if (dir_stream == NULL)
-		return (ft_error("msh_opendir: ", strerror(errno), -2));
+		return (ft_error("msh_opendir: ", NULL, -2));
 	count = 0;
 	rvalue = (vec->count + 1 >= vec->max_count);
 	rvalue = (rvalue == 0) - (rvalue << 2);
@@ -70,7 +70,7 @@ ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
 		count += (rvalue == 1);
 	}
 	if (closedir(dir_stream) < 0)
-		ft_error("msh_closedir: ", strerror(errno), 0);
+		ft_error("msh_closedir: ", NULL, 0);
 	return (rvalue + (ssize_t)((rvalue == 0) * count));
 }
 

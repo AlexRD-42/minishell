@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 11:12:50 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 13:18:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 14:00:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ stt_open(t_token *token, t_env *env)
 	if (rvalue >= 0)
 		token->fd[0] = stt_parse_fd(token->type, word);
 	else if (rvalue == -4)
-		return (ft_error("msh_redirects: Ambiguous redirects", "\n", rvalue));
+		return (ft_error("msh_redirects: Ambiguous redirects", "", rvalue));
 	return (rvalue);
 }
 

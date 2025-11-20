@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:43 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 11:57:39 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 13:16:55 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,7 @@ int	stt_add(t_kstr new_entry, t_env *env)
 	return (0);
 }
 
-// New_entry string should contain the length of the variable name
-// Unless it is strictly 
+// New_entry string should contain the length of the variable name (when it is append)
 // Index == SIZE_MAX means the variable does not exist in ENV
 int	env_add(t_kstr new_entry, size_t index, bool append, t_env *env)
 {
