@@ -3,50 +3,62 @@
 /*                                                        :::      ::::::::   */
 /*   cursor.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: feazeved <feazeved@student.42porto.com> \  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/19 15:39:31 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 21:20:33 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/11/20 19:31:49 by feazeved          #+#    #+#             */
+/*   Updated: 2025/11/20 19:31:59 by feazeved         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
 #include "read_input.h"
-#include "msh_types.h"
-#include "msh_utils.h"
+#include <unistd.h>
 
-
-void	rep_cmd(size_t count, const char cmd)
+void	cursor_home(t_line_editor *data)
 {
-	char	num_ptr[32];
-	char	buffer[32];
-	char	*ptr;
-	char	*buffer_ptr;
+	int		current_total_len;
+	int		rows_to_up;
 
-	buffer_ptr = buffer;
-	*buffer_ptr++ = '\033';
-	*buffer_ptr++ = '[';
-	ptr = ft_itoa_stack((int64_t) count, num_ptr);
-	while (*ptr != 0)
-		*buffer_ptr++ = *ptr++;
-	*buffer_ptr++ = cmd;
-	write(STDOUT_FILENO, buffer, (size_t)(buffer_ptr - buffer));
+	current_total_len = data->prompt.length + data->cursor_pos;
+	rows_to_up = current_total_len / data->screen.col;
+	write(STDOUT_FILENO, "\r", 1);
+	while (rows_to_up > 0)
+	{
+		write(STDOUT_FILENO, "\033[A", 3);
+		rows_to_up--;
+	}
+	data->cursor.col = 0;
+	data->cursor.row = 0;
+}
+
+void	cursor_end(t_line_editor *data)
+{
+	while (data->cursor_pos < data->line.length)
+		move_cursor_right(data);
 }
 
 void	redraw_line(t_line_editor *data)
 {
-	size_t	total_len;
-	int		end_row;
-	int		target_row;
+	size_t	saved_pos;
+	size_t	i;
 
+	saved_pos = data->cursor_pos;
+	if (data->cursor_pos > 0
+		&& (data->cursor_pos + data->prompt.length) % data->screen.col == 0)
+		write(STDOUT_FILENO, " \r", 2);
+	cursor_home(data);
 	write(STDOUT_FILENO, "\033[0J", 4);
 	write(STDOUT_FILENO, data->prompt.ptr, data->prompt.length);
 	write(STDOUT_FILENO, data->line.ptr, data->line.length);
-	total_len = data->prompt.length + data->line.length;
-	end_row = total_len / data->screen.col;
-	target_row = data->cursor.row;
-	rep_cmd((size_t)(end_row - target_row), 'A');
-	write(STDOUT_FILENO, "\r", 1);
-	if (data->cursor.col > 0)
-		rep_cmd(data->cursor.col, 'C');
+	if (data->line.length > 0
+		&& (data->line.length + data->prompt.length) % data->screen.col == 0)
+		write(STDOUT_FILENO, " \r", 2);
+	data->cursor_pos = data->line.length;
+	data->cursor.col = (data->prompt.length + data->line.length)
+		% data->screen.col;
+	i = data->line.length;
+	while (i > saved_pos)
+	{
+		move_cursor_left(data);
+		i--;
+	}
 }
