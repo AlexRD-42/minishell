@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 10:04:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 14:00:14 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 14:07:02 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ int	msh_init(t_memory *mem, t_shell *msh, const char **envp)
 	if (stt_setup_signals())
 		return (-1);
 	if (stt_env_copy(msh->env, envp) == SIZE_MAX)
+		return (-2);	// OOM
+	if (env_add_shlvl(msh->env) != 0)
 		return (-2);	// OOM
 	return (0);
 }

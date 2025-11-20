@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 13:31:42 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 16:18:45 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,11 @@ int		msh_export(t_vecp *argv, t_env *env);
 int		msh_echo(t_vecp *argv);
 
 // ENV
-int		env_add(t_kstr new_entry, size_t index, bool append, t_env *env);
+int		env_replace(const char *new_entry, size_t index, t_env *env);
+int		env_append(const char *new_entry, size_t index, t_env *env);
+int		env_add(const char *new_entry, t_env *env);
+int		env_export(const char *entry, t_env *env);
+
 size_t	env_del(const char *entry, t_env *env);
 char	*env_find(const char *entry, size_t length, size_t *index, t_env *env);
 char	*env_expand(t_buf src, t_buf *dst, t_env *env);
