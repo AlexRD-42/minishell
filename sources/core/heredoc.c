@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 11:37:50 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 14:51:05 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int	heredoc(t_token *token, t_env *env)
 	if (pipe(fd.ptr) == -1)
 		ft_error("msh_pipe: ", NULL, -1);
 	eof_buf = (t_buf){eof, eof + sizeof(eof), eof};
-	if (expand_token(token, env, &(t_vecp){eof_buf, 0, 1, NULL}))
+	if (expand_token(*token, env, &(t_vecp){eof_buf, 0, 1, NULL}))
 		return (-1);
 	return (stt_heredoc(eof_buf, env, fd));
 }

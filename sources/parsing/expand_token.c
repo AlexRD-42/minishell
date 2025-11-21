@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 13:03:39 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 15:29:47 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,21 +137,21 @@ char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst)
 	return (src.wptr + (src.wptr < src.end && quoted));
 }
 
-// Return: >=0) OK, -1) OOM, -2) dir function problems, -4) exceeded count;
 /* This function expands a token, and globs the result if indicated by the token
 The count variable serves as both a way of knowing if ptr is out of bounds, and
 as a way of throwing errors for ambiguous redirects when expanding file names;
 Saves the final results to arg, and uses a temporary arg_tmp buffer to store
 the pattern if necessary*/
-ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec)
+// Return: >=0) OK, -1) OOM (P), -2) dir function problems (P), -4) exceeded count;
+ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 {
 	t_buf			*dst;
 	t_buf			src;
 	char			buffer[FT_ARG_SIZE];	// Limit for one argument
 	const uintptr_t	address = (uintptr_t) vec->buf.wptr;
 
-	src = (t_buf){token->ptr, token->ptr + token->length, token->ptr};
-	if (token->type & E_EXPAND && vec->count != 0)		// Check
+	src = (t_buf){token.ptr, token.ptr + token.length, token.ptr};
+	if (token.type & E_EXPAND)		// Check
 		dst = &(t_buf){buffer, buffer + sizeof(buffer), buffer};
 	else
 		dst = &vec->buf;
@@ -165,7 +165,7 @@ ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec)
 	if (dst->wptr + 1 > dst->end)
 		return (-1);
 	*(dst->wptr++) = 0;
-	if ((token->type & E_EXPAND) && vec->count != 0)	// Check
+	if ((token.type & E_EXPAND))	// Check count == 0
 		return (stt_expand_glob(buffer, vec));
 	vec->ptr[vec->count++] = (char *) address;
 	return (1);

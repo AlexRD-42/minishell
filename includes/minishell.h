@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 12:25:03 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 14:51:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 size_t	tokenize(t_token *tokens, const char *input);
 int		syntax_validation(t_token *tokens);
 
-ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec);
+ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec);
 int		parse_interval(t_buf src, t_env *env, t_buf *dst);
 
 // Core

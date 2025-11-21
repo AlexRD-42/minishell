@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/21 13:10:15 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 15:36:14 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void	stt_set_fds(t_token *tokens, t_env *env)
 			if (stt_expand_asterisk(tokens[0].ptr, tokens[0].length))	// Change to parsing
 				tokens[0].type |= E_EXPAND;
 		}
-		tokens += 1 + (tokens[0].type & E_REDIR);
+		tokens += 1 + !!(tokens[0].type & E_REDIR);
 	}
 }
 
