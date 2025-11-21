@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 10:04:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 19:56:04 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 09:52:48 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <signal.h>
 #include <termios.h>
 #include "minishell.h"
+#include "msh_defines.h"
 #include "msh_utils.h"
 
 // Return: !SIZE_MAX) Env Count, SIZE_MAX) OOM
@@ -26,6 +27,7 @@ size_t	stt_env_copy(t_env *env, const char **envp)
 
 	ft_memset(env->optr, 0, FT_ENV_SIZE);
 	ft_memset(env->metadata, 0, FT_ENV_COUNT);	// Careful
+	ft_memset(env->ptr, 0, FT_ENV_COUNT * sizeof(char **));	// Check
 	while (envp[env->count] != NULL)	// no guard for env->count, env_add responsability
 	{
 		entry = envp[env->count];

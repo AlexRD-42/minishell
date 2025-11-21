@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:43 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 16:21:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 09:50:48 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ int	env_add(const char *new_entry, t_env *env)
 	ft_memcpy(wptr, new_entry, total_size);
 	env->ptr[env->count] = wptr;
 	env->count++;
+	env->ptr[env->count] = NULL;
 	return (0);
 }
 

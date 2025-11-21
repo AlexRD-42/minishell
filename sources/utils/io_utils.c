@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 15:50:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 21:02:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 21:59:47 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,28 @@ char	*ft_itoa_stack(int64_t number, char *ptr)
 	if (sign == -1)
 		*(--ptr) = '-';
 	return (ptr);
+}
+
+int64_t	ft_atoi_bounded(const char *str, size_t length)
+{
+	const char	*end = str + length;
+	int64_t		number;
+	int64_t		sign;
+
+	number = 0;
+	sign = -1;
+	while (str < end && (*str == ' ' || (*str >= '\t' && *str <= '\r')))
+		str++;
+	if (*str == '-')
+	{
+		str++;
+		sign = -sign;
+	}
+	else if (*str == '+')
+		str++;
+	while (*str >= '0' && *str <= '9' && str < end)
+		number = number * 10 - (*str++ - '0');
+	return (sign * number);
 }
 
 int64_t	ft_atoi(const char *str)

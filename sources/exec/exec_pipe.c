@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 19:17:29 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/20 23:06:55 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,11 +92,11 @@ ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv)
 // Path only matters if its not a built-in or if it has absolute path!
 int	exec_pipe(t_token *tokens, t_env *env)
 {
-	char	*arg_ptr[FT_ARG_COUNT];
-	char	buffer[FT_ARG_SIZE];
-	t_vecp	argv;
-	char	*cmd;
-	size_t	length;
+	char		*arg_ptr[FT_ARG_COUNT];
+	static char	buffer[FT_ARG_MAX];	
+	t_vecp		argv;
+	char		*cmd;
+	size_t		length;
 
 	argv = (t_vecp){{buffer, buffer + sizeof(buffer), buffer}, 0, FT_ARG_COUNT, arg_ptr};
 	if (msh_build_argv(tokens, env, &argv) < 0)
@@ -111,9 +111,7 @@ int	exec_pipe(t_token *tokens, t_env *env)
 	if (cmd[length] == '/' && execve(cmd, argv.ptr, env->ptr))
 		if (errno != ENOENT && errno != ENOTDIR)
 			_exit(126);
-	while (cmd[length] != 0)
-		length++;
-	if (length < FT_PATH_SIZE)
+	if (length < FT_PATH_SIZE && cmd[length] != '/')
 		_exit(stt_search_path(&argv, env, length + 1));
 	_exit(127);
 }

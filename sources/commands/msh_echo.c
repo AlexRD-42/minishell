@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 19:11:13 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 10:25:53 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,31 +17,43 @@
 #include "minishell.h"
 #include "msh_utils.h"
 
-// /* Echo prints out the arguments to stdout, with a space separating them
-// followed by a newline (-n suppresses the newline)
-// To do: Error handling */
-// int	msh_echo(int argc, const char **argv, t_env *env)
-// {
-// 	size_t	i;
-// 	uint8_t	no_nl;
+/* Echo prints out the arguments to stdout, with a space separating them
+followed by a newline (-n suppresses the newline)
+To do: Error handling */
+static
+int	stt_print_args(size_t count, uint8_t no_nl, char **envp)
+{
+	size_t		i;
+	const char	*str;
 
-// 	if (argc < 2)
-// 	{
-// 		write(STDOUT_FILENO, "\n", 1);
-// 		return (0);
-// 	}
-// 	no_nl = (argv[1][0] == '-') && (argv[1][1] == 'n') && (argv[1][2] == 0);
-// 	if (argc == 2 && no_nl == 1)
-// 		return (0);
-// 	i = 1 + no_nl;
-// 	while (i < (size_t) argc - 1)
-// 	{
-// 		write(STDOUT_FILENO, argv[i], ft_strlen(argv[i]));
-// 		write(STDOUT_FILENO, " ", 1);
-// 		i++;
-// 	}
-// 	write(STDOUT_FILENO, argv[i], ft_strlen(argv[i]));
-// 	if (no_nl == 0)
-// 		write(STDOUT_FILENO, "\n", 1);
-// 	return (0);
-// }
+	i = 1 + no_nl;
+	while (i < count - 1)
+	{
+		str = envp[i];
+		ft_write(STDOUT_FILENO, str, ft_strlen(str));
+		ft_write(STDOUT_FILENO, " ", 1);
+		i++;
+	}
+	ft_write(STDOUT_FILENO, str, ft_strlen(str));
+	if (no_nl == 0)
+		ft_write(STDOUT_FILENO, "\n", 1);
+	return (0);
+}
+
+int	msh_echo(t_vecp *argv)
+{
+	uint8_t		no_nl;
+	const char	*str;
+
+	if (argv->count < 2)
+	{
+		ft_write(STDOUT_FILENO, "\n", 1);
+		return (0);
+	}
+	str = argv->ptr[1];
+	no_nl = (str[0] == '-') && (str[1] == 'n') && (str[2] == 0);
+	if (argv->count == 2 && no_nl == 1)
+		return (0);
+	stt_print_args(argv->count, no_nl, argv->ptr);
+	return (0);
+}
