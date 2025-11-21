@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 15:41:55 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 20:58:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 22:59:51 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	exec_subshell(t_token *tokens, t_env *env)
 	t_token	*end;
 	int		rvalue;
 
+	// increments shlvl
 	start = tokens + 1;
 	end = stt_get_end(start);
 	rvalue = exec_stu(start, end, env);

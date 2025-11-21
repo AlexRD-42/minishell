@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 14:51:01 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 22:28:17 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,10 @@ int		msh_echo(t_vecp *argv);
 size_t	init_read(char *buffer, t_hst *hst);
 
 // EXECUTE
-int		exec_line(t_token *tokens, t_env *env);
-int		exec_stu(t_token *tokens, t_env *env);
+int		exec_line(t_token *start, t_token *end, t_env *env);
+int		exec_stu(t_token *start, t_token *end, t_env *env);
 int		exec_pipe(t_token *tokens, t_env *env);
+int		msh_apply_redir(t_token *token, t_env *env);
 ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv);
 
 #endif
