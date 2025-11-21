@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 15:27:28 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 19:16:33 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,20 +106,12 @@ enum e_type
 	E_APPND = 1u << 9,
 	E_HRDOC = 1u << 10,
 	E_LIMITER = 1u << 11,
-	E_FILE = 1u << 12,
-	E_EXPAND = 1u << 13,
-	E_STU_END = 1u << 14,
-	E_END = 1u << 15,
+	E_EXPAND = 1u << 12,
+	E_END = 1u << 13,
+	E_FILE = E_APPND | E_REDIR_IN | E_REDIR_OUT,
 	E_REDIR = E_REDIR_IN | E_REDIR_OUT | E_APPND | E_HRDOC,
 	E_OPERATOR = E_OR | E_AND | E_PIPE,
-	E_CMD_END = E_AND | E_OR | E_PIPE | E_END
-};
-
-enum e_env_index
-{
-	E_PATH = 0u,
-	E_PWD = 1u,
-	E_OLDPWD = 2u
+	E_CMD_END = E_AND | E_OR | E_PIPE | E_END | E_OPEN_PAREN | E_CLOSE_PAREN
 };
 
 enum e_ascii

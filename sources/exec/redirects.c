@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 15:39:05 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 21:01:49 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,16 +88,33 @@ int	stt_apply_redir(t_token *token, t_env *env)
 	return (0);
 }
 
-int	open_and_dup(t_token *curr, t_token *end, t_env *env)
+// Need to open everything up until E_AND, E_OR, E_PIPE is found
+// When a () is found, find its closing pair ignoring everything else
+// Then find the next interval until a pipe or E_AND, E_OR, E_PIPE is found
+// end is important for subshells
+ssize_t	msh_open_files(t_token *start, t_token *end, t_env *env)
 {
-	while (curr < end)
+	ssize_t		count;
+	ssize_t		pdepth;
+	uint32_t	type;
+	t_token		*tokens;
+
+	tokens = start;
+	count = 0;
+	pdepth = 0;
+	while (tokens < end && (tokens->type & (E_OPERATOR | E_END)) == 0)
 	{
-		if (curr->type & (E_REDIR))
+		type = tokens->type;
+		pdepth += !!(type & E_OPEN_PAREN) - !!(type & E_CLOSE_PAREN);
+		if (type & E_REDIR && pdepth == 0)
 		{
-			if (stt_apply_redir(curr, env) < 0)
+			if (stt_apply_redir(tokens, env) < 0)
 				return (-1);
+			count++;
 		}
-		curr += 1 + !!(curr->type & E_REDIR);
+		if (pdepth < 0)
+			ft_error("Houston we have a problem", "", -1);
+		tokens++;
 	}
-	return (0);
+	return (count);
 }

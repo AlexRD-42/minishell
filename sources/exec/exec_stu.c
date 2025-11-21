@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 10:14:41 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 16:03:01 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 20:28:56 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ t_token	*stt_next_sep(t_token *tokens)
 static
 void	stt_child(t_token *current, t_token *end, t_env *env, int fds[3])
 {
-	signal(SIGINT, SIG_DFL);
+	signal(SIGINT, SIG_DFL);	// needs to use sigaction
 	signal(SIGQUIT, SIG_DFL);
 	if (fds[0] != -1)
 	{
@@ -62,7 +62,7 @@ void	stt_child(t_token *current, t_token *end, t_env *env, int fds[3])
 	}
 	if (open_and_dup(current, end, env) < 0)
 		exit(1);
-	end->type |= E_CMD_END;			// Check
+	end->type |= E_CMD_END;			// Wrong
 	// if (current->type & E_OPEN_PAREN)
 	// {
 	// 	prepare_subshell(current);

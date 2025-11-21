@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:44:17 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/20 12:52:44 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 19:37:28 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ size_t	stt_token_word_handler(t_token *token, const char *str)
 		quote = *end;
 		end = stt_token_quote_handler(token, end, quote);
 		if (!end)
-			return (0);// Erro?
+			return (0);		// Erro?
 		end = ft_strfind(end, lookup_table, 1);
 		if (!end)
 			break ;
@@ -118,6 +118,8 @@ char	*stt_get_next_token(t_token *token, const char *str)
 	return (str + token->length);
 }
 
+// When it is a heredoc, we mark as expand if it has no quotes
+// When it is a REDIR, we initialize FDs to -1
 size_t	tokenize(t_token *tokens, const char *input)
 {
 	size_t	count;

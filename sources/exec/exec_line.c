@@ -6,123 +6,60 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/21 15:36:14 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 21:40:18 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_utils.h"
 
 static
-t_token	*stt_findstu_sep(t_token *tokens)
+t_token	*stt_next_stu(t_token *start, t_token *end)
 {
-	t_token	*current;
-	int		in_paren;
+	ssize_t		pdepth;
+	uint32_t	type;
+	t_token		*tokens;
 
-	in_paren = 0;
-	current = tokens;
-	while (!(current->type & (E_END)))
+	pdepth = 0;
+	tokens = start;
+	while (tokens < end && (tokens->type & (E_END)) == 0)
 	{
-		if (current->type & (E_OPEN_PAREN))
-			in_paren++;
-		else if (current->type & (E_CLOSE_PAREN))
-			in_paren--;
-		if (!in_paren && current->type & (E_AND | E_OR))
+		type = tokens->type;
+		pdepth += !!(type & E_OPEN_PAREN) - !!(type & E_CLOSE_PAREN);
+		if (pdepth == 0 && (type & (E_AND | E_OR)))
+			return (tokens);
+		else if (pdepth < 0)
 		{
-			current->type |= E_STU_END;
-			return (current);
+			ft_error("Houston we have a problem", "", -1);
+			return (NULL);
 		}
-		current++;
-	}
-	current->type |= E_STU_END;
-	return (current);
-}
-
-static const
-char	*stt_has_quote(const char *str, size_t length)
-{
-	const char	*end = str + length;
-
-	while (str < end && *str != 0)
-	{
-		if (*str == '\'' || *str == '"')
-			return (str);
-		str++;
+		tokens++;
 	}
 	return (NULL);
 }
 
-static
-int	stt_expand_asterisk(const char *str, size_t length)
+// exec line needs to take a start and end parameter as well
+// this is some recursion bullshit
+// exec_line needs to loop through until it finds a AND, OR, PARENTHESIS
+int	exec_line(t_token *start, t_token *end, t_env *env)
 {
-	const char	*end = str + length;
-	char		quote;
-
-	quote = 0;
-	while (str < end && *str != 0)
-	{
-		if (*str == '\'' || *str == '"')
-		{
-			quote = *str;
-			while (str < end && *str && *str != quote)
-				str++;
-		}
-		else if (*str == '*')
-			return (1);
-		str++;
-	}
-	return (0);
-}
-
-// marca como file, e inicializa os fds, abre os heredocs
-static
-void	stt_set_fds(t_token *tokens, t_env *env)
-{
-	while (!(tokens[0].type & (E_END)))
-	{
-		if (tokens[0].type & (E_HRDOC))
-		{
-			tokens[1].type = E_LIMITER;
-			if (!stt_has_quote(tokens[1].ptr, tokens[1].length))
-				tokens[1].type |= E_EXPAND;
-			tokens[0].fd[0] = heredoc(tokens + 1, env);
-		}
-		if (tokens[0].type & (E_REDIR))
-		{
-			tokens[0].fd[0] = -1;
-			tokens[0].fd[1] = -1;
-			tokens[1].type = (E_FILE | tokens[0].type);
-		}
-		else if (tokens[0].type & (E_WORD | E_FILE))
-		{
-			if (stt_expand_asterisk(tokens[0].ptr, tokens[0].length))	// Change to parsing
-				tokens[0].type |= E_EXPAND;
-		}
-		tokens += 1 + !!(tokens[0].type & E_REDIR);
-	}
-}
-
-int	exec_line(t_token *tokens, t_env *env)
-{
+	int		status;
+	t_token	*next;
 	t_token	*current;
-	int		rvalue;
 
-	if (tokens[0].type & (E_END))
+	if (start == end)
 		return (0);
-	stt_set_fds(tokens, env);
-	current = stt_findstu_sep(tokens);
-	rvalue = exec_stu(tokens, env);
-	if (current->type & E_END)
-		return (att_exit(rvalue, true));
-	while (current->type & (E_AND | E_OR))
+	current = start;
+	next = stt_next_stu(current, end);
+	while (next != NULL)
 	{
-		stt_findstu_sep(current + 1);
-		if ((current->type & E_OR) && rvalue)
-			rvalue = exec_stu(current + 1, env);
-		else if ((current->type & E_AND) && !rvalue)
-			rvalue = exec_stu(current + 1, env);
-		while (!((++current)->type & E_STU_END))
-			current++;
-		att_exit(rvalue, true);
+		status = exec_stu(current, next, env);
+		if ((next->type & E_AND) && status != 0)
+			return (status);
+		if ((next->type & E_OR) && status == 0)
+			return (status);
+		current = next + 1;
+		next = stt_next_stu(current, end);
 	}
-	return (rvalue);
+	return (exec_stu(current, end, env));
 }

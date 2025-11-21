@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 12:25:47 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 14:38:15 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 21:42:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,6 @@ int	stt_notty_mode(t_env *env, t_hst *hst)
 	// Execute
 	// Exit
 	return (0);
-}
-
-int	att_exit(int code, int change)
-{
-	static int	exit_status;
-
-	if (change)
-		exit_status = code;
-	return (exit_status);
 }
 
 static

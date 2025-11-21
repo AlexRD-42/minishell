@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 14:51:05 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 20:30:37 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ size_t	stt_read_eof(const char *eof, char *buffer)
 	return (SIZE_MAX);
 }
 
-int	stt_heredoc(t_buf eof, t_env *env, t_fd fd)
+int	stt_heredoc(t_buf eof, t_env *env, int32_t fd[2])
 {
 	char	buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
 	char	aux_buffer[FT_PIPE_SIZE];
@@ -77,9 +77,9 @@ int	stt_heredoc(t_buf eof, t_env *env, t_fd fd)
 	if (parse_interval(eof, env, &dst))
 		return (-1);
 	*dst.wptr++ = 0;
-	ft_write(fd.out, dst.optr, (size_t)(dst.wptr - dst.optr));	// Error checking
-	close(fd.out);
-	return (fd.in);
+	ft_write(fd[1], dst.optr, (size_t)(dst.wptr - dst.optr));	// Error checking
+	close(fd[1]);
+	return (fd[0]);
 }
 
 // To do: better error handling
@@ -87,9 +87,9 @@ int	heredoc(t_token *token, t_env *env)
 {
 	char	eof[FT_NAME_MAX];
 	t_buf	eof_buf;
-	t_fd	fd;
+	int32_t	fd[2];
 
-	if (pipe(fd.ptr) == -1)
+	if (pipe(fd) == -1)
 		ft_error("msh_pipe: ", NULL, -1);
 	eof_buf = (t_buf){eof, eof + sizeof(eof), eof};
 	if (expand_token(*token, env, &(t_vecp){eof_buf, 0, 1, NULL}))
