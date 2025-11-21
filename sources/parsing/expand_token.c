@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 14:00:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 13:03:39 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,19 +145,16 @@ Saves the final results to arg, and uses a temporary arg_tmp buffer to store
 the pattern if necessary*/
 ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec)
 {
-	t_buf	*dst;
-	t_buf	src;
-	char	buffer[FT_ARG_SIZE];	// Limit for one argument
-	char    *start_ptr;
+	t_buf			*dst;
+	t_buf			src;
+	char			buffer[FT_ARG_SIZE];	// Limit for one argument
+	const uintptr_t	address = (uintptr_t) vec->buf.wptr;
 
-	src = (t_buf){(char *)token->ptr, (char *)token->ptr + token->length, (char *)token->ptr};
-	if (token->type & E_EXPAND)
+	src = (t_buf){token->ptr, token->ptr + token->length, token->ptr};
+	if (token->type & E_EXPAND && vec->count != 0)		// Check
 		dst = &(t_buf){buffer, buffer + sizeof(buffer), buffer};
 	else
-	{
 		dst = &vec->buf;
-		start_ptr = dst->wptr;
-	}
 	while (src.wptr < src.end)
 	{
 		src.wptr = stt_find_interval(src, env, dst);
@@ -168,8 +165,8 @@ ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec)
 	if (dst->wptr + 1 > dst->end)
 		return (-1);
 	*(dst->wptr++) = 0;
-	if ((token->type & E_EXPAND))
+	if ((token->type & E_EXPAND) && vec->count != 0)	// Check
 		return (stt_expand_glob(buffer, vec));
-	vec->ptr[vec->count] = start_ptr;
+	vec->ptr[vec->count++] = (char *) address;
 	return (1);
 }

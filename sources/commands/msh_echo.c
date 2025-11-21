@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 10:25:53 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 11:28:41 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,9 @@
 /* Echo prints out the arguments to stdout, with a space separating them
 followed by a newline (-n suppresses the newline)
 To do: Error handling */
+
 static
-int	stt_print_args(size_t count, uint8_t no_nl, char **envp)
+int	stt_print_args(size_t count, uint8_t no_nl, char **argv)
 {
 	size_t		i;
 	const char	*str;
@@ -29,7 +30,7 @@ int	stt_print_args(size_t count, uint8_t no_nl, char **envp)
 	i = 1 + no_nl;
 	while (i < count - 1)
 	{
-		str = envp[i];
+		str = argv[i];
 		ft_write(STDOUT_FILENO, str, ft_strlen(str));
 		ft_write(STDOUT_FILENO, " ", 1);
 		i++;

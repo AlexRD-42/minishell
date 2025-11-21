@@ -6,14 +6,14 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 15:24:01 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/19 11:59:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:57:33 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include "minishell.h"
+#include "msh_types.h"
 #include "msh_defines.h"
 #include "msh_utils.h"
 
@@ -45,7 +45,7 @@ static
 size_t	stt_find_space(char *metadata, size_t max_count, size_t lower, size_t *out)
 {
 	size_t	i;
-	size_t	start;
+	size_t	start;		// Remember
 	size_t	blocks_free;
 	size_t	upper;
 

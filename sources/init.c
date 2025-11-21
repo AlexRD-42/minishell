@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 10:04:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 09:52:48 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:07:08 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ size_t	stt_env_copy(t_env *env, const char **envp)
 		entry = envp[env->count];
 		if (env_add(entry, env))
 			return (SIZE_MAX);
-		//env->count++; already being incremented in env_add
 	}
 	env->ptr[env->count] = NULL;
 	return (env->count);
@@ -64,20 +63,17 @@ int	stt_setup_signals(void)
 }
 
 // Are signals relevant to non-tty mode?
-int	msh_init(t_memory *mem, t_shell *msh, const char **envp)
+int	msh_init(t_env *env, t_hst *hst, const char **envp)
 {
-	static t_hst	hst_storage;
-	static t_env	env_storage;
-
-	msh->hst = &hst_storage;
-	msh->env = &env_storage;
-	*msh->hst = (t_hst){FT_HST_SIZE, 0, 0, 0, mem->hst_block, mem->hst_ptr};
-	*msh->env = (t_env){0, FT_ENV_COUNT, mem->meta_block, mem->env_block, mem->env_ptr};
+	ft_memset(env, 0, sizeof(t_env));
+	ft_memset(hst, 0, sizeof(t_hst));
+	hst->free = FT_HST_SIZE;
+	env->max_count = FT_ENV_COUNT;
 	if (stt_setup_signals())
 		return (-1);
-	if (stt_env_copy(msh->env, envp) == SIZE_MAX)
+	if (stt_env_copy(env, envp) == SIZE_MAX)
 		return (-2);	// OOM
-	if (env_add_shlvl(msh->env) != 0)
+	if (env_add_shlvl(env) != 0)
 		return (-2);	// OOM
 	return (0);
 }

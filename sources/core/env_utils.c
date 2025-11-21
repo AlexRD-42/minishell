@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 21:18:21 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 16:24:03 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:17:22 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char	*stt_expand_type(t_buf src, t_buf *dst)
 	src.wptr += src.wptr < src.end && *src.wptr == '$';
 	if (src.wptr < src.end && *src.wptr == '?')
 	{
-		ptr = ft_itoa_stack(g_signal, buffer + sizeof(buffer));
+		ptr = ft_itoa_stack(g_signal, buffer + sizeof(buffer) - 1);
 		length = ft_strlen(ptr);
 		if (ft_lmcpy(dst->wptr, ptr, length, dst->end))
 			return (NULL);
@@ -120,7 +120,7 @@ int	env_add_shlvl(t_env *env)
 	level = ft_atoi(env_entry + 6) + 1;
 	if (level <= 0 || level >= 1000)
 		level = 1;
-	ptr = ft_itoa_stack(level, buffer + 63); //needs to pass a pointer to the end of buffer
+	ptr = ft_itoa_stack(level, buffer + sizeof(buffer) - 1);
 	ptr -= 6;
 	ft_memcpy(ptr, "SHLVL=", 6);
 	return (env_replace(ptr, index, env));

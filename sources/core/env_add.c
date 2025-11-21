@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:43 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 09:50:48 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:15:44 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 #include <stdbool.h>
 #include "minishell.h"
 #include "msh_utils.h"
+
+char	*allocate_blocks(t_env *env, size_t bytes);
+size_t	mark_for_deletion(char *ptr, t_env *env);
 
 static
 ssize_t	stt_get_blocks_diff(t_env *env, const char *ptr, size_t total_size)

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   utils_read_input.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 21:14:00 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/18 21:14:15 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:25:00 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "read_input.h"
+#include "msh_readline.h"
 #include <sys/ioctl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -38,7 +38,7 @@ void	reset_line(t_line_editor *data)
 	data->cursor_pos = 0;
 	data->cursor.col = data->prompt.length;
 	data->cursor.row = 0;
-	data->hst_current = data->hist->count;
+	data->hst_current = data->hst->count;
 }
 
 int	rd_handle_sigint(t_line_editor *data)

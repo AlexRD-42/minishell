@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_dispatch.c                                    :+:      :+:    :+:   */
+/*   msh_dispatch.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/03 10:29:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 10:25:37 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 11:30:41 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int msh_dispatch(t_vecp *argv, t_env *env)
 	if (str[0] == 'e')
 	{
 		if (str[1] == 'x' && str[2] == 'i' && str[3] == 't' && stt_end(str[4]))
-			_exit (msh_exit());
+			_exit (msh_exit(argv, env));
 		if (str[1] == 'x' && str[2] == 'p' && str[3] == 'o' && str[4] == 'r'
 			&& str[5] == 't' && stt_end(str[6]))
 			_exit (msh_export(argv, env));
@@ -49,7 +49,7 @@ int msh_dispatch(t_vecp *argv, t_env *env)
 		return (127);
 	}
 	if (str[0] == 'c' && str[1] == 'd' && stt_end(str[2]))
-		_exit (msh_cd(env));
+		_exit (msh_cd(argv, env));
 	if (str[0] == 'p' && str[1] == 'w' && str[2] == 'd' && stt_end(str[3]))
 		_exit (msh_pwd());
 	if (str[0] == 'u' && str[1] == 'n' && str[2] == 's' && str[3] == 'e'

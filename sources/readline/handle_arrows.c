@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   handle_arrows.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 19:33:52 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/20 19:34:04 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:27:08 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include "read_input.h"
-#include "msh_utils.h"
+#include "msh_readline.h"
 #include "minishell.h"
+#include "msh_types.h"
+#include "msh_utils.h"
 
 int	move_cursor_left(t_line_editor *data)
 {
@@ -57,18 +58,18 @@ int	move_cursor_right(t_line_editor *data)
 
 static int	stt_history_prev(t_line_editor *data)
 {
-	t_hst	*hist;
+	t_hst	*hst;
 	char	temp[FT_LINE_MAX];
 	size_t	len;
 
-	hist = data->hist;
-	if (hist->count == 0 || data->hst_current == 0)
+	hst = data->hst;
+	if (hst->count == 0 || data->hst_current == 0)
 		return (0);
 	cursor_home(data);
 	write(STDOUT_FILENO, "\033[0J", 4);
 	write(STDOUT_FILENO, data->prompt.ptr, data->prompt.length);
 	data->hst_current--;
-	len = hst_read(data->hst_current, temp, hist);
+	len = hst_read(data->hst_current, temp, hst);
 	if (len == SIZE_MAX)
 		return (0);
 	ft_memcpy(data->line.ptr, temp, len);
@@ -83,20 +84,20 @@ static int	stt_history_prev(t_line_editor *data)
 
 static int	stt_history_next(t_line_editor *data)
 {
-	t_hst	*hist;
+	t_hst	*hst;
 	char	temp[FT_LINE_MAX];
 	size_t	len;
 
-	hist = data->hist;
-	if (hist->count == 0 || data->hst_current >= hist->count)
+	hst = data->hst;
+	if (hst->count == 0 || data->hst_current >= hst->count)
 		return (0);
 	cursor_home(data);
 	write(STDOUT_FILENO, "\033[0J", 4);
 	write(STDOUT_FILENO, data->prompt.ptr, data->prompt.length);
 	data->hst_current++;
-	if (data->hst_current >= hist->count)
+	if (data->hst_current >= hst->count)
 		return (reset_line(data), 0);
-	len = hst_read(data->hst_current, temp, hist);
+	len = hst_read(data->hst_current, temp, hst);
 	if (len == SIZE_MAX)
 		return (0);
 	ft_memcpy(data->line.ptr, temp, len);

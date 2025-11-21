@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 23:06:55 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 10:59:36 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv)
 		{
 			if (expand_token(token, env, argv) < 0)
 				return (-1);
-			argv->count++;
 		}
 		token++;
 	}

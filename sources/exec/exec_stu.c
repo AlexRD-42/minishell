@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 10:14:41 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/12 10:27:15 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 13:26:13 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@
 #include <stdlib.h>
 #include <signal.h>
 
-static t_token	*stt_next_sep(t_token *tokens)
+static
+t_token	*stt_next_sep(t_token *tokens)
 {
 	int	in_paren;
 
@@ -40,7 +41,8 @@ static t_token	*stt_next_sep(t_token *tokens)
 	return (tokens);
 }
 
-static int32_t	stt_parse_fd(const uint32_t type, const char *str)
+static
+int32_t	stt_parse_fd(const uint32_t type, const char *str)
 {
 	int		fd;
 	int32_t	flags;
@@ -80,7 +82,8 @@ stt_open_file(t_token *token, t_env *env)
 	return (stt_parse_fd(token->type, word));
 }
 
-static int	stt_apply_redir(t_token *token, t_env *env)
+static
+int	stt_apply_redir(t_token *token, t_env *env)
 {
 	int	fd;
 	int	target_fd;
@@ -108,7 +111,8 @@ static int	stt_apply_redir(t_token *token, t_env *env)
 	return (0);
 }
 
-static int	stt_open_and_dup(t_token *curr, t_token *end, t_env *env)
+static
+int	stt_open_and_dup(t_token *curr, t_token *end, t_env *env)
 {
 	while (curr < end)
 	{
@@ -122,50 +126,53 @@ static int	stt_open_and_dup(t_token *curr, t_token *end, t_env *env)
 	return (0);
 }
 
-// static int stt_exec_builtin_parent(t_token *tokens, t_env *env)
-// {
-//     char    *arg_ptr[FT_ARG_COUNT];
-//     char    buffer[FT_ARG_SIZE];
-//     t_vecp  argv;
-//     int     saved_stdin;
-//     int     saved_stdout;
-//     int     exit_code;
+static
+int stt_exec_builtin_parent(t_token *tokens, t_env *env)
+{
+    char    *arg_ptr[FT_ARG_COUNT];
+    char    buffer[FT_ARG_SIZE];
+    t_vecp  argv;
+    int     saved_stdin;
+    int     saved_stdout;
+    int     exit_code;
 
-//     argv = (t_vecp){{buffer, buffer + sizeof(buffer), buffer}, 0, FT_ARG_COUNT, arg_ptr};
-//     if (msh_build_argv(tokens, env, &argv) < 0)
-//         return (1);
-//     saved_stdin = dup(STDIN_FILENO);
-//     saved_stdout = dup(STDOUT_FILENO);
-//     if (saved_stdin == -1 || saved_stdout == -1)
-//         return (perror("dup"), 1);
-//     if (stt_open_and_dup(tokens, tokens + argv.count, env) < 0)
-//         exit_code = 1;
-//     else
-//         exit_code = msh_dispatch(&argv, env);
-//     dup2(saved_stdin, STDIN_FILENO);
-//     dup2(saved_stdout, STDOUT_FILENO);
-//     close(saved_stdin);
-//     close(saved_stdout);
-//     return (exit_code);
-// }
+    argv = (t_vecp){{buffer, buffer + sizeof(buffer), buffer}, 0, FT_ARG_COUNT, arg_ptr};
+    if (msh_build_argv(tokens, env, &argv) < 0)
+        return (1);
+    saved_stdin = dup(STDIN_FILENO);
+    saved_stdout = dup(STDOUT_FILENO);
+    if (saved_stdin == -1 || saved_stdout == -1)
+        return (perror("dup"), 1);
+    if (stt_open_and_dup(tokens, tokens + argv.count, env) < 0)
+        exit_code = 1;
+    else
+        exit_code = msh_dispatch(&argv, env);
+    dup2(saved_stdin, STDIN_FILENO);
+    dup2(saved_stdout, STDOUT_FILENO);
+    close(saved_stdin);
+    close(saved_stdout);
+    return (exit_code);
+}
 
-// void	prepare_subshell(t_token *tokens)
-// {
-// 	int	paren_depth;
+// Executes after fork (only on childs)
+void	prepare_subshell(t_token *tokens)
+{
+	int	paren_depth;
 
-// 	paren_depth = 1;
-// 	while (!(tokens->type & E_STU_END))
-// 	{
-// 		if (tokens->type & E_OPEN_PAREN)
-// 			paren_depth++;
-// 		else if (tokens->type & E_CLOSE_PAREN)
-// 			paren_depth--;
-// 		if (paren_depth == 0)
-// 			tokens->type = E_END;
-// 	}
-// }
+	paren_depth = 1;
+	while (!(tokens->type & E_STU_END))
+	{
+		if (tokens->type & E_OPEN_PAREN)
+			paren_depth++;
+		else if (tokens->type & E_CLOSE_PAREN)
+			paren_depth--;
+		if (paren_depth == 0)
+			tokens->type = E_END;
+	}
+}
 
-static void	stt_child(t_token *current, t_token *end, t_env *env, int fds[3])
+static
+void	stt_child(t_token *current, t_token *end, t_env *env, int fds[3])
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
@@ -182,7 +189,7 @@ static void	stt_child(t_token *current, t_token *end, t_env *env, int fds[3])
 	}
 	if (stt_open_and_dup(current, end, env) < 0)
 		exit(1);
-	end->type |= E_CMD_END;
+	end->type |= E_CMD_END;			// Check
 	// if (current->type & E_OPEN_PAREN)
 	// {
 	// 	prepare_subshell(current);
@@ -191,7 +198,8 @@ static void	stt_child(t_token *current, t_token *end, t_env *env, int fds[3])
 	exec_pipe(current, env);
 }
 
-static int wait_all_children(pid_t *pids, int count)
+static
+int wait_all_children(pid_t *pids, int count)
 {
     int i;
     int status;
@@ -219,7 +227,7 @@ int	exec_stu(t_token *tokens, t_env *env)
 	t_token	*end;
 	int		fd[3];
 	int		prev_read;
-	pid_t	pids[32];
+	pid_t	pids[32];		// Standardize
 	int		status;
 	int		i;
 
@@ -229,12 +237,12 @@ int	exec_stu(t_token *tokens, t_env *env)
 	while (!(tokens->type & (E_STU_END)))
 	{
 		end = stt_next_sep(tokens);
-		// if (!(end->type & E_PIPE) && tokens->type & E_WORD && msh_mutates_state(tokens->ptr))
-        // {
-        //     status = stt_exec_builtin_parent(tokens, env);
-        //     tokens = end + 1;
-        //     break;
-        // }
+		if (!(end->type & E_PIPE) && tokens->type & E_WORD && msh_mutates_state(tokens->ptr))
+        {
+            status = stt_exec_builtin_parent(tokens, env);
+            tokens = end + 1;
+            break ;
+        }
 		if ((end->type & E_PIPE) && pipe(fd) == -1)
 			return (ft_error("msh", "", 1));
 		pids[i] = fork();

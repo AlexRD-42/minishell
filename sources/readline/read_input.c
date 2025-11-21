@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   read_input.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:52:03 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/18 16:52:18 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:51:30 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
-#include "read_input.h"
+#include "msh_readline.h"
 #include <signal.h>
 #include <termios.h>
 #include <sys/ioctl.h>
@@ -40,7 +40,7 @@ stt_init_line_editor(t_line_editor *data, char *buffer, t_hst *hst, struct termi
 	data->prompt.ptr = FT_PROMPT;
 	data->prompt.length = ft_strlen(FT_PROMPT);
 	data->cursor.col = data->prompt.length;
-	data->hist = hst;
+	data->hst = hst;
 	data->hst_current = hst->count;
 	return (0);
 }
@@ -62,7 +62,8 @@ char	read_key(char *c)
 	return (1);
 }
 
-static size_t	stt_read_input(t_line_editor *data)
+static
+size_t	stt_read_input(t_line_editor *data)
 {
 	char	c;
 	ssize_t	ret;
@@ -72,10 +73,10 @@ static size_t	stt_read_input(t_line_editor *data)
 	{
 		ret = read(STDIN_FILENO, &c, 1);
 		if (ret == -1 && errno != EINTR)
-			return (-1);
+			return (SIZE_MAX);
 		if (g_signal == SIGWINCH)
 			if (get_window_size(&data->screen) == -1)
-				return (-1);
+				return (SIZE_MAX);
 		if (g_signal == SIGINT)
 			return (rd_handle_sigint(data));
 		if (process_key(data, c) != 0)
@@ -91,7 +92,7 @@ size_t	init_read(char *buffer, t_hst *hst)
 	struct termios	old_mode;
 
 	if (tcgetattr(STDIN_FILENO, &old_mode) == -1)
-		return (-1);
+		return (SIZE_MAX);
 	rvalue = 0;
 	if (stt_init_line_editor(&data, buffer, hst, old_mode) == 0)
 	{

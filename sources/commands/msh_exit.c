@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 10:26:08 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 11:24:23 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,26 +17,25 @@
 #include "minishell.h"
 #include "msh_utils.h"
 
-static
-int	stt_parse_str(const char *str, int64_t *number)
-{
-	const char	*ostr = str;
+// static
+// int	stt_parse_str(const char *str, int64_t *number)
+// {
+// 	const char	*ostr = str;
 
-	while (*str != 0)
-	{
-		if (*str < '0' || *str > '9')
-			return (-1);
-		str++;
-	}
-	if (str - ostr >= 18)
-		return (-1);
-	*number = ft_atoi(ostr);
-	return (0);
-}
+// 	while (*str != 0)
+// 	{
+// 		if (*str < '0' || *str > '9')
+// 			return (-1);
+// 		str++;
+// 	}
+// 	if (str - ostr >= 18)
+// 		return (-1);
+// 	*number = ft_atoi(ostr);
+// 	return (0);
+// }
 
 // prints exit always
-int	msh_exit(int argc, const char **argv, t_env *env)
+int	msh_exit(t_vecp *argv, t_env *env)
 {
-	if (argc < 2)
-	_exit (argv[1]);
+	_exit(1);
 }

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 12:25:47 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 10:27:54 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:51:24 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,25 +27,23 @@ void	signal_handler(int sig)
 	g_signal = sig;
 }
 
-// static
-// int	stt_notty_mode(int argc, const char **argv, t_shell *msh)
-// {
-// 	const char	*str;
-// 	size_t		token_count;
+static
+int	stt_notty_mode(t_env *env, t_hst *hst)
+{
+	// const char	*str;
+	// size_t		token_count;
 
-// 	if (argc < 2)
-// 		return (1);
-// 	str = argv[1];	// We only care about the first argument
-// 	token_count = tokenize(msh, str);
-// 	if (token_count == SIZE_MAX)
-// 	{
+	// str = argv[1];	// We only care about the first argument
+	// token_count = tokenize(msh, str);
+	// if (token_count == SIZE_MAX)
+	// {
 
-// 	}
-// 	return (0);
-// 	// syntax error;
-// 	// Execute
-// 	// Exit
-// }
+	// }
+	// syntax error;
+	// Execute
+	// Exit
+	return (0);
+}
 
 int	att_exit(int code, int change)
 {
@@ -55,59 +53,50 @@ int	att_exit(int code, int change)
 		exit_status = code;
 	return (exit_status);
 }
-	// Read Input
-	// Tokenize
-	// Execute
-	// Continue unless break
+
 static
-int	stt_tty_mode(t_shell *msh)
+int	stt_tty_mode(t_env *env, t_hst *hst)
 {
-	t_token		token_block[FT_TOKEN_COUNT];
+	t_token	tokens[FT_TOKEN_COUNT];	// Allocation
 	char	line[FT_LINE_MAX];
 	size_t	len;
 	int		rvalue;
 
 	while (1)
 	{
-		len = init_read(line, msh->hst); // Read char by char in non canonical mode
+		len = init_read(line, hst); // Read char by char in non canonical mode
 		if (len == SIZE_MAX) // Control + D on empty line -> exit
-        {
-            write(STDOUT_FILENO, "exit\n", 5);
-            break;
-        }
-        if (len == 0) // Empty string "" , do not add to history
-            continue;
-		hst_add_entry(line, len, msh->hst);
-		if (tokenize(token_block, line) == SIZE_MAX)
+		{
+			write(STDOUT_FILENO, "exit\n", 5);
+			break ;
+		}
+		if (len == 0) // Empty string "" , do not add to history
+			continue;
+		hst_add_entry(line, len, hst);
+		if (tokenize(tokens, line) == SIZE_MAX)
 		{
 			att_exit(2, true); //exit_status for syntax error: 2
 			continue ;
 		}
-		rvalue = execute(token_block, msh->env);
+		rvalue = exec_line(tokens, env);
 	}
 	return (rvalue); // When passing false, only returns current exit_status
 }
 
 int	main(int argc, const char **argv, const char **envp)
 {
-	static t_memory		mem;
-	t_shell				msh;
-	struct termios		shell_src;
-	int					rvalue;
+	static t_env	env;
+	static t_hst	hst;
+	int				rvalue;
 
-	(void)argc;
-	(void)argv;
-	if (tcgetattr(STDIN_FILENO, &shell_src) == -1)
-		return (-1);
+	(void)(argv && argc);
 	rvalue = 0;
-	msh.shell_src = &shell_src;
-	if (msh_init(&mem, &msh, envp) == 0)
+	if (msh_init(&env, &hst, envp) == 0)
 	{
 		if (isatty(STDIN_FILENO) == 1)
-			rvalue = stt_tty_mode(&msh);
-		// else
-		// 	rvalue = stt_notty_mode(argc, argv, &msh);
+			rvalue = stt_tty_mode(&env, &hst);
+		else
+			rvalue = stt_notty_mode(&env, &hst);
 	}
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &shell_src);	// Need to be extra careful with exits
 	return (rvalue);
 }

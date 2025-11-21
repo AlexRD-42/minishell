@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 11:12:50 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 14:00:01 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 11:38:51 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ stt_parse_fd(const uint32_t type, const char *str)
 static ssize_t
 stt_open(t_token *token, t_env *env)
 {
-	ssize_t		rvalue;
+	ssize_t	rvalue;
 	char	word[256];
 	char	*ptr[1];
 	t_buf	buf;

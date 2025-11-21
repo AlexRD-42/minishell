@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 11:59:26 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:25:17 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ typedef struct s_env
 {
 	size_t	count;
 	size_t	max_count;	// max_count needs to match max_blocks
-	char	*metadata;
-	char	*optr;
-	char	**ptr;
+	char	metadata[FT_ENV_COUNT];
+	char	optr[FT_ENV_SIZE];
+	char	*ptr[FT_ENV_COUNT];
 }	t_env;
 
 // General use buffer (24 bytes)
@@ -57,8 +57,8 @@ typedef struct s_hst
 	size_t		head;		// next write position
 	size_t		first;		// index of oldest entry
 	size_t		count;		// number of valid entries
-	char		*data;
-	t_hst_entry *entries;
+	char		data[FT_HST_SIZE];
+	t_hst_entry entries[FT_HST_COUNT];
 }	t_hst;
 
 typedef union u_fd
@@ -102,15 +102,5 @@ typedef struct s_shell
 	t_hst	*hst;
 	void	*shell_src;
 }	t_shell;
-
-typedef struct t_memory
-{
-	char		hst_block[FT_HST_SIZE];
-	t_hst_entry hst_ptr[FT_HST_COUNT];
-	char		meta_block[FT_ENV_COUNT];
-	char		env_block[FT_ENV_SIZE];
-	char 		*env_ptr[FT_ENV_COUNT];
-	t_token		token_block[FT_TOKEN_COUNT];
-}	t_memory;
 
 #endif

@@ -1,5 +1,5 @@
 # Configuration ------------------------------- #
-NAME = minishell
+NAME = main
 BUILD_PATH = build
 INC_PATH = includes
 OBJ_PATH = $(BUILD_PATH)/obj

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   cursor.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com> \  +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 19:31:49 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/20 19:31:59 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:25:21 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "read_input.h"
+#include "msh_readline.h"
 #include <unistd.h>
 
 void	cursor_home(t_line_editor *data)

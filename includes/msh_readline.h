@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   read_input.h                                       :+:      :+:    :+:   */
+/*   msh_readline.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/15 21:35:15 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/19 21:20:37 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 12:27:00 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,6 @@
 # define READ_INPUT_H
 
 # include "msh_types.h"
-# include "msh_defines.h"
-
-# ifndef FT_PROMPT
-#  define FT_PROMPT "msh: "
-# endif
 
 typedef struct s_pos
 {
@@ -35,7 +30,7 @@ typedef struct s_line_editor
 	size_t	cursor_pos;
 	t_pos	cursor;
 	size_t	hst_current;
-	t_hst	*hist;
+	t_hst	*hst;
 }	t_line_editor;
 
 char	read_key(char *c);

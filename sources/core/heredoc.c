@@ -6,27 +6,14 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 10:19:26 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/21 11:37:50 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <asm-generic/errno-base.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include "minishell.h"
-#include "msh_defines.h"
-#include "msh_types.h"
-#include "msh_utils.h"
-
-#include <asm-generic/errno-base.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
 #include "minishell.h"
 #include "msh_defines.h"
 #include "msh_types.h"
@@ -76,18 +63,21 @@ size_t	stt_read_eof(const char *eof, char *buffer)
 	return (SIZE_MAX);
 }
 
-int	stt_heredoc(const char *eof, t_env *env, t_fd fd)
+int	stt_heredoc(t_buf eof, t_env *env, t_fd fd)
 {
 	char	buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
 	char	aux_buffer[FT_PIPE_SIZE];
+	t_buf	dst;
 	size_t	length;
 
-	length = stt_read_eof(eof, buffer);
+	dst = (t_buf){aux_buffer, aux_buffer + sizeof(aux_buffer), aux_buffer};
+	length = stt_read_eof(eof.optr, buffer);
 	if (length == SIZE_MAX)
 		return (-1);
-	if (parse_interval(buffer, buffer + length, env, ))
+	if (parse_interval(eof, env, &dst))
 		return (-1);
-	ft_write(fd.out, buffer, length);
+	*dst.wptr++ = 0;
+	ft_write(fd.out, dst.optr, (size_t)(dst.wptr - dst.optr));	// Error checking
 	close(fd.out);
 	return (fd.in);
 }
@@ -96,13 +86,13 @@ int	stt_heredoc(const char *eof, t_env *env, t_fd fd)
 int	heredoc(t_token *token, t_env *env)
 {
 	char	eof[FT_NAME_MAX];
-	t_buf	buf;
+	t_buf	eof_buf;
 	t_fd	fd;
 
 	if (pipe(fd.ptr) == -1)
 		ft_error("msh_pipe: ", NULL, -1);
-	buf = (t_buf){eof, eof + sizeof(eof), eof};
-	if (expand_token(token, env, &(t_vecp){buf, 0, 1, NULL}))
+	eof_buf = (t_buf){eof, eof + sizeof(eof), eof};
+	if (expand_token(token, env, &(t_vecp){eof_buf, 0, 1, NULL}))
 		return (-1);
-	return (stt_heredoc(eof, env, fd));
+	return (stt_heredoc(eof_buf, env, fd));
 }
