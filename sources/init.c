@@ -31,7 +31,7 @@ size_t	stt_env_copy(t_env *env, const char **envp)
 		entry = envp[env->count];
 		if (env_add(entry, env))
 			return (SIZE_MAX);
-		env->count++;
+		//env->count++; already being incremented in env_add
 	}
 	env->ptr[env->count] = NULL;
 	return (env->count);
@@ -54,12 +54,21 @@ int	stt_setup_signals(void)
 		return (ft_error("msh_signals: ", NULL, -1));
 	if (sigaction(SIGQUIT, &sigmain, NULL) < 0)
 		return (ft_error("msh_signals: ", NULL, -1));
+	if (sigaction(SIGTTOU, &sigmain, NULL) < 0)
+		return (ft_error("msh_signals: ", NULL, -1));
+	if (sigaction(SIGTTIN, &sigmain, NULL) < 0)
+		return (ft_error("msh_signals: ", NULL, -1));
 	return (0);
 }
 
 // Are signals relevant to non-tty mode?
 int	msh_init(t_memory *mem, t_shell *msh, const char **envp)
 {
+	static t_hst	hst_storage;
+	static t_env	env_storage;
+
+	msh->hst = &hst_storage;
+	msh->env = &env_storage;
 	*msh->hst = (t_hst){FT_HST_SIZE, 0, 0, 0, mem->hst_block, mem->hst_ptr};
 	*msh->env = (t_env){0, FT_ENV_COUNT, mem->meta_block, mem->env_block, mem->env_ptr};
 	if (stt_setup_signals())

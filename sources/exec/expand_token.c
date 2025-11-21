@@ -148,12 +148,16 @@ ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec)
 	t_buf	*dst;
 	t_buf	src;
 	char	buffer[FT_ARG_SIZE];	// Limit for one argument
+	char    *start_ptr;
 
-	src = (t_buf){token->ptr, token->ptr + token->length, token->ptr};
+	src = (t_buf){(char *)token->ptr, (char *)token->ptr + token->length, (char *)token->ptr};
 	if (token->type & E_EXPAND)
 		dst = &(t_buf){buffer, buffer + sizeof(buffer), buffer};
 	else
+	{
 		dst = &vec->buf;
+		start_ptr = dst->wptr;
+	}
 	while (src.wptr < src.end)
 	{
 		src.wptr = stt_find_interval(src, env, dst);
@@ -166,5 +170,6 @@ ssize_t	expand_token(t_token *token, t_env *env, t_vecp *vec)
 	*(dst->wptr++) = 0;
 	if ((token->type & E_EXPAND))
 		return (stt_expand_glob(buffer, vec));
+	vec->ptr[vec->count] = start_ptr;
 	return (1);
 }

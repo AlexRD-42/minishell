@@ -35,13 +35,13 @@ void	signal_handler(int sig);
 // BUILT-INS
 int 	msh_dispatch(t_vecp *argv, t_env *env);
 uint8_t	msh_is_builtin(const char *str);
-int		msh_cd(t_env *env);
+int		msh_cd(t_vecp *argv, t_env *env);
 int		msh_pwd(void);
-int		msh_exit(void);
-int		msh_unset(t_vecp *argv, t_env *env);
-int		msh_env(t_env *env);
+int		msh_exit(int argc, const char **argv, t_env *env);
+int		msh_unset(int argc, const char **argv, t_env *env);
+int		msh_env(int argc, const char **argv, t_env *env);
 int		msh_export(t_vecp *argv, t_env *env);
-int		msh_echo(t_vecp *argv);
+int		msh_echo(int argc, const char **argv, t_env *env);
 
 // ENV
 int		env_replace(const char *new_entry, size_t index, t_env *env);
@@ -59,5 +59,20 @@ size_t	mark_for_deletion(char *ptr, t_env *env);
 // HST
 size_t	hst_add_entry(const char *str, size_t length, t_hst *hst);
 size_t	hst_read(size_t index, char *buffer, const t_hst *hst);
+
+// EXIT
+int		att_exit(int code, int change);
+
+// READ_LINE
+size_t	init_read(char *buffer, t_hst *hst);
+
+// HEREDOCE
+int		heredoc(t_token *token, t_env *env);
+
+// EXECUTE
+int		execute(t_token *tokens, t_env *env);
+int		exec_stu(t_token *tokens, t_env *env);
+ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv);
+int		exec_pipe(t_token *tokens, t_env *env);
 
 #endif

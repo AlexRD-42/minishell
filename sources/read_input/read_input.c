@@ -18,6 +18,10 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <stdbool.h>
+#include "minishell.h"
+#include "msh_utils.h"
+
+extern volatile sig_atomic_t	g_signal;
 
 static int	\
 stt_init_line_editor(t_line_editor *data, char *buffer, t_hst *hst, struct termios raw_mode)
@@ -33,15 +37,15 @@ stt_init_line_editor(t_line_editor *data, char *buffer, t_hst *hst, struct termi
 	data->line.ptr = buffer;
 	data->line.length = 0;
 	data->cursor_pos = 0;
-	data->prompt.ptr = PROMPT;
-	data->prompt.length = ft_strlen(PROMPT);
+	data->prompt.ptr = FT_PROMPT;
+	data->prompt.length = ft_strlen(FT_PROMPT);
 	data->cursor.col = data->prompt.length;
 	data->hist = hst;
 	data->hst_current = hst->count;
 	return (0);
 }
 
-// Return: 1) OK,  0) EOF/singal,  -1) fatal error
+// Return: 1) OK,  0) EOF/signal,  -1) fatal error
 char	read_key(char *c)
 {
 	ssize_t	ret;
@@ -58,7 +62,7 @@ char	read_key(char *c)
 	return (1);
 }
 
-int	read_input(char	*buffer, t_line_editor *data)
+static size_t	stt_read_input(t_line_editor *data)
 {
 	char	c;
 	ssize_t	ret;
@@ -80,9 +84,9 @@ int	read_input(char	*buffer, t_line_editor *data)
 	return (data->line.length);
 }
 
-int	stt_init_read(char *buffer, t_hst *hst)
+size_t	init_read(char *buffer, t_hst *hst)
 {
-	int				rvalue;
+	size_t			rvalue;
 	t_line_editor	data;
 	struct termios	old_mode;
 
@@ -91,7 +95,7 @@ int	stt_init_read(char *buffer, t_hst *hst)
 	rvalue = 0;
 	if (stt_init_line_editor(&data, buffer, hst, old_mode) == 0)
 	{
-		rvalue = read_input(buffer, &data);
+		rvalue = stt_read_input(&data);
 	}
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &old_mode);
 	return (rvalue);

@@ -10,6 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef MSH_UTILS_H
+# define MSH_UTILS_H
+
 #include <stdint.h>
 #include <stddef.h>
 #include <unistd.h>
@@ -37,3 +40,5 @@ int			ft_lmcpy(void *restrict vdst, const void *restrict vsrc, size_t length, ch
 ssize_t		ft_write(int fd, const void *buffer, size_t length);
 ssize_t		ft_error(const char *prefix, const char *suffix, ssize_t rvalue);
 ssize_t		ft_read(int fd, void *buffer, void *end, size_t read_size);
+
+#endif

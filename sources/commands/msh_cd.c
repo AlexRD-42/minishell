@@ -16,26 +16,26 @@
 #include "msh_defines.h"
 #include "msh_utils.h"
 
-// Remember the prefix PWD= (check if needed)
-int	msh_cd(t_vecp *argv, t_env *env)
-{
-	size_t	buffer[(FT_PATH_SIZE * 2) / sizeof(size_t)];
-	char	*ptr;
+// // Remember the prefix PWD= (check if needed)
+// int	msh_cd(t_vecp *argv, t_env *env)
+// {
+// 	size_t	buffer[(FT_PATH_SIZE * 2) / sizeof(size_t)];
+// 	char	*ptr;
 
-	if (argv->count < 2)
-		return (ft_error("", "", 1));
-	if (argv->count > 2)
-		return (ft_error("msh_cd: too many arguments", "", 1));
-	buffer[0] = 17245115378846799;
-	ptr = (char *) buffer;
-	if (getcwd(ptr + 8, (FT_PATH_SIZE * 2)) == NULL)
-		return (ft_error("msh_cd: ", NULL, 1));
-	if (env_export(ptr, env))
-		return (ft_error("msh_cd: out of memory", NULL, 1));
-	chdir(argv->ptr[1]);
-	if (getcwd(ptr + 8, (FT_PATH_SIZE * 2)) == NULL)
-		return (ft_error("msh_cd: ", NULL, 1));
-	if (env_export(ptr + 3, env))
-		return (ft_error("msh_cd: out of memory", NULL, 1));
-	return (0);
-}
+// 	if (argv->count < 2)
+// 		return (ft_error("", "", 1));
+// 	if (argv->count > 2)
+// 		return (ft_error("msh_cd: too many arguments", "", 1));
+// 	buffer[0] = 17245115378846799;
+// 	ptr = (char *) buffer;
+// 	if (getcwd(ptr + 8, (FT_PATH_SIZE * 2)) == NULL)
+// 		return (ft_error("msh_cd: ", NULL, 1));
+// 	if (env_export(ptr, env))
+// 		return (ft_error("msh_cd: out of memory", NULL, 1));
+// 	chdir(argv->ptr[1]);
+// 	if (getcwd(ptr + 8, (FT_PATH_SIZE * 2)) == NULL)
+// 		return (ft_error("msh_cd: ", NULL, 1));
+// 	if (env_export(ptr + 3, env))
+// 		return (ft_error("msh_cd: out of memory", NULL, 1));
+// 	return (0);
+// }

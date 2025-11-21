@@ -17,52 +17,52 @@
 
 #define PROMPT "msh: "
 
-void	non_interactive_shell(t_shell *shell, t_token *tokens)
-{
+// void	non_interactive_shell(t_shell *shell, t_token *tokens)
+// {
 	
-}
+// }
 
-void	print_prompt(void)
-{
-	write(1, PROMPT, ft_strlen(PROMPT));
-}
+// void	print_prompt(void)
+// {
+// 	write(1, PROMPT, ft_strlen(PROMPT));
+// }
 
-void	interactive_shell(t_shell *shell)
-{
-	char	line[FT_PAGE_SIZE];
-	ssize_t	n;
+// void	interactive_shell(t_shell *shell)
+// {
+// 	char	line[FT_PAGE_SIZE];
+// 	ssize_t	n;
 
-	setup_signals();
-	while (1)
-	{
-		print_prompt();
-		n = read_input(shell->history, &line, sizeof(line));
-		if (n == -1)
-		{
-			write(STDOUT_FILENO, "exit\n", 5);
-			break ;
-		}
-		if (!line[0])
-			continue ;
-		hst_add_entry(line, n, &shell->history);
-		if (tokenize(&shell, line) == -1)
-			continue ;
-		execute(shell);
-	}
-}
+// 	setup_signals();
+// 	while (1)
+// 	{
+// 		print_prompt();
+// 		n = read_input(shell->history, &line, sizeof(line));
+// 		if (n == -1)
+// 		{
+// 			write(STDOUT_FILENO, "exit\n", 5);
+// 			break ;
+// 		}
+// 		if (!line[0])
+// 			continue ;
+// 		hst_add_entry(line, n, &shell->history);
+// 		if (tokenize(&shell, line) == -1)
+// 			continue ;
+// 		execute(shell);
+// 	}
+// }
 
-int	main(int argc, char **argv, char **envp)
-{
-	t_shell	shell;
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	t_shell	shell;
 
-	(void)argc;
-	(void)argc;
-	ft_memset(&shell, 0, sizeof(shell));
-	env_init(&shell.env, envp);
-	//shlvl();
-	if (isatty(STDIN_FILENO))
-		interactive_shell(&shell);
-	else
-		non_interactive_shell(&shell, NULL);
-	exit(0);
-}
+// 	(void)argc;
+// 	(void)argc;
+// 	ft_memset(&shell, 0, sizeof(shell));
+// 	env_init(&shell.env, envp);
+// 	//shlvl();
+// 	if (isatty(STDIN_FILENO))
+// 		interactive_shell(&shell);
+// 	else
+// 		non_interactive_shell(&shell, NULL);
+// 	exit(0);
+// }

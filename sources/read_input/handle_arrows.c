@@ -12,6 +12,8 @@
 
 #include <unistd.h>
 #include "read_input.h"
+#include "msh_utils.h"
+#include "minishell.h"
 
 int	move_cursor_left(t_line_editor *data)
 {
@@ -53,7 +55,7 @@ int	move_cursor_right(t_line_editor *data)
 	return (0);
 }
 
-int	stt_history_prev(t_line_editor *data)
+static int	stt_history_prev(t_line_editor *data)
 {
 	t_hst	*hist;
 	char	temp[FT_LINE_MAX];
@@ -79,7 +81,7 @@ int	stt_history_prev(t_line_editor *data)
 	return (0);
 }
 
-int	stt_history_next(t_line_editor *data)
+static int	stt_history_next(t_line_editor *data)
 {
 	t_hst	*hist;
 	char	temp[FT_LINE_MAX];
@@ -93,13 +95,7 @@ int	stt_history_next(t_line_editor *data)
 	write(STDOUT_FILENO, data->prompt.ptr, data->prompt.length);
 	data->hst_current++;
 	if (data->hst_current >= hist->count)
-	{
-		data->line.length = 0;
-		data->line.ptr[0] = '\0';
-		data->cursor_pos = 0;
-		data->cursor.col = data->prompt.length;
-		return (0);
-	}
+		return (reset_line(data), 0);
 	len = hst_read(data->hst_current, temp, hist);
 	if (len == SIZE_MAX)
 		return (0);

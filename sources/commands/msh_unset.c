@@ -14,24 +14,24 @@
 #include <unistd.h>
 #include "minishell.h"
 
-// 0  All name operands were successfully unset
-// >0 At least one name could not be unset
-int	msh_unset(int argc, const char **argv, t_env *env)
-{
-	int		rvalue;
-	size_t	i;
+// // 0  All name operands were successfully unset
+// // >0 At least one name could not be unset
+// int	msh_unset(int argc, const char **argv, t_env *env)
+// {
+// 	int		rvalue;
+// 	size_t	i;
 
-	if (argc < 2)
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		return (1);	// Lack of arguments
-	}
-	rvalue = 0;
-	i = 1;
-	while (argv[i] != NULL)
-	{
-		rvalue += (env_del(env, argv[i]) != 0);
-		i++;
-	}
-	return (rvalue);
-}
+// 	if (argc < 2)
+// 	{
+// 		write(STDOUT_FILENO, "\n", 1);
+// 		return (1);	// Lack of arguments
+// 	}
+// 	rvalue = 0;
+// 	i = 1;
+// 	while (argv[i] != NULL)
+// 	{
+// 		rvalue += (env_del(env, argv[i]) != 0);
+// 		i++;
+// 	}
+// 	return (rvalue);
+// }

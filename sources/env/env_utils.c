@@ -120,7 +120,7 @@ int	env_add_shlvl(t_env *env)
 	level = ft_atoi(env_entry + 6) + 1;
 	if (level <= 0 || level >= 1000)
 		level = 1;
-	ptr = ft_itoa_stack(level, buffer);
+	ptr = ft_itoa_stack(level, buffer + 63); //needs to pass a pointer to the end of buffer
 	ptr -= 6;
 	ft_memcpy(ptr, "SHLVL=", 6);
 	return (env_replace(ptr, index, env));

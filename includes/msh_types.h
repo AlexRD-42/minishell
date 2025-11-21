@@ -98,7 +98,6 @@ typedef struct s_token
 
 typedef struct s_shell
 {
-	char	*input;
 	t_env	*env;
 	t_hst	*hst;
 	void	*shell_src;

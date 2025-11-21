@@ -21,7 +21,7 @@ t_token	*stt_findstu_sep(t_token *tokens)
 
 	in_paren = 0;
 	current = tokens;
-	while (current->type != (E_END))
+	while (!(current->type & (E_END)))
 	{
 		if (current->type & (E_OPEN_PAREN))
 			in_paren++;
@@ -38,22 +38,22 @@ t_token	*stt_findstu_sep(t_token *tokens)
 	return (current);
 }
 
-static const
-char	*stt_has_quote(const char *str, size_t length)
-{
-	const char	*end = str + length;
+// static const
+// char	*stt_has_quote(const char *str, size_t length)
+// {
+// 	const char	*end = str + length;
 
-	while (str < end && *str != 0)
-	{
-		if (*str == '\'' || *str == '"')
-			return (str);
-		str++;
-	}
-	return (NULL);
-}
+// 	while (str < end && *str != 0)
+// 	{
+// 		if (*str == '\'' || *str == '"')
+// 			return (str);
+// 		str++;
+// 	}
+// 	return (NULL);
+// }
 
 static
-int	stt_expand_asterisk(char *str, size_t length)
+int	stt_expand_asterisk(const char *str, size_t length)
 {
 	const char	*end = str + length;
 	char		quote;
@@ -74,57 +74,83 @@ int	stt_expand_asterisk(char *str, size_t length)
 	return (0);
 }
 
-static void	stt_set_fds(t_token *tokens)
+static void	stt_set_fds(t_token *tokens, t_env *env)
 {
 	t_token	*current;
 
 	current = tokens;
-	while (current->type != (E_END))
+	(void)env;
+	while (!(current->type & (E_END)))
 	{
-		if (current->type & (E_HRDOC))
-		{
-			(current + 1)->type = E_LIMITER;
-			if (!stt_has_quote((current + 1)->ptr, (current + 1)->length))
-				(current + 1)->type |= E_EXPAND;
-			current->fd[0] = heredoc(current + 1);
-		}
-		else if (current->type & (E_REDIR))
+		// if (current->type & (E_HRDOC))
+		// {
+		// 	(current + 1)->type = E_LIMITER;
+		// 	if (!stt_has_quote((current + 1)->ptr, (current + 1)->length))
+		// 		(current + 1)->type |= E_EXPAND;
+		// 	current->fd[0] = heredoc(current + 1, env);
+		// }
+		if (current->type & (E_REDIR))
 		{
 			current->fd[0] = -1;
 			current->fd[1] = -1;
-			(current + 1)->type = E_FILE | current->type;
+			(current + 1)->type = (E_FILE | current->type);
 		}
 		else if (current->type & (E_WORD | E_FILE))
 		{
 			if (stt_expand_asterisk(current->ptr, current->length))
 				current->type |= E_EXPAND;
 		}
+		current += 1 + (current->type & E_REDIR);
+	}
+}
+
+static void	stt_remove_expand_from_cmd_name(t_token *tokens)
+{
+	t_token	*current;
+	int	reset;
+
+	reset = 1;
+	current = tokens;
+	while (!(current->type & (E_END)))
+	{
+		if (reset)
+		{
+			if (current->type & E_WORD)
+			{
+				current->type &= ~E_EXPAND;
+				reset = 0;
+			}
+		}
+		if (current->type & (E_OPERATOR | E_OPEN_PAREN))
+			reset = 1;
 		current++;
 	}
 }
 
 // Weird returns
-int	execute(t_shell *shell, t_token *tokens)
+int	execute(t_token *tokens, t_env *env)
 {
 	t_token	*current;
-	int		return_value;
+	int		rvalue;
 
 	if (tokens[0].type & (E_END))
-		return ;
-	stt_set_fds(tokens);
+		return (0);
+	stt_set_fds(tokens, env);
+	stt_remove_expand_from_cmd_name(tokens);
 	current = stt_findstu_sep(tokens);
-	return_value = exec_stu(tokens);
+	rvalue = exec_stu(tokens, env);
 	if (current->type & E_END)
-		return (return_value);
+		return (att_exit(rvalue, true));
 	while (current->type & (E_AND | E_OR))
 	{
 		stt_findstu_sep(current + 1);
-		if ((current->type & E_OR) && return_value)
-			return_value = exec_stu(current + 1);
-		else if ((current->type & E_AND) && !return_value)
-			return_value = exec_stu(current + 1);
-		while (current->type != E_STU_END)
+		if ((current->type & E_OR) && rvalue)
+			rvalue = exec_stu(current + 1, env);
+		else if ((current->type & E_AND) && !rvalue)
+			rvalue = exec_stu(current + 1, env);
+		while (!((++current)->type & E_STU_END))
 			current++;
+		att_exit(rvalue, true);
 	}
-	return (return_value);
+	return (rvalue);
 }

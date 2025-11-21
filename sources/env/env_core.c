@@ -45,6 +45,7 @@ static
 size_t	stt_find_space(char *metadata, size_t max_count, size_t lower, size_t *out)
 {
 	size_t	i;
+	size_t	start;
 	size_t	blocks_free;
 	size_t	upper;
 
@@ -55,15 +56,17 @@ size_t	stt_find_space(char *metadata, size_t max_count, size_t lower, size_t *ou
 		i = 0;
 		while (i < max_count)
 		{
+			start = i;
 			blocks_free = 0;
 			while (i < max_count && metadata[i] == 0 && blocks_free++ < upper)
 				i++;
 			if (blocks_free >= upper)
 			{
 				*out = upper;
-				return (i - blocks_free);
+				return (start);
 			}
-			i++;
+			if (i < max_count && metadata[i] != 0)
+				i++;
 		}
 		upper >>= 1;
 	}

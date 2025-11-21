@@ -11,25 +11,25 @@
 /* ************************************************************************** */
 
 #include <signal.h>
-#define FT_SIGWINCH 1
-#define FT_SIGINT 2
+// #define FT_SIGWINCH 1
+// #define FT_SIGINT 2
 
 
-void	stt_handle_sigint(int sig)
-{
-	(void)sig;
-	g_signal = FT_SIGINT;
-}
+// void	stt_handle_sigint(int sig)
+// {
+// 	(void)sig;
+// 	g_signal = FT_SIGINT;
+// }
 
-void	stt_handle_sigwinch(int sig)
-{
-	(void)sig;
-	g_signal = FT_SIGWINCH;
-}
+// void	stt_handle_sigwinch(int sig)
+// {
+// 	(void)sig;
+// 	g_signal = FT_SIGWINCH;
+// }
 
-void	setup_signals(void)
-{
-	signal(SIGINT, stt_handle_sigint);
-	signal(SIGQUIT, SIG_IGN);
-	signal(SIGWINCH, stt_handle_sigwinch);
-}
+// void	setup_signals(void)
+// {
+// 	signal(SIGINT, stt_handle_sigint);
+// 	signal(SIGQUIT, SIG_IGN);
+// 	signal(SIGWINCH, stt_handle_sigwinch);
+// }

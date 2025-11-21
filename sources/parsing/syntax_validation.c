@@ -45,7 +45,7 @@ int	syntax_validation(t_token *tokens)
 	if (tokens[0].type & (E_OPERATOR | E_CLOSE_PAREN))
 		return (-1);	// Print error first token bad
 	pardepth = (tokens[0].type == E_OPEN_PAREN);
-	while (tokens[1].type != E_END)
+	while (!(tokens[1].type & (E_END)))
 	{
 		if (stt_syntax_check(tokens[1].type, tokens[0].type, &pardepth))
 			return (-1);	// Print error at token ptr

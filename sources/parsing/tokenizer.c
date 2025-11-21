@@ -12,6 +12,7 @@
 
 #include "minishell.h"
 #include "msh_utils.h"
+#include <stdio.h>
 
 static const
 char	*stt_token_quote_handler(t_token *token, const char *end, char quote)
@@ -131,9 +132,9 @@ size_t	tokenize(t_token *tokens, const char *input)
 			return (SIZE_MAX);
 		}
 		input = stt_get_next_token(tokens + count, input);
-		if (tokens[count].type == E_END)
+		if (tokens[count].type & (E_END))
 			break ;
-		if (tokens[count].type == E_ERROR)			// ?
+		if (tokens[count].type & (E_ERROR))			// ?
 			return (SIZE_MAX);
 		count++;
 	}

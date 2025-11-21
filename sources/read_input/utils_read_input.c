@@ -16,6 +16,8 @@
 #include <unistd.h>
 #include <signal.h>
 
+extern volatile sig_atomic_t	g_signal;
+
 int	get_window_size(t_pos *coords)
 {
 	struct winsize	ws;
@@ -29,15 +31,20 @@ int	get_window_size(t_pos *coords)
 	return (0);
 }
 
-int	rd_handle_sigint(t_line_editor *data)
+void	reset_line(t_line_editor *data)
 {
-	write(STDOUT_FILENO, "^C\n", 3);
 	data->line.ptr[0] = '\0';
 	data->line.length = 0;
 	data->cursor_pos = 0;
 	data->cursor.col = data->prompt.length;
 	data->cursor.row = 0;
 	data->hst_current = data->hist->count;
+}
+
+int	rd_handle_sigint(t_line_editor *data)
+{
+	write(STDOUT_FILENO, "^C\n", 3);
+	reset_line(data);
 	g_signal = 0;
 	return (0);
 }

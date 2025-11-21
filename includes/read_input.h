@@ -13,14 +13,12 @@
 #ifndef READ_INPUT_H
 # define READ_INPUT_H
 
-# include <termios.h>
 # include "msh_types.h"
+# include "msh_defines.h"
 
-# ifndef FT_LINE_MAX
-#  define FT_LINE_MAX 4096
+# ifndef FT_PROMPT
+#  define FT_PROMPT "msh: "
 # endif
-
-# define PROMPT "msh: "
 
 typedef struct s_pos
 {
@@ -33,24 +31,23 @@ typedef struct s_line_editor
 	t_str	line;
 	t_kstr	prompt;
 	t_pos	screen;
-	t_pos	cursor;
+	int		input_lines;
 	size_t	cursor_pos;
+	t_pos	cursor;
 	size_t	hst_current;
+	t_hst	*hist;
 }	t_line_editor;
 
-	// int		last_display_lines;
-	// int		prompt_start_y;
-	// int		prompt_start_x;
-void	signal_handler(int sig);
-int		setup_signals(void);
-
 char	read_key(char *c);
-int		rd_handle_sigint(t_line_editor *data);
-int		get_window_size(t_pos *screen);
-int		process_key(t_line_editor *data, char c, t_hst *hst);
-int		handle_arrows(t_line_editor *data, t_hst *hst);
-void	redraw_line(t_line_editor *data);
+int		process_key(t_line_editor *data, char c);
 int		move_cursor_left(t_line_editor *data);
 int		move_cursor_right(t_line_editor *data);
-void	rep_cmd(size_t count, const char cmd);
+int		handle_arrows(t_line_editor *data);
+void	redraw_line(t_line_editor *data);
+void	cursor_end(t_line_editor *data);
+void	cursor_home(t_line_editor *data);
+int		get_window_size(t_pos *coords);
+int		rd_handle_sigint(t_line_editor *data);
+void	reset_line(t_line_editor *data);
+
 #endif

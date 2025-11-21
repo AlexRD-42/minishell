@@ -17,7 +17,7 @@
 #include <minishell.h>
 
 // 
-int	msh_exit(int argc, const char **argv, t_env *env)
-{
+// int	msh_exit(int argc, const char **argv, t_env *env)
+// {
 	
-}
+// }

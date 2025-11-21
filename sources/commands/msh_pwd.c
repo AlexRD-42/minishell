@@ -15,22 +15,22 @@
 #include <stdio.h>
 #include "minishell.h"
 
-/* pwd - prints the name of current/working directory
-uses getcwd to determine the current path
-Using getcwd might introduce mallocs to the code */
-int	msh_pwd(void)
-{
-	char	buffer[FT_PATH_SIZE];
-	size_t	length;
+// /* pwd - prints the name of current/working directory
+// uses getcwd to determine the current path
+// Using getcwd might introduce mallocs to the code */
+// int	msh_pwd(void)
+// {
+// 	char	buffer[FT_PATH_SIZE];
+// 	size_t	length;
 
-	if (getcwd(buffer, FT_PATH_SIZE) == NULL)
-	{
-		perror("cwd");
-		return (1);
-	}
-	length = ft_strlen(buffer);
-	buffer[length] = '\n';
-	if (ft_write(STDOUT_FILENO, buffer, length + 1) < 0)
-		return (1);
-	return (0);
-}
+// 	if (getcwd(buffer, FT_PATH_SIZE) == NULL)
+// 	{
+// 		perror("cwd");
+// 		return (1);
+// 	}
+// 	length = ft_strlen(buffer);
+// 	buffer[length] = '\n';
+// 	if (ft_write(STDOUT_FILENO, buffer, length + 1) < 0)
+// 		return (1);
+// 	return (0);
+// }

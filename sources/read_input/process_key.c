@@ -13,7 +13,7 @@
 #include "read_input.h"
 #include <unistd.h>
 
-int	stt_finalize_line(t_line_editor *data)
+static int	stt_finalize_line(t_line_editor *data)
 {
 	cursor_end(data);
 	data->line.ptr[data->line.length] = '\0';
@@ -21,7 +21,7 @@ int	stt_finalize_line(t_line_editor *data)
 	return (1);
 }
 
-int	stt_handle_printable_char(t_line_editor *data, char c)
+static int	stt_handle_printable_char(t_line_editor *data, char c)
 {
 	size_t	i;
 
@@ -42,7 +42,7 @@ int	stt_handle_printable_char(t_line_editor *data, char c)
 	return (0);
 }
 
-int	stt_handle_backspace(t_line_editor *data)
+static int	stt_handle_backspace(t_line_editor *data)
 {
 	size_t	i;
 
@@ -73,7 +73,7 @@ int	process_key(t_line_editor *data, char c)
 		return (handle_arrows(data));
 	if (c == 4 && data->line.length == 0)
 	{
-		data->line.length = -1;
+		data->line.length = SIZE_MAX;
 		return (-1);
 	}
 	return (0);

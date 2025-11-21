@@ -1,26 +1,24 @@
 # Configuration ------------------------------- #
-NAME = main
+NAME = minishell
 BUILD_PATH = build
 INC_PATH = includes
 OBJ_PATH = $(BUILD_PATH)/obj
 BIN = $(BUILD_PATH)/$(NAME)
-VPATH = sources sources/utils sources/env sources/commands sources/core sources/exec sources/history \
-sources/read_input sources/history
+
+# Automatically find all source directories
+SRC_DIRS = $(shell find sources -type d)
+VPATH = $(SRC_DIRS)
 
 # Files --------------------------------------- #
 LIBS =
-SRCS = mem_read.c mem_write.c str_read.c str_write.c str_cmp.c io_utils.c syscalls.c \
-test2.c
-# main.c history.c cursor.c handle_arrows.c process_key.c interrupts.c
-# exec.c heredoc.c main.c pipe.c
-# msh_cd.c msh_dispatch.c msh_echo.c msh_env.c msh_exit.c msh_export.c msh_pwd.c msh_unset.c
-
+# Automatically find all .c files in sources directory
+SRCS = $(notdir $(shell find sources -name "*.c"))
 OBJS = $(addprefix $(OBJ_PATH)/, $(SRCS:.c=.o))
 
 # Flags --------------------------------------- #
 CC = clang
 CFLAGS = -Wall -Wextra $(addprefix -I,$(INC_PATH)) -flto -fstrict-aliasing
-LFLAGS =
+LFLAGS = -lreadline
 DEBUG = -g -Wpedantic -Wcast-qual -Wfloat-equal -Wswitch-default -Wduplicated-branches -Wduplicated-cond -Wsign-conversion
 SANITIZERS = -fsanitize=address,undefined,leak -fno-omit-frame-pointer
 FAST = -march=native -O3 -ffast-math

@@ -18,20 +18,20 @@
 // V lower V upper (length)
 // variable=value
 // Check without =
-int	mshx_export(const char *entry, t_env *env)
-{
-	size_t	length;
-	size_t	index;
-	bool	append;
+// int	mshx_export(const char *entry, t_env *env)
+// {
+	// size_t	length;
+	// size_t	index;
+	// bool	append;
 
-	length = 0;
-	while (entry[length] != 0 && entry[length] != '=')
-		length++;
-	append = (length > 1) && (entry[length] == '=')	&& entry[length - 1] == '+';
-	env_find(entry, length - append, &index, env);
-	length += (entry[length] == '=');
-	return (env_add((t_kstr){entry, length}, index, append, env));
-}
+	// length = 0;
+	// while (entry[length] != 0 && entry[length] != '=')
+	// 	length++;
+	// append = (length > 1) && (entry[length] == '=')	&& entry[length - 1] == '+';
+	// env_find(entry, length - append, &index, env);
+	// length += (entry[length] == '=');
+	// return (env_add((t_kstr){entry, length}, index, append, env));
+//}
 
 // // TO DO: Add append and argless prints in
 // int	msh_export(int argc, const char **argv, t_env *env)

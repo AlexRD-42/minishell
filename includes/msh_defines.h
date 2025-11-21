@@ -79,6 +79,11 @@
 # define FT_SYSCALL_RETRIES 16
 # define FT_BLOCK_SIZE 64
 
+// For read_input
+# ifndef FT_LINE_MAX
+#  define FT_LINE_MAX 4096
+# endif
+
 enum e_type
 {
 	E_UNSET = 0u,	// remove

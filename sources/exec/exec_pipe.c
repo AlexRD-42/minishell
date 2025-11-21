@@ -100,10 +100,10 @@ int	exec_pipe(t_token *tokens, t_env *env)
 
 	argv = (t_vecp){{buffer, buffer + sizeof(buffer), buffer}, 0, FT_ARG_COUNT, arg_ptr};
 	if (msh_build_argv(tokens, env, &argv) < 0)
-		return (-1);	// To do: Check if we still attempt a run on dir problems
+		_exit(1);	// To do: Check if we still attempt a run on dir problems
 	if (argv.ptr[0] == NULL || argv.count == 0)
-		return (-1);
-	msh_dispatch(&argv, env);	// Never returns on success
+		_exit(1); // FELIPE: 103 e 105 were "return (-1)" but were creating zombie child
+	//msh_dispatch(&argv, env);	// Never returns on success
 	cmd = argv.ptr[0];
 	length = 0;
 	while (cmd[length] != 0 && cmd[length] != '/')
