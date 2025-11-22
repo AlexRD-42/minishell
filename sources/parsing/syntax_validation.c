@@ -42,22 +42,22 @@ int	stt_syntax_check(uint32_t cur_type, uint32_t prev_type, int *pdepth)
 // Marcar os fds
 // Marcar simple command
 
-int	syntax_validation(t_token *tokens)
+size_t	syntax_validation(t_token *tokens)
 {
 	int	pdepth;
 
 	if (tokens[0].type & (E_OPERATOR | E_CLOSE_PAREN))
-		return (-1);	// Print error first token bad
+		return (SIZE_MAX);	// Print error first token bad
 	pdepth = (tokens[0].type == E_OPEN_PAREN);
 	while (!(tokens[1].type & (E_END)))
 	{
 		if (stt_syntax_check(tokens[1].type, tokens[0].type, &pdepth))
-			return (-1);	// Print error at token ptr
+			return (SIZE_MAX);	// Print error at token ptr
 		tokens++;
 	}
 	if (tokens[0].type & (E_OPERATOR | E_REDIR | E_OPEN_PAREN))
-		return (-1);	// Print error 
+		return (SIZE_MAX);	// Print error 
 	if (pdepth > 0)
-		return (-1);	// Unclosed (
+		return (SIZE_MAX);	// Unclosed (
 	return (0);
 }

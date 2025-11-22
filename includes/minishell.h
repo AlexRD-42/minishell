@@ -20,8 +20,10 @@
 
 # include "msh_types.h"
 
+// PARSING
+size_t	parsing(t_token *tokens, char *input, t_env *env);
 size_t	tokenize(t_token *tokens, const char *input);
-int		syntax_validation(t_token *tokens);
+size_t	syntax_validation(t_token *tokens);
 
 ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec);
 int		parse_interval(t_buf src, t_env *env, t_buf *dst);

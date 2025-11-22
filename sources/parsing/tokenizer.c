@@ -140,7 +140,5 @@ size_t	tokenize(t_token *tokens, const char *input)
 			return (SIZE_MAX);
 		count++;
 	}
-	if (count != 0 && syntax_validation(tokens) == -1)	// Why count != 0?
-		return (SIZE_MAX);
 	return (count);
 }
