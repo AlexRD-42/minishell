@@ -17,6 +17,7 @@
 # include <stddef.h>
 # include <stdbool.h>
 # include <unistd.h>
+# include <wait.h>
 
 # include "msh_types.h"
 
