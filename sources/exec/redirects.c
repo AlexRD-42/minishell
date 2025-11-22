@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/22 14:21:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 19:35:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,23 +61,43 @@ int32_t	stt_open_file(t_token *token, t_env *env)
 	return (-1);
 }
 
-int	msh_apply_redir(t_token *token, t_env *env)
+// Returns: 1) STDIN REDIRECTED 2) STDOUT REDIRECTED 4) Error
+static
+int	stt_apply_redir(t_token *token, t_env *env)
 {
-	int	rvalue;
-	int	fd;
+	const int	target = !!(token->type & (E_REDIR_OUT | E_APPND));
+	int			fd;
 
 	if (token->type & E_HRDOC)
 		fd = token->fd[0];
 	else
 		fd = stt_open_file(token, env);
 	if (fd < 0)
-		return (-1);							// TODO: Meaningful returns
-	if (token->type & (E_REDIR_IN | E_HRDOC))
-		rvalue = dup2(fd, STDIN_FILENO);
-	else
-		rvalue = dup2(fd, STDOUT_FILENO);
+		return (4);	// TODO: Meaningful returns
+	if (dup2(fd, target) < 0)
+		return (ft_error("msh_dup2: ", NULL, 4));	// What happens on dup errors? do we continue?
 	close(fd);
-	if (rvalue == -1)
-		return (ft_error("msh_dup2: ", NULL, -2));	// What happens on dup errors? do we continue?
-	return (0);
+	return (target + 1);
+}
+
+// Returns: 0) None 1) STDIN REDIRECTED 2) STDOUT REDIRECTED 3) Both 4) Error
+int	msh_open_files(t_token *tokens, t_token *end, t_env *env)
+{
+	ssize_t		pdepth;
+	uint32_t	type;
+	int			rvalue;
+
+	pdepth = 0;
+	rvalue = 0;
+	while (tokens < end && !(tokens->type & E_END) && rvalue != 4)
+	{
+		type = tokens->type;
+		pdepth += !!(type & E_OPEN_PAREN) - !!(type & E_CLOSE_PAREN);
+		if (pdepth == 0 && (type & E_REDIR))
+			rvalue |= stt_apply_redir(tokens, env);
+		if (pdepth < 0)
+			return (ft_error("Houston we have a problem", "", -1));
+		tokens++;
+	}
+	return (rvalue);
 }

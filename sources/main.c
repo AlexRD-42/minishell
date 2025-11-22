@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 12:25:47 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 21:42:38 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 21:18:59 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <signal.h>
 #include <termios.h>
 #include "minishell.h"
+#include "msh_defines.h"
 #include "msh_types.h"
 #include "msh_utils.h"
 
@@ -66,10 +67,10 @@ int	stt_tty_mode(t_env *env, t_hst *hst)
 		hst_add_entry(line, len, hst);
 		if (tokenize(tokens, line) == SIZE_MAX)
 		{
-			att_exit(2, true); //exit_status for syntax error: 2
-			continue ;
+			// att_exit(2, true); //exit_status for syntax error: 2
+			// continue ;
 		}
-		rvalue = exec_line(tokens, env);
+		rvalue = exec_line(tokens, tokens + FT_TOKEN_COUNT, env);
 	}
 	return (rvalue); // When passing false, only returns current exit_status
 }

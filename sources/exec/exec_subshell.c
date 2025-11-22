@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 15:41:55 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/22 16:12:47 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 21:08:05 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,33 +14,24 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "minishell.h"
+#include "msh_defines.h"
 
-static
-t_token	*stt_get_end(t_token *tokens)
+// Always exits upon return
+int	exec_subshell(t_token *start, t_env *env)
 {
+	t_token		*end;
 	size_t		pdepth;
 	uint32_t	type;
 
-	type = tokens->type;
+	start += !!(start->type & E_OPEN_PAREN);	// Could just do start++
+	end = start;
+	type = end->type;
 	pdepth = 1 - !!(type & E_CLOSE_PAREN);
 	while (pdepth != 0)		// Dangerous if pre-validation is wrong but good for debugging
 	{
-		tokens++;
-		type = tokens->type;
+		end++;
+		type = end->type;
 		pdepth += !!(type & E_OPEN_PAREN) - !!(type & E_CLOSE_PAREN);
 	}
-	return (tokens);
-}
-
-// Always exits upon return
-int	exec_subshell(t_token *start, t_token *end, t_env *env)
-{
-	// t_token	*start;
-	// t_token	*end;
-	int		rvalue;
-
-	start = tokens + 1;
-	end = stt_get_end(start);
-	rvalue = exec_stu(start, end, env);
-	_exit(rvalue);
+	_exit (exec_line(start, end - 1, env));	// Double check the math here
 }

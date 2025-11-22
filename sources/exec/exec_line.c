@@ -6,11 +6,12 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/21 21:40:18 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 21:20:06 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_types.h"
 #include "msh_utils.h"
 
 static
@@ -53,7 +54,7 @@ int	exec_line(t_token *start, t_token *end, t_env *env)
 	next = stt_next_stu(current, end);
 	while (next != NULL)
 	{
-		status = exec_stu(current, next, env);
+		status = exec_stu(&(t_token_range){current, current, current, end}, env);
 		if ((next->type & E_AND) && status != 0)
 			return (status);
 		if ((next->type & E_OR) && status == 0)
@@ -61,5 +62,5 @@ int	exec_line(t_token *start, t_token *end, t_env *env)
 		current = next + 1;
 		next = stt_next_stu(current, end);
 	}
-	return (exec_stu(current, end, env));
+	return (exec_stu(&(t_token_range){current, current, current, end}, env));
 }
