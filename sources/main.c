@@ -65,7 +65,7 @@ int	stt_tty_mode(t_env *env, t_hst *hst)
 		if (len == 0) // Empty string "" , do not add to history
 			continue;
 		hst_add_entry(line, len, hst);
-		if (tokenize(tokens, line) == SIZE_MAX)
+		if (parsing(tokens, line, env) == SIZE_MAX)
 		{
 			// att_exit(2, true); //exit_status for syntax error: 2
 			// continue ;
