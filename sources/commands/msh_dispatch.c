@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/03 10:29:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/22 12:04:00 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 22:42:26 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ uint8_t	stt_end(const char c)
 	return (c == 0 || c == ' ' || (c >= 9 && c <= 13));
 }
 
-// Does not return on success
 int msh_dispatch(t_vecp *argv, t_env *env)
 {
 	const char *str = argv->ptr[0];

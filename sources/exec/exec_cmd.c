@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_pipe.c                                        :+:      :+:    :+:   */
+/*   exec_cmd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/22 16:11:23 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 22:48:06 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,9 @@ int	exec_cmd(t_token *tokens, t_env *env)
 		_exit(1);	// To do: Check if we still attempt a run on dir problems
 	if (argv.ptr[0] == NULL || argv.count == 0)
 		_exit(1); // FELIPE: 103 e 105 were "return (-1)" but were creating zombie child
-	//msh_dispatch(&argv, env);	// Never returns on success
+	length = (size_t) msh_dispatch(&argv, env);	// Never returns on success
+	if ((int) length != 127)
+		_exit((int) length);	// To do: do this in a non retarded way
 	cmd = argv.ptr[0];
 	length = 0;
 	while (cmd[length] != 0 && cmd[length] != '/')
