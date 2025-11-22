@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 15:45:06 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 16:11:23 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv)
 }
 
 // Path only matters if its not a built-in or if it has absolute path!
-int	exec_pipe(t_token *tokens, t_env *env)
+int	exec_cmd(t_token *tokens, t_env *env)
 {
 	char		*arg_ptr[FT_ARG_COUNT];
 	static char	buffer[FT_ARG_MAX];	

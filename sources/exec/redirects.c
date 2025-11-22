@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 22:28:06 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 14:21:16 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "minishell.h"
+#include "msh_defines.h"
 #include "msh_utils.h"
 #include "msh_types.h"
 
@@ -61,28 +63,21 @@ int32_t	stt_open_file(t_token *token, t_env *env)
 
 int	msh_apply_redir(t_token *token, t_env *env)
 {
+	int	rvalue;
 	int	fd;
-	int	target_fd;
 
 	if (token->type & E_HRDOC)
-	{
 		fd = token->fd[0];
-		if (fd < 0)
-			return (-1);
-		target_fd = STDIN_FILENO;
-	}
 	else
-	{
 		fd = stt_open_file(token, env);
-		if (fd < 0)
-			return (-1);
-		if (token->type & (E_REDIR_IN))
-			target_fd = STDIN_FILENO;
-		else
-			target_fd = STDOUT_FILENO;
-	}
-	if (dup2(fd, target_fd) < 0)
-		return (ft_error("msh_dup2: ", NULL, -1));
+	if (fd < 0)
+		return (-1);							// TODO: Meaningful returns
+	if (token->type & (E_REDIR_IN | E_HRDOC))
+		rvalue = dup2(fd, STDIN_FILENO);
+	else
+		rvalue = dup2(fd, STDOUT_FILENO);
 	close(fd);
+	if (rvalue == -1)
+		return (ft_error("msh_dup2: ", NULL, -2));	// What happens on dup errors? do we continue?
 	return (0);
 }

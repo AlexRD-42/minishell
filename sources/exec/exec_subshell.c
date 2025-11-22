@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 15:41:55 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 22:59:51 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 16:12:47 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,12 @@ t_token	*stt_get_end(t_token *tokens)
 }
 
 // Always exits upon return
-void	exec_subshell(t_token *tokens, t_env *env)
+int	exec_subshell(t_token *start, t_token *end, t_env *env)
 {
-	t_token	*start;
-	t_token	*end;
+	// t_token	*start;
+	// t_token	*end;
 	int		rvalue;
 
-	// increments shlvl
 	start = tokens + 1;
 	end = stt_get_end(start);
 	rvalue = exec_stu(start, end, env);

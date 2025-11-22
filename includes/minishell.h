@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 22:28:17 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 17:32:03 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	signal_handler(int sig);
 
 // BUILT-INS
 int 	msh_dispatch(t_vecp *argv, t_env *env);
-bool	msh_mutates_state(const char *str);
+bool	msh_mutates_state(t_token *start, t_token *end);
 int		msh_cd(t_vecp *argv, t_env *env);
 int		msh_pwd(void);
 int		msh_exit(t_vecp *argv, t_env *env);
@@ -62,8 +62,9 @@ size_t	init_read(char *buffer, t_hst *hst);
 
 // EXECUTE
 int		exec_line(t_token *start, t_token *end, t_env *env);
-int		exec_stu(t_token *start, t_token *end, t_env *env);
-int		exec_pipe(t_token *tokens, t_env *env);
+int		exec_stu(t_token_range *token, t_env *env);
+int		exec_cmd(t_token *tokens, t_env *env);
+int		exec_subshell(t_token *start, t_token *end, t_env *env);
 int		msh_apply_redir(t_token *token, t_env *env);
 ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv);
 

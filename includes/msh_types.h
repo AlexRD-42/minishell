@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 20:31:00 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 17:16:21 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,5 +85,13 @@ typedef struct s_token
 	uint32_t	type;
 	uint32_t	length;
 }	t_token;
+
+typedef struct s_token_range
+{
+	t_token	*start;
+	t_token	*current;
+	t_token	*next;
+	t_token	*end;
+}	t_token_range;
 
 #endif

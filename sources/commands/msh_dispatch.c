@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/03 10:29:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 15:13:20 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 12:04:00 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,14 @@ int msh_dispatch(t_vecp *argv, t_env *env)
 	return (127);
 }
 
-bool msh_mutates_state(const char *str)
+bool	msh_mutates_state(t_token *start, t_token *end)
 {
-	bool	rvalue;
+	const char	*str;
+	bool		rvalue;
 
+	while (start < end && !(start->type & E_WORD))
+		start++;
+	str = start->ptr;
 	rvalue = (str[0] == 'e' && 
 		((str[1] == 'x' && str[2] == 'i' && str[3] == 't' && stt_end(str[4]))
 		|| (str[1] == 'x' && str[2] == 'p' && str[3] == 'o' && str[4] == 'r' && str[5] == 't' && stt_end(str[6]))))

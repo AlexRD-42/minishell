@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 10:14:41 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 21:44:53 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/22 15:45:28 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	stt_child(t_token *current, t_token *end, t_env *env, int fds[3])
 	// 	prepare_subshell(current);
 	// 	_exit(non_interactive_shell(current + 1, env));
 	// }
-	exec_pipe(current, env);
+	exec_cmd(current, env);
 }
 
 static
