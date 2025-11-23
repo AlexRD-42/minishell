@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 15:24:01 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 12:57:33 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 01:25:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,7 @@ static
 size_t	stt_find_space(char *metadata, size_t max_count, size_t lower, size_t *out)
 {
 	size_t	i;
-	size_t	start;		// Remember
-	size_t	blocks_free;
+	size_t	block_index;
 	size_t	upper;
 
 	upper = 4 * lower;
@@ -56,17 +55,15 @@ size_t	stt_find_space(char *metadata, size_t max_count, size_t lower, size_t *ou
 		i = 0;
 		while (i < max_count)
 		{
-			start = i;
-			blocks_free = 0;
-			while (i < max_count && metadata[i] == 0 && blocks_free++ < upper)
+			block_index = i + upper;	// use ft_max
+			while (i < max_count && metadata[i] == 0 && i < block_index)
 				i++;
-			if (blocks_free >= upper)
+			if (i == block_index)
 			{
 				*out = upper;
-				return (start);
+				return (block_index - upper);
 			}
-			if (i < max_count && metadata[i] != 0)
-				i++;
+			i++;
 		}
 		upper >>= 1;
 	}
