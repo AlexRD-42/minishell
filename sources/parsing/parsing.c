@@ -11,8 +11,9 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdint.h>
 
-static int	stt_expan(t_token token, int heredoc)
+static uint32_t	stt_expan(t_token token, int heredoc)
 {
 	const char	*end = token.ptr + token.length;
 	char		quote;

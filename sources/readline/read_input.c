@@ -75,8 +75,11 @@ size_t	stt_read_input(t_line_editor *data)
 		if (ret == -1 && errno != EINTR)
 			return (SIZE_MAX);
 		if (g_signal == SIGWINCH)
+		{
 			if (get_window_size(&data->screen) == -1)
 				return (SIZE_MAX);
+			continue ;
+		}
 		if (g_signal == SIGINT)
 			return (rd_handle_sigint(data));
 		if (process_key(data, c) != 0)

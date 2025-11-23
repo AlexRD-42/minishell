@@ -70,7 +70,8 @@ int	stt_tty_mode(t_env *env, t_hst *hst)
 			// att_exit(2, true); //exit_status for syntax error: 2
 			// continue ;
 		}
-		rvalue = exec_line(tokens, tokens + FT_TOKEN_COUNT, env);
+		if (tokens[0].type != E_END)
+			rvalue = exec_line(tokens, tokens + FT_TOKEN_COUNT, env);
 	}
 	return (rvalue); // When passing false, only returns current exit_status
 }
