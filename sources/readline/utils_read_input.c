@@ -22,7 +22,7 @@ int	get_window_size(t_pos *coords)
 {
 	struct winsize	ws;
 
-	if (g_signal == SIGWINCH)
+	if (g_signal == SIGWINCH || g_signal == SIGQUIT)
 		g_signal = 0;
 	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0)
 		return (perror("msh: ioctl"), -1);

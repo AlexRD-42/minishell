@@ -73,6 +73,7 @@ int	process_key(t_line_editor *data, char c)
 		return (handle_arrows(data));
 	if (c == 4 && data->line.length == 0)
 	{
+		write(STDOUT_FILENO, "\n", 1);
 		data->line.length = SIZE_MAX;
 		return (-1);
 	}
