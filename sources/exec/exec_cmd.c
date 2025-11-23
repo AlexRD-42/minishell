@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/22 22:48:06 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 12:50:36 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@
 static const
 char	*stt_find_path(char **envp)
 {
-	static const char	empty_path[2] = ":";
-	char				*ptr;
+	static const char	default_path[32] = "/usr/local/bin:/usr/bin:/bin";
+	char				*ptr;	// Review: Do we have a default path if path is unset?
 
 	if (envp == NULL)
-		return (empty_path);
+		return (default_path);
 	ptr = *envp;
 	while (ptr != NULL)
 	{
@@ -39,7 +39,7 @@ char	*stt_find_path(char **envp)
 			return (ptr + 5);
 		ptr = *(++envp);
 	}
-	return (empty_path);
+	return (default_path);
 }
 
 // Attemps to execute the command through the different paths offered
@@ -72,47 +72,28 @@ int	stt_search_path(t_vecp *argv, t_env *env, size_t cmd_size)
 	return (127);
 }
 
-// To do: Check if expand_token null terminates the argument (it should)
-ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv)
-{
-	while ((token->type & E_CMD_END) == 0 && argv->count < argv->max_count - 1)
-	{
-		if (token->type & E_WORD)
-		{
-			if (expand_token(*token, env, argv) < 0)
-				return (-1);
-		}
-		token++;
-	}
-	argv->ptr[argv->count] = NULL;
-	return ((ssize_t) argv->count);
-}
-
 // Path only matters if its not a built-in or if it has absolute path!
 int	exec_cmd(t_token *tokens, t_env *env)
 {
-	char		*arg_ptr[FT_ARG_COUNT];
-	static char	buffer[FT_ARG_MAX];	
-	t_vecp		argv;
-	char		*cmd;
-	size_t		length;
+	t_vecp	argv;
+	char	*cmd;
+	char	*arg_ptr[FT_ARG_COUNT];
+	char	buf[FT_ARG_MAX];			// Kernel FT_ARG_MAX is 2 MB
+	int		rvalue;
 
-	argv = (t_vecp){{buffer, buffer + sizeof(buffer), buffer}, 0, FT_ARG_COUNT, arg_ptr};
-	if (msh_build_argv(tokens, env, &argv) < 0)
-		_exit(1);	// To do: Check if we still attempt a run on dir problems
-	if (argv.ptr[0] == NULL || argv.count == 0)
+	argv = (t_vecp){{buf, buf + sizeof(buf), buf}, 0, FT_ARG_COUNT, arg_ptr};
+	if (msh_build_argv(tokens, env, &argv) <= 0 || !argv.ptr[0])
 		_exit(1); // FELIPE: 103 e 105 were "return (-1)" but were creating zombie child
-	length = (size_t) msh_dispatch(&argv, env);	// Never returns on success
-	if ((int) length != 127)
-		_exit((int) length);	// To do: do this in a non retarded way
+	rvalue = msh_dispatch(&argv, env);
+	if (rvalue != 127)
+		_exit(rvalue);
 	cmd = argv.ptr[0];
-	length = 0;
-	while (cmd[length] != 0 && cmd[length] != '/')
-		length++;
-	if (cmd[length] == '/' && execve(cmd, argv.ptr, env->ptr))
+	while (*cmd != 0 && *cmd != '/')
+		cmd++;
+	if (*cmd == '/' && execve(argv.ptr[0], argv.ptr, env->ptr))
 		if (errno != ENOENT && errno != ENOTDIR)
 			_exit(126);
-	if (length < FT_PATH_SIZE && cmd[length] != '/')
-		_exit(stt_search_path(&argv, env, length + 1));
+	if ((cmd - argv.ptr[0]) < FT_PATH_SIZE && *cmd != '/')
+		_exit(stt_search_path(&argv, env, (size_t)(cmd - argv.ptr[0] + 1)));
 	_exit(127);
 }

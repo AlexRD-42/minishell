@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 20:30:37 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 13:32:57 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,14 @@ int	stt_heredoc(t_buf eof, t_env *env, int32_t fd[2])
 int	heredoc(t_token *token, t_env *env)
 {
 	char	eof[FT_NAME_MAX];
-	t_buf	eof_buf;
+	char	*ptr[1];
 	int32_t	fd[2];
+	t_buf	eof_buf;
 
 	if (pipe(fd) == -1)
 		ft_error("msh_pipe: ", NULL, -1);
 	eof_buf = (t_buf){eof, eof + sizeof(eof), eof};
-	if (expand_token(*token, env, &(t_vecp){eof_buf, 0, 1, NULL}))
+	if (expand_token(*token, env, &(t_vecp){eof_buf, 0, 1, ptr}))
 		return (-1);
 	return (stt_heredoc(eof_buf, env, fd));
 }

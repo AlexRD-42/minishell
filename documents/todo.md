@@ -4,12 +4,16 @@ Wildcard matching considers asterisks within quotes if one asterisk was valid wi
 Ex: abc*"t*"d 		-> abc*t*d
 when it should be	-> abc*t\*d
 
+# Create a safe close and dup
 
 # Implement an FD LIMIT
  to avoid having to deal with FD MAX
 
 # (Extra):
 - Change HST to use ptrs and vecp
+
+# (Extra):
+- Env using bitmap
 
 # (Extra): buffered putstr with newline
 

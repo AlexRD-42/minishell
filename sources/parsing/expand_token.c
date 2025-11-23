@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 15:29:47 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 13:19:43 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,11 +137,6 @@ char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst)
 	return (src.wptr + (src.wptr < src.end && quoted));
 }
 
-/* This function expands a token, and globs the result if indicated by the token
-The count variable serves as both a way of knowing if ptr is out of bounds, and
-as a way of throwing errors for ambiguous redirects when expanding file names;
-Saves the final results to arg, and uses a temporary arg_tmp buffer to store
-the pattern if necessary*/
 // Return: >=0) OK, -1) OOM (P), -2) dir function problems (P), -4) exceeded count;
 ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 {
@@ -170,3 +165,8 @@ ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 	vec->ptr[vec->count++] = (char *) address;
 	return (1);
 }
+/* This function expands a token, and globs the result if indicated by the token
+The count variable serves as both a way of knowing if ptr is out of bounds, and
+as a way of throwing errors for ambiguous redirects when expanding file names;
+Saves the final results to arg, and uses a temporary arg_tmp buffer to store
+the pattern if necessary*/

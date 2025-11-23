@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 10:04:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 12:07:08 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 14:02:34 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,23 @@ int	stt_setup_signals(void)
 		return (ft_error("msh_signals: ", NULL, -1));
 	if (sigaction(SIGQUIT, &sigmain, NULL) < 0)
 		return (ft_error("msh_signals: ", NULL, -1));
-	if (sigaction(SIGTTOU, &sigmain, NULL) < 0)
+	if (sigaction(SIGTTOU, &sigmain, NULL) < 0)			// Review: Why do we need these?
 		return (ft_error("msh_signals: ", NULL, -1));
-	if (sigaction(SIGTTIN, &sigmain, NULL) < 0)
+	if (sigaction(SIGTTIN, &sigmain, NULL) < 0)			// Review: Why do we need these?
 		return (ft_error("msh_signals: ", NULL, -1));
 	return (0);
+}
+
+static
+void	*stt_signal_dfl(void)
+{
+	static struct sigaction	sigmain;
+
+	ft_memset(&sigmain, 0, sizeof(sigmain));
+	sigemptyset(&sigmain.sa_mask);
+	sigmain.sa_flags = 0;
+	sigmain.sa_handler = SIG_DFL;
+	return (&sigmain);
 }
 
 // Are signals relevant to non-tty mode?
@@ -69,6 +81,7 @@ int	msh_init(t_env *env, t_hst *hst, const char **envp)
 	ft_memset(hst, 0, sizeof(t_hst));
 	hst->free = FT_HST_SIZE;
 	env->max_count = FT_ENV_COUNT;
+	env->sig_dfl = stt_signal_dfl();
 	if (stt_setup_signals())
 		return (-1);
 	if (stt_env_copy(env, envp) == SIZE_MAX)

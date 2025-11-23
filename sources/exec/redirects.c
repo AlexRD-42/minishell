@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/22 19:35:38 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 13:17:14 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int32_t	stt_open_file(t_token *token, t_env *env)
 	return (-1);
 }
 
-// Returns: 1) STDIN REDIRECTED 2) STDOUT REDIRECTED 4) Error
+// Returns: -1 Error (P), 1) STDIN REDIRECTED 2) STDOUT REDIRECTED
 static
 int	stt_apply_redir(t_token *token, t_env *env)
 {
@@ -73,14 +73,17 @@ int	stt_apply_redir(t_token *token, t_env *env)
 	else
 		fd = stt_open_file(token, env);
 	if (fd < 0)
-		return (4);	// TODO: Meaningful returns
+		return (-1);
 	if (dup2(fd, target) < 0)
-		return (ft_error("msh_dup2: ", NULL, 4));	// What happens on dup errors? do we continue?
+	{
+		close(fd);									// Review: Do we close fd here? The assumption of the caller is that as the pipeline gets executed, the fds get closed
+		return (ft_error("msh_dup2: ", NULL, -1));	// Review: Stop execution on dup errors?
+	}
 	close(fd);
 	return (target + 1);
 }
 
-// Returns: 0) None 1) STDIN REDIRECTED 2) STDOUT REDIRECTED 3) Both 4) Error
+// Returns: -1) Error (P), 1) STDIN REDIRECTED 2) STDOUT REDIRECTED 3) Both
 int	msh_open_files(t_token *tokens, t_token *end, t_env *env)
 {
 	ssize_t		pdepth;
@@ -89,14 +92,14 @@ int	msh_open_files(t_token *tokens, t_token *end, t_env *env)
 
 	pdepth = 0;
 	rvalue = 0;
-	while (tokens < end && !(tokens->type & E_END) && rvalue != 4)
+	while (tokens < end && !(tokens->type & E_END) && rvalue != -1)
 	{
 		type = tokens->type;
 		pdepth += !!(type & E_OPEN_PAREN) - !!(type & E_CLOSE_PAREN);
 		if (pdepth == 0 && (type & E_REDIR))
 			rvalue |= stt_apply_redir(tokens, env);
 		if (pdepth < 0)
-			return (ft_error("Houston we have a problem", "", -1));
+			return (ft_error("msh_unexpected: Negative parenthesis depth", "", -1));
 		tokens++;
 	}
 	return (rvalue);

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/22 21:15:18 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 14:01:40 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,29 +43,50 @@ t_token	*stt_next_pipe(t_token *tokens, t_token *end)
 	return (NULL);
 }
 
+// static const struct sigaction
+// sa = {.sa_handler = SIG_DFL, .sa_mask = {0},.sa_flags = 0};
 static
-pid_t	stt_fork(int32_t *fd, pid_t process_id, t_token_range *token, t_env *env)
+pid_t	stt_child(int32_t *fd, bool not_subshell, t_token_range *token, t_env *env)
 {
-	int			rvalue;
-	const bool	not_subshell = !(token->current->type & E_OPEN_PAREN);
-	const bool	is_child = (process_id == 0);
+	int	rvalue;
+
+	sigaction(SIGINT, env->sig_dfl, NULL);
+	sigaction(SIGQUIT, env->sig_dfl, NULL);
+	sigaction(SIGWINCH, env->sig_dfl, NULL);
+	sigaction(SIGTTOU, env->sig_dfl, NULL);
+	sigaction(SIGTTIN, env->sig_dfl, NULL);
+	rvalue = 0;
+	if (token->next != NULL)
+	{
+		close(fd[0]);
+		rvalue = dup2(fd[1], STDOUT_FILENO);
+		close(fd[1]);
+		if (rvalue == -1)
+			return (ft_error("msh_dup2: ", NULL, -1));
+	}
+	msh_open_files(token->current, token->next, env);
+	if (not_subshell)
+		return (exec_cmd(token->current, env));
+	else
+		return (exec_subshell(token->current, env));
+}
+
+// When it is a pipeline, parent dups its STDIN to childs STDOUT
+static
+pid_t	stt_parent(int32_t *fd, pid_t process_id, t_token_range *token)
+{
+	int	rvalue;
 
 	rvalue = 0;
 	if (token->next != NULL)
 	{
-		close(fd[!is_child]);
-		rvalue = dup2(fd[is_child], is_child);
-		close(fd[is_child]);
+		close(fd[1]);
+		rvalue = dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+		if (rvalue == -1)
+			return (ft_error("msh_dup2: ", NULL, -1));
 	}
-	if (rvalue == -1)
-		return (ft_error("msh_dup2: ", NULL, -1));
-	if (is_child == 0)
-		return (process_id);
-	msh_open_files(token->current, token->next, env);
-	if (not_subshell)
-		_exit (exec_cmd(token->current, env));
-	else
-		_exit (exec_subshell(token->current, env));
+	return (process_id);
 }
 
 pid_t	exec_pipe(t_token_range *token, t_env *env)
@@ -82,8 +103,10 @@ pid_t	exec_pipe(t_token_range *token, t_env *env)
 	if (token->next != NULL && pipe(fd) == -1)
 		return (ft_error("msh_pipe: ", NULL, -1));
 	process_id = fork();
-	if (process_id >= 0)
-		return (stt_fork(fd, process_id, token, env));
+	if (process_id == 0)
+		_exit (stt_child(fd, not_subshell, token, env));
+	if (process_id > 0)
+		return (stt_parent(fd, process_id, token));
 	if (token->next != NULL)
 	{
 		close(fd[1]);

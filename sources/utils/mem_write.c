@@ -6,13 +6,14 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:35:52 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/16 11:20:43 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 13:27:07 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 #include <unistd.h>
+#include "msh_utils.h"
 
 static
 void	*stt_memrcpy(void *vdst, const void *vsrc, size_t length)
@@ -98,10 +99,7 @@ int	ft_lmcpy\
 
 	dst = vdst;
 	if ((uintptr_t)(dst + length) > (uintptr_t) end)
-	{
-		write(2, "msh_memcpy: Out of memory\n", 26);
-		return (-1);
-	}
+		return (ft_error("msh_memory: Out of memory (memcpy)", "", -1));
 	while (length > 0)
 	{
 		*dst++ = *src++;

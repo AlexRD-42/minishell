@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/22 21:23:52 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/23 11:46:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,6 @@
 #  define FT_NAME_MAX 256
 # endif
 
-// 2 MB, each child will get their own
-// It might be good for it to belong in the stack and not static
-// So that children that inherit this memory don't cling to it once it goes out of scope?
 // Bytes (1 byte) (Kernel = 2 MB)
 # ifndef FT_ARG_MAX
 #  define FT_ARG_MAX 2097152
@@ -54,7 +51,7 @@
 # endif
 
 // --- Persistent Storage ---------
-// Struct (16 bytes)
+// Struct (16 bytes) (MSH = 64 KB)
 # ifndef FT_TOKEN_COUNT
 #  define FT_TOKEN_COUNT 4096
 # endif
@@ -82,7 +79,7 @@
 # define FT_SYSCALL_RETRIES 16
 # define FT_BLOCK_SIZE 64		// Block count needs to map to env count
 
-// For read_input
+// Bytes (1 byte)
 # ifndef FT_LINE_MAX
 #  define FT_LINE_MAX 4096
 # endif
