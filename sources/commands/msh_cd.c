@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 20:25:19 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:00:49 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,5 @@ int	msh_cd(t_vecp *argv, t_env *env)
 		return (ft_error("msh_getcwd: ", NULL, 1));
 	if (env_export(buffer + 3, env))
 		return (ft_error("msh_export: out of memory", "", 1));
+	return (0);
 }

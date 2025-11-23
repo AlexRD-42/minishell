@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 12:25:47 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 19:00:46 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:02:54 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ int	stt_tty_mode(t_env *env, t_hst *hst)
 	size_t	len;
 	int		rvalue;
 
+	rvalue = env->exit_status;
 	while (1)
 	{
 		len = init_read(line, hst); // Read char by char in non canonical mode
