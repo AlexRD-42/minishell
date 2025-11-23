@@ -6,12 +6,10 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 12:50:36 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 16:17:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
-#include <linux/limits.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <unistd.h>

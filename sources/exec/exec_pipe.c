@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 14:01:40 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 16:30:23 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,29 +19,8 @@
 #include <unistd.h>
 #include <wait.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include "msh_utils.h"
 #include <stdlib.h>
-
-static
-t_token	*stt_next_pipe(t_token *tokens, t_token *end)
-{
-	ssize_t		pdepth;
-	uint32_t	type;
-
-	pdepth = 0;
-	while (tokens < end && !(tokens->type & E_END))
-	{
-		type = tokens->type;
-		pdepth += !!(type & E_OPEN_PAREN) - !!(type & E_CLOSE_PAREN);
-		if (pdepth == 0 && (type & E_PIPE))
-			return (tokens);
-		if (pdepth < 0)
-			ft_error("Houston we have a problem", "", -1);
-		tokens++;
-	}
-	return (NULL);
-}
 
 // static const struct sigaction
 // sa = {.sa_handler = SIG_DFL, .sa_mask = {0},.sa_flags = 0};
@@ -96,7 +75,7 @@ pid_t	exec_pipe(t_token_range *token, t_env *env)
 	pid_t		process_id;
 
 	process_id = 0;
-	token->next = stt_next_pipe(token->current, token->end);
+	token->next = msh_next_delimiter(token->current, token->end, E_PIPE);
 	if (not_subshell && token->current == token->start && token->next == NULL
 			&& exec_simple(token->start, token->end, env) == 1)
 		return (0);	// Was executed in the parent

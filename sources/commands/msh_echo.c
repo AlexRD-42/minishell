@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 11:28:41 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 14:39:29 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,22 +20,19 @@
 /* Echo prints out the arguments to stdout, with a space separating them
 followed by a newline (-n suppresses the newline)
 To do: Error handling */
-
 static
-int	stt_print_args(size_t count, uint8_t no_nl, char **argv)
+int	stt_print_args(bool no_nl, char **argv)
 {
-	size_t		i;
-	const char	*str;
-
-	i = 1 + no_nl;
-	while (i < count - 1)
+	if (argv[0] != NULL)
 	{
-		str = argv[i];
-		ft_write(STDOUT_FILENO, str, ft_strlen(str));
-		ft_write(STDOUT_FILENO, " ", 1);
-		i++;
+		while (argv[1] != NULL)
+		{
+			ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0]));
+			ft_write(STDOUT_FILENO, " ", 1);
+			argv++;
+		}
+		ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0]));
 	}
-	ft_write(STDOUT_FILENO, str, ft_strlen(str));
 	if (no_nl == 0)
 		ft_write(STDOUT_FILENO, "\n", 1);
 	return (0);
@@ -43,7 +40,7 @@ int	stt_print_args(size_t count, uint8_t no_nl, char **argv)
 
 int	msh_echo(t_vecp *argv)
 {
-	uint8_t		no_nl;
+	bool		no_nl;
 	const char	*str;
 
 	if (argv->count < 2)
@@ -55,6 +52,6 @@ int	msh_echo(t_vecp *argv)
 	no_nl = (str[0] == '-') && (str[1] == 'n') && (str[2] == 0);
 	if (argv->count == 2 && no_nl == 1)
 		return (0);
-	stt_print_args(argv->count, no_nl, argv->ptr);
+	stt_print_args(no_nl, argv->ptr + no_nl + 1);
 	return (0);
 }
