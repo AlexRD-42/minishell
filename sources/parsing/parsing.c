@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: feazeved <feazeved@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 15:31:23 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/22 15:31:32 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/23 23:06:28 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ static void	stt_prepare_tokens(t_token *tokens)
 		{
 			tokens[0].fd[0] = -1;
 			tokens[0].fd[1] = -1;
-			tokens[1].type = E_FILE | tokens[0].type | stt_expan(tokens[1], 0);
-		}
+			tokens[1].type = tokens[0].type | stt_expan(tokens[1], 0);	// Review: | E_FILE eh derivado, nao pode ser atribuido. O nome tem que ser LIMITER
+		}	// Exemplo: cat > out = WORD REDIR_OUT LIMITER
 		else if (tokens[0].type & (E_WORD))
 		{
 			if (!cmd && stt_expan(tokens[0], 0))

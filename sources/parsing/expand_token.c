@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 20:24:32 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:50:13 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,8 +137,6 @@ char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst)
 	return (src.wptr + (src.wptr < src.end && quoted));
 }
 
-// sources/parsing/expand_token.c:148:37: runtime error: 
-// applying non-zero offset to non-null pointer 0xffffffffffffffff produced null pointer
 // Return: >=0) OK, -1) OOM (P), -2) dir function problems (P), -4) exceeded count;
 ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 {

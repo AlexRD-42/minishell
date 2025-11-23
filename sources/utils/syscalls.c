@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 11:59:05 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 14:01:08 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:51:32 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ ssize_t	ft_error(const char *prefix, const char *suffix, ssize_t rvalue)
 	ft_memcpy(buffer + prefix_length, suffix, error_length);
 	total_length = prefix_length + error_length;
 	buffer[total_length++] = '\n';
-	ft_write(STDERR_FILENO, buffer, total_length);
+	write(STDERR_FILENO, buffer, total_length);
 	return (rvalue);
 }
 

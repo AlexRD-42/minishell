@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:43 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 19:53:45 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:42:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	env_replace(const char *new_entry, size_t index, t_env *env)
 		wptr = allocate_blocks(env, total_size);
 		if (wptr == NULL)
 			return (ft_error("msh_export: out of memory", "", -1));
-		mark_for_deletion(old_entry, env);
+		mark_for_deletion(old_entry, env);	// Review: Call before allocate blocks
 		ft_memcpy(wptr, new_entry, total_size);
 		env->ptr[index] = wptr;
 	}

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 22:08:48 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:46:43 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,11 @@ int	stt_heredoc(t_buf eof, t_env *env, int32_t fd[2])
 	t_buf	src;
 	size_t	length;
 
-	src = (t_buf){buffer, buffer + sizeof(buffer), buffer};
 	dst = (t_buf){aux_buffer, aux_buffer + sizeof(aux_buffer), aux_buffer};
 	length = stt_read_eof(eof.optr, buffer);
 	if (length == SIZE_MAX)
 		return (-1);
+	src = (t_buf){buffer, buffer + length, buffer};
 	if (parse_interval(src, env, &dst))
 		return (-1);
 	*dst.wptr++ = 0;	// Check
@@ -95,7 +95,7 @@ int	heredoc(t_token *token, t_env *env)
 	if (pipe(fd) == -1)
 		ft_error("msh_pipe: ", NULL, -1);
 	eof_buf = (t_buf){eof, eof + sizeof(eof), eof};
-	if (expand_token(*token, env, &(t_vecp){eof_buf, 0, 1, ptr}))
+	if (expand_token(*token, env, &(t_vecp){eof_buf, 0, 1, ptr}))	// Review: Check conditional expand
 		return (-1);
 	return (stt_heredoc(eof_buf, env, fd));
 }

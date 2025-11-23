@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 12:16:14 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:57:58 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,6 @@ size_t	env_del(const char *entry, t_env *env)
 		index++;
 	}
 	env->count--;
+	env->ptr[env->count] = NULL;	// I think this might be useless
 	return (blocks_freed);
 }

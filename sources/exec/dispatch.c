@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/03 10:29:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 12:53:11 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:23:28 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ bool	msh_mutates_state(t_token *start, t_token *end)
 
 	while (start < end && !(start->type & (E_WORD | E_PIPE)))
 		start++;
+	if (start >= end || !(start->type & E_WORD))
+		return (false);
 	str = start->ptr;
 	rvalue = (str[0] == 'e' && 
 		((str[1] == 'x' && str[2] == 'i' && str[3] == 't' && stt_end(str[4]))

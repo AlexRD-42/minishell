@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 12:15:52 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 19:01:17 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:47:42 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 #include "msh_types.h"
 #include "msh_utils.h"
 
+// Review :
+// Track whether waitpid actually succeeded for the last child and only inspect status in that case. 
+// On error, you probably want to set env->exit_status to some error value explicitly.
 void	msh_wait_child(pid_t *cpid_list, size_t count, t_env *env)
 {
 	size_t	i;

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 21:12:29 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 23:02:04 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int	msh_open_files(t_token *tokens, t_token *end, t_env *env)
 	{
 		type = tokens->type;
 		pdepth += !!(type & E_OPAREN) - !!(type & E_CPAREN);
-		if (pdepth == 0 && (type & E_REDIR))
+		if (pdepth == 0 && (type & E_REDIR))	// Review: Why are 
 			rvalue |= stt_apply_redir(tokens, env);
 		if (pdepth < 0)
 			return (ft_error("msh_unexpected: Negative parenthesis depth", "", -1));
