@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 17:53:49 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 21:12:29 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,25 +19,22 @@
 #include "msh_defines.h"
 #include "msh_utils.h"
 #include "msh_types.h"
+#include <stdio.h>
 
 // Return: >=0: Ok, -1) Open failure (P)
 static
 int32_t	stt_parse_fd(const uint32_t type, const char *str)
 {
 	int		fd;
-	int32_t	flags;
 
-	flags = O_RDONLY;
-	if ((type & E_REDIR_IN) == 0)
-	{
-		if (type & E_APPND)
-			flags = O_WRONLY | O_CREAT | O_APPEND;
-		else if (type & E_REDIR_OUT)
-			flags = O_WRONLY | O_CREAT | O_TRUNC;
-		fd = open(str, flags, 0644);
-	}
-	else
-		fd = open(str, flags);
+	fd = -1;
+	// printf("\n\n<%s, %d>\n\n", str, type);	// Review: Algo quebrou redirects
+	if (type & E_REDIR_IN)
+		fd = open(str, O_RDONLY);
+	else if (type & E_APPND)
+		fd = open(str, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else if (type & E_REDIR_OUT)
+		fd = open(str, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 		return (ft_error("msh_open: ", NULL, -1));
 	return (fd);

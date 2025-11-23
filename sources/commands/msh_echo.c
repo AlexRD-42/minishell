@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 14:39:29 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 19:14:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,18 @@ int	stt_print_args(bool no_nl, char **argv)
 	{
 		while (argv[1] != NULL)
 		{
-			ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0]));
-			ft_write(STDOUT_FILENO, " ", 1);
+			if (ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0])))
+				return (1);
+			if (ft_write(STDOUT_FILENO, " ", 1))
+				return (1);
 			argv++;
 		}
-		ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0]));
+		if (ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0])))
+			return (1);
 	}
 	if (no_nl == 0)
-		ft_write(STDOUT_FILENO, "\n", 1);
+		if (ft_write(STDOUT_FILENO, "\n", 1))
+			return (1);
 	return (0);
 }
 
@@ -52,6 +56,5 @@ int	msh_echo(t_vecp *argv)
 	no_nl = (str[0] == '-') && (str[1] == 'n') && (str[2] == 0);
 	if (argv->count == 2 && no_nl == 1)
 		return (0);
-	stt_print_args(no_nl, argv->ptr + no_nl + 1);
-	return (0);
+	return (stt_print_args(no_nl, argv->ptr + no_nl + 1));
 }

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 11:25:05 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 19:07:42 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,7 @@ int	msh_pwd(void)
 	size_t	length;
 
 	if (getcwd(buffer, FT_PATH_SIZE) == NULL)
-	{
-		perror("cwd");
-		return (1);
-	}
+		return (ft_error("msh_cwd: ", NULL, 1));
 	length = ft_strlen(buffer);
 	buffer[length] = '\n';
 	if (ft_write(STDOUT_FILENO, buffer, length + 1) < 0)

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/23 18:58:39 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 20:53:58 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int stt_exec_simple(t_token *start, t_token *end, t_env *env)
 	argv = (t_vecp){{buf, buf + sizeof(buf), buf}, 0, FT_ARG_COUNT, arg_ptr};
 	if (msh_build_argv(start, env, &argv) <= 0 || !argv.ptr[0])
 		return (1);
+	msh_open_files(start, end, env);
 	rvalue = msh_dispatch(&argv, env);	// Review: Do we care about the rvalue here?
 	if ((dup2(prev_fd[0], STDIN_FILENO) < 0) + (dup2(prev_fd[1], STDOUT_FILENO) < 0))
 		ft_error("msh_dup2: ", NULL, -1);	// Restores fds
@@ -53,7 +54,7 @@ int	exec_stu(t_token *start, t_token *end, t_env *env)
 	if (next == end && !(start->type & E_OPAREN) && msh_mutates_state(start, end))
 		stt_exec_simple(start, end, env);
 	else
-		exec_pipeline(start, next, end, env);
+		exec_pipeline(start, next, end, env);	// Review: return codes here
 	if ((dup2(original_stdin, STDIN_FILENO) < 0))
 		ft_error("msh_dup2: ", NULL, -1);
 	close(original_stdin);
@@ -64,21 +65,25 @@ int	exec_line(t_token *start, t_token *end, t_env *env)
 {
 	t_token	*next;
 	t_token	*current;
+	bool	should_run;
 
 	if (start == end)
 		return (0);
 	current = start;
+	should_run = 1;
 	while (current < end)
 	{
 		next = msh_next_delimiter(current, end, E_AND | E_OR);
-		env->exit_status = exec_stu(current, next, env);
+		if (should_run)
+			env->exit_status = exec_stu(current, next, env);
 		if (next == end)
 			break ;
-		if ((next->type & E_AND) && env->exit_status != 0)
-			return (env->exit_status);
-		if ((next->type & E_OR) && env->exit_status == 0)
-			return (env->exit_status);
+		if ((next->type & E_AND))
+			should_run = env->exit_status == 0;
+		else if ((next->type & E_OR))
+			should_run = env->exit_status != 0;
 		current = next + 1;
 	}
 	return (env->exit_status);
 }
+

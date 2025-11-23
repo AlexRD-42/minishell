@@ -6,18 +6,15 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 21:18:21 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/21 12:17:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 20:10:43 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <signal.h>
 #include "minishell.h"
 #include "msh_utils.h"
-
-extern volatile sig_atomic_t g_signal;
 
 // If length is 0, it will be calculated
 char	*env_find(const char *entry, size_t length, size_t *index, t_env *env)
@@ -47,7 +44,7 @@ char	*env_find(const char *entry, size_t length, size_t *index, t_env *env)
 
 // Handles solo $ and ?
 static
-char	*stt_expand_type(t_buf src, t_buf *dst)
+char	*stt_expand_type(t_buf src, t_buf *dst, int32_t exit_status)
 {
 	char		*ptr;
 	char		buffer[32];
@@ -56,7 +53,7 @@ char	*stt_expand_type(t_buf src, t_buf *dst)
 	src.wptr += src.wptr < src.end && *src.wptr == '$';
 	if (src.wptr < src.end && *src.wptr == '?')
 	{
-		ptr = ft_itoa_stack(g_signal, buffer + sizeof(buffer) - 1);
+		ptr = ft_itoa_stack(exit_status, buffer + sizeof(buffer) - 1);
 		length = ft_strlen(ptr);
 		if (ft_lmcpy(dst->wptr, ptr, length, dst->end))
 			return (NULL);
@@ -83,7 +80,7 @@ char	*env_expand(t_buf src, t_buf *dst, t_env *env)
 	const char	*ptr;
 
 	ptr = dst->wptr;
-	src.wptr = stt_expand_type(src, dst);
+	src.wptr = stt_expand_type(src, dst, env->exit_status);
 	if (src.wptr == NULL || ptr != dst->wptr)
 		return (src.wptr);
 	ptr = src.wptr;
