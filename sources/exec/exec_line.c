@@ -6,41 +6,58 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/23 16:43:05 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 18:58:39 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "msh_defines.h"
 #include "msh_types.h"
 #include "msh_utils.h"
 
-// Receives {start, start, start, end}
-int	exec_stu(t_token_range *token, t_env *env)
+// Returns 1 if a command was executed
+// Review: exit status
+static
+int stt_exec_simple(t_token *start, t_token *end, t_env *env)
+{
+	const int32_t	prev_fd[2] = {dup(STDIN_FILENO), dup(STDOUT_FILENO)};
+	t_vecp  		argv;
+	char			*arg_ptr[FT_ARG_COUNT];
+	char			buf[FT_ARG_MAX];			// Kernel FT_ARG_MAX is 2 MB
+	int	 			rvalue;
+
+	if (prev_fd[0] < 0 || prev_fd[1] < 0)
+		return (ft_error("msh_dup: ", NULL, -1));	// Failed to save the state
+	argv = (t_vecp){{buf, buf + sizeof(buf), buf}, 0, FT_ARG_COUNT, arg_ptr};
+	if (msh_build_argv(start, env, &argv) <= 0 || !argv.ptr[0])
+		return (1);
+	rvalue = msh_dispatch(&argv, env);	// Review: Do we care about the rvalue here?
+	if ((dup2(prev_fd[0], STDIN_FILENO) < 0) + (dup2(prev_fd[1], STDOUT_FILENO) < 0))
+		ft_error("msh_dup2: ", NULL, -1);	// Restores fds
+	close(prev_fd[0]);	// Do we throw error messages for close?
+	close(prev_fd[1]);
+	return (1);	
+}
+
+// Receives {start, end, env}
+int	exec_stu(t_token *start, t_token *end, t_env *env)
 {
 	const int32_t	original_stdin = dup(STDIN_FILENO);
-	size_t			count;
-	pid_t			cpid_list[FT_MAX_CHILDREN];	// No overflow because it is prevalidated
-	pid_t			process_id;
+	t_token			*next;
 
-	if (token->start == token->end)
+	if (start == end)
 		return (0);
 	if (original_stdin < 0)
-		return (ft_error("msh_dup: ", NULL, -1));	// Failed to save the state
-	count = 0;
-	while (token->current < token->end)
-	{
-		process_id = exec_pipe(token, env);
-		if (process_id > 0)	// Does not save ID of parent executions
-			cpid_list[count++] = process_id;
-		if (token->next == NULL)
-			break ;
-		token->current = token->next + 1;
-	}
-	msh_wait_child(cpid_list, count, env);
+		return (ft_error("msh_dup: ", NULL, 1));	// Failed to save the state
+	next = msh_next_delimiter(start, end, E_PIPE);
+	if (next == end && !(start->type & E_OPAREN) && msh_mutates_state(start, end))
+		stt_exec_simple(start, end, env);
+	else
+		exec_pipeline(start, next, end, env);
 	if ((dup2(original_stdin, STDIN_FILENO) < 0))
 		ft_error("msh_dup2: ", NULL, -1);
 	close(original_stdin);
-	return (0);
+	return (env->exit_status);
 }
 
 int	exec_line(t_token *start, t_token *end, t_env *env)
@@ -51,16 +68,17 @@ int	exec_line(t_token *start, t_token *end, t_env *env)
 	if (start == end)
 		return (0);
 	current = start;
-	next = msh_next_delimiter(current, end, E_AND | E_OR);
-	while (next != NULL)
+	while (current < end)
 	{
-		env->exit_status = exec_stu(&(t_token_range){current, current, current, end}, env);
+		next = msh_next_delimiter(current, end, E_AND | E_OR);
+		env->exit_status = exec_stu(current, next, env);
+		if (next == end)
+			break ;
 		if ((next->type & E_AND) && env->exit_status != 0)
 			return (env->exit_status);
 		if ((next->type & E_OR) && env->exit_status == 0)
 			return (env->exit_status);
 		current = next + 1;
-		next = msh_next_delimiter(current, end, E_AND | E_OR);
 	}
-	return (exec_stu(&(t_token_range){current, current, current, end}, env));
+	return (env->exit_status);
 }

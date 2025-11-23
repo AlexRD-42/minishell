@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 13:17:14 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 17:53:49 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ int32_t	stt_open_file(t_token *token, t_env *env)
 }
 
 // Returns: -1 Error (P), 1) STDIN REDIRECTED 2) STDOUT REDIRECTED
+// Review: Set heredocs dupped here to -1, maybe on exit we close all fds
 static
 int	stt_apply_redir(t_token *token, t_env *env)
 {
@@ -95,7 +96,7 @@ int	msh_open_files(t_token *tokens, t_token *end, t_env *env)
 	while (tokens < end && !(tokens->type & E_END) && rvalue != -1)
 	{
 		type = tokens->type;
-		pdepth += !!(type & E_OPEN_PAREN) - !!(type & E_CLOSE_PAREN);
+		pdepth += !!(type & E_OPAREN) - !!(type & E_CPAREN);
 		if (pdepth == 0 && (type & E_REDIR))
 			rvalue |= stt_apply_redir(tokens, env);
 		if (pdepth < 0)

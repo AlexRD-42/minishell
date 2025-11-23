@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:44:17 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/21 19:37:28 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 17:53:49 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,9 @@ size_t	stt_token_finder(t_token *token, const char *str)
 	else if (str[0] == '|')
 		token->type = E_PIPE;
 	else if (str[0] == '(')
-		token->type = E_OPEN_PAREN;
+		token->type = E_OPAREN;
 	else if (str[0] == ')')
-		token->type = E_CLOSE_PAREN;
+		token->type = E_CPAREN;
 	else if (str[0] == '>')
 		token->type = E_REDIR_OUT;
 	else if (str[0] == '<')

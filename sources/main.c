@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 12:25:47 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/22 21:32:25 by feazeved         ###   ########.fr       */
+/*   Updated: 2025/11/23 19:00:46 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,8 @@ int	stt_tty_mode(t_env *env, t_hst *hst)
 			// continue ;
 		}
 		if (tokens[0].type != E_END)
-			rvalue = exec_line(tokens, tokens + FT_TOKEN_COUNT, env);
-	}
+			rvalue = exec_line(tokens, tokens + FT_TOKEN_COUNT, env);	// This needs to have the correct length
+	}	// Review: Parsing returns the end tokens ptr
 	return (rvalue); // When passing false, only returns current exit_status
 }
 

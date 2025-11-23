@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 16:30:23 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 19:01:11 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,34 @@
 #include "msh_utils.h"
 #include <stdlib.h>
 
+// Always exits upon return
+static
+int	stt_exec_subshell(t_token *start, t_env *env)
+{
+	t_token		*end;
+	size_t		pdepth;
+	uint32_t	type;
+
+	start += !!(start->type & E_OPAREN);	// Could just do start++
+	end = start;
+	type = end->type;
+	pdepth = 1 - !!(type & E_CPAREN);
+	while (pdepth != 0)		// Dangerous if pre-validation is wrong but good for debugging
+	{
+		end++;
+		type = end->type;
+		pdepth += !!(type & E_OPAREN) - !!(type & E_CPAREN);
+	}
+	_exit (exec_line(start, end, env));	// Double check the math here
+}
+
 // static const struct sigaction
 // sa = {.sa_handler = SIG_DFL, .sa_mask = {0},.sa_flags = 0};
 static
-pid_t	stt_child(int32_t *fd, bool not_subshell, t_token_range *token, t_env *env)
+pid_t	stt_child(int32_t *fd, t_token *current, t_token *next, t_env *env)
 {
-	int	rvalue;
+	int			rvalue;
+	const bool	not_subshell = !(current->type & E_OPAREN);
 
 	sigaction(SIGINT, env->sig_dfl, NULL);
 	sigaction(SIGQUIT, env->sig_dfl, NULL);
@@ -35,7 +57,7 @@ pid_t	stt_child(int32_t *fd, bool not_subshell, t_token_range *token, t_env *env
 	sigaction(SIGTTOU, env->sig_dfl, NULL);
 	sigaction(SIGTTIN, env->sig_dfl, NULL);
 	rvalue = 0;
-	if (token->next != NULL)
+	if (fd[0] != -1 || fd[1] != -1)
 	{
 		close(fd[0]);
 		rvalue = dup2(fd[1], STDOUT_FILENO);
@@ -43,21 +65,22 @@ pid_t	stt_child(int32_t *fd, bool not_subshell, t_token_range *token, t_env *env
 		if (rvalue == -1)
 			return (ft_error("msh_dup2: ", NULL, -1));
 	}
-	msh_open_files(token->current, token->next, env);
+	msh_open_files(current, next, env);
 	if (not_subshell)
-		return (exec_cmd(token->current, env));
+		return (exec_cmd(current, env));
 	else
-		return (exec_subshell(token->current, env));
+		return (stt_exec_subshell(current, env));
 }
 
-// When it is a pipeline, parent dups its STDIN to childs STDOUT
+// 	Parent: STDIN  > READ_END of pipe
+// 	Child:	STDOUT > WRITE_END of pipe
 static
-pid_t	stt_parent(int32_t *fd, pid_t process_id, t_token_range *token)
+pid_t	stt_parent(int32_t *fd, pid_t process_id)
 {
 	int	rvalue;
 
 	rvalue = 0;
-	if (token->next != NULL)
+	if (fd[0] != -1 || fd[1] != -1)
 	{
 		close(fd[1]);
 		rvalue = dup2(fd[0], STDIN_FILENO);
@@ -68,28 +91,44 @@ pid_t	stt_parent(int32_t *fd, pid_t process_id, t_token_range *token)
 	return (process_id);
 }
 
-pid_t	exec_pipe(t_token_range *token, t_env *env)
+static
+pid_t	stt_exec_pipe(t_token *current, t_token *next, t_token *end, t_env *env)
 {
 	int32_t		fd[2];
-	const bool	not_subshell = !(token->current->type & E_OPEN_PAREN);
 	pid_t		process_id;
 
+	fd[0] = -1;
+	fd[1] = -1;
 	process_id = 0;
-	token->next = msh_next_delimiter(token->current, token->end, E_PIPE);
-	if (not_subshell && token->current == token->start && token->next == NULL
-			&& exec_simple(token->start, token->end, env) == 1)
-		return (0);	// Was executed in the parent
-	if (token->next != NULL && pipe(fd) == -1)
+	if (next != end && pipe(fd) == -1)
 		return (ft_error("msh_pipe: ", NULL, -1));
 	process_id = fork();
 	if (process_id == 0)
-		_exit (stt_child(fd, not_subshell, token, env));
+		_exit (stt_child(fd, current, next, env));
 	if (process_id > 0)
-		return (stt_parent(fd, process_id, token));
-	if (token->next != NULL)
+		return (stt_parent(fd, process_id));
+	if (fd[0] != -1 || fd[1] != -1)
 	{
 		close(fd[1]);
 		close(fd[0]);
 	}
 	return (ft_error("msh_fork: ", NULL, -1));
+}
+
+int	exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env)
+{
+	size_t		count;
+	pid_t		cpid_list[FT_MAX_CHILDREN];	// No overflow because it is prevalidated
+
+	count = 0;
+	cpid_list[count++] = stt_exec_pipe(current, next, end, env);
+	current = next + 1;	// Execs once because next was calculated before entry
+	while (current < end)
+	{
+		next = msh_next_delimiter(current, end, E_PIPE);
+		cpid_list[count++] = stt_exec_pipe(current, next, end, env);
+		current = next + 1;
+	}
+	msh_wait_child(cpid_list, count, env);	// To do: Check returns of wait_child
+	return (env->exit_status);
 }

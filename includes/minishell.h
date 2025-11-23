@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 16:31:39 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 17:59:20 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,14 +65,11 @@ size_t	init_read(char *buffer, t_hst *hst);
 
 // EXECUTE
 int		exec_line(t_token *start, t_token *end, t_env *env);
-int		exec_stu(t_token_range *token, t_env *env);
-pid_t	exec_pipe(t_token_range *token, t_env *env);
+int		exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env);
 int		exec_cmd(t_token *tokens, t_env *env);
 int		msh_open_files(t_token *tokens, t_token *end, t_env *env);
 
 // EXECUTE UTILS
-int		exec_simple(t_token *start, t_token *end, t_env *env);
-int		exec_subshell(t_token *start, t_env *env);
 ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv);
 t_token	*msh_next_delimiter(t_token *start, t_token *end, uint32_t delimiter);
 void	msh_wait_child(pid_t *cpid_list, size_t count, t_env *env);
