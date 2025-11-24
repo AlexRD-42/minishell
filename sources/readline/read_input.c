@@ -63,7 +63,7 @@ char	read_key(char *c)
 }
 
 static
-size_t	stt_read_input(t_line_editor *data)
+size_t	stt_read_input(t_line_editor *data, t_env *env)
 {
 	char	c;
 	ssize_t	ret;
@@ -81,14 +81,14 @@ size_t	stt_read_input(t_line_editor *data)
 			continue ;
 		}
 		if (g_signal == SIGINT)
-			return (rd_handle_sigint(data));
+			return (rd_handle_sigint(data, env));
 		if (process_key(data, c) != 0)
 			break ;
 	}
 	return (data->line.length);
 }
 
-size_t	init_read(char *buffer, t_hst *hst)
+size_t	init_read(char *buffer, t_hst *hst, t_env *env)
 {
 	size_t			rvalue;
 	t_line_editor	data;
@@ -99,7 +99,7 @@ size_t	init_read(char *buffer, t_hst *hst)
 	rvalue = 0;
 	if (stt_init_line_editor(&data, buffer, hst, old_mode) == 0)
 	{
-		rvalue = stt_read_input(&data);
+		rvalue = stt_read_input(&data, env);
 	}
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &old_mode);
 	return (rvalue);

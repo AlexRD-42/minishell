@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
+#include <msh_types.h>
 
 extern volatile sig_atomic_t	g_signal;
 
@@ -41,10 +42,11 @@ void	reset_line(t_line_editor *data)
 	data->hst_current = data->hst->count;
 }
 
-int	rd_handle_sigint(t_line_editor *data)
+int	rd_handle_sigint(t_line_editor *data, t_env *env)
 {
 	write(STDOUT_FILENO, "^C\n", 3);
 	reset_line(data);
 	g_signal = 0;
+	env->exit_status = 130;
 	return (0);
 }

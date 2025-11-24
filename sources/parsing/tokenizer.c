@@ -120,7 +120,7 @@ char	*stt_get_next_token(t_token *token, const char *str)
 
 // When it is a heredoc, we mark as expand if it has no quotes
 // When it is a REDIR, we initialize FDs to -1
-size_t	tokenize(t_token *tokens, const char *input)
+size_t	tokenize(t_token *tokens, const char *input, t_token **end)
 {
 	size_t	count;
 
@@ -140,5 +140,6 @@ size_t	tokenize(t_token *tokens, const char *input)
 			return (SIZE_MAX);
 		count++;
 	}
+	*end = &tokens[count];
 	return (count);
 }

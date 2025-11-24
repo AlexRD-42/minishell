@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 14:07:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 12:30:10 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 # include "msh_types.h"
 
 // PARSING
-size_t	parsing(t_token *tokens, char *input, t_env *env);
-size_t	tokenize(t_token *tokens, const char *input);
-size_t	syntax_validation(t_token *tokens);
+size_t	parsing(t_token *tokens, char *input, t_token **end, t_env *env);
+size_t	tokenize(t_token *tokens, const char *input, t_token **end);
+size_t	syntax_validation(t_token *tokens, t_token *end);
 
 // Core
 int		msh_init(t_env *env, t_hst *hst, const char **envp);
@@ -61,7 +61,7 @@ int		msh_export(t_vecp *argv, t_env *env);
 int		msh_echo(t_vecp *argv);
 
 // READ_LINE
-size_t	init_read(char *buffer, t_hst *hst);
+size_t	init_read(char *buffer, t_hst *hst, t_env *env);
 
 // EXECUTE
 int		exec_line(t_token *start, t_token *end, t_env *env);

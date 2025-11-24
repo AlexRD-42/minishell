@@ -131,6 +131,6 @@ int	exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env)
 			cpid_list[count++] = process_id;
 		current = next + 1;
 	}
-	msh_wait_child(cpid_list, count, env);	// To do: Check returns of wait_child
+	msh_wait_child(cpid_list, count);	// To do: Check returns of wait_child
 	return (env->exit_status);
 }

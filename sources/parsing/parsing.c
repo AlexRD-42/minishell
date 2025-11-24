@@ -67,23 +67,64 @@ static void	stt_prepare_tokens(t_token *tokens)
 
 static size_t	stt_handle_heredocs(t_token *tokens, t_env *env)
 {
+	bool	must_expand;
+
 	while (!(tokens[0].type & (E_END)))
 	{
 		if (tokens[0].type & (E_HRDOC) && tokens[1].type & E_WORD)
 		{
-			// tokens[0].type = E_HRDOC | E_EXPAND relativo a expansion no geral, tokens[1].type = E_LIMITER | E_EXPAND relativo a 
-			tokens[0].type = E_LIMITER | stt_expan(tokens[1], 1);
-			tokens[0].fd[0] = heredoc(&tokens[1], env); // Review: heredoc error.
-			tokens[0].fd[1] = -1;
+			// tokens[0].type = E_HRDOC | E_EXPAND relativo a expansion no geral, tokens[1].type = E_LIMITER | E_EXPAND relativo a
+			if (stt_expan(tokens[1], 1))
+				must_expand = true;
+			else
+				must_expand = false;
+			tokens[1].type = E_LIMITER;
+			heredoc(tokens[1].ptr, tokens[1].length, must_expand, env); // Review: heredoc error.
 		}
 		tokens++;
 	}
 	return (0);
 }
 
-size_t	parsing(t_token *tokens, char *input, t_env *env)
+int get_max_forks(t_token *start, t_token *end)
 {
-	if (tokenize(tokens, input) == SIZE_MAX)
+    int     max_forks;
+    int     curr_pipe_len;
+	int		internal_max;
+    t_token *delimiter;
+	t_token	*close;
+
+	max_forks = 0;
+    while (start < end)
+    {
+        delimiter = msh_next_delimiter(start, end, (E_AND | E_OR));
+        curr_pipe_len = 0;
+        while (start < delimiter)
+        {
+            if (start->type & (E_PIPE))
+                curr_pipe_len++;
+            else if (start->type & E_OPAREN)
+            {
+                close = msh_next_delimiter(start + 1, delimiter, E_CPAREN);
+                internal_max = get_max_forks(start + 1, close);
+                if (internal_max > max_forks)
+                    max_forks = internal_max;
+                curr_pipe_len++; 
+                start = close;
+            }
+            start++;
+        }
+        if (curr_pipe_len > max_forks)
+            max_forks = curr_pipe_len;
+        
+        start = delimiter + 1;
+    }
+    return (max_forks);
+}
+
+size_t	parsing(t_token *tokens, char *input, t_token **end, t_env *env)
+{
+	if (tokenize(tokens, input, end) == SIZE_MAX)
 		return (SIZE_MAX);
 	if (stt_handle_heredocs(tokens, env) == SIZE_MAX)
 		return (SIZE_MAX);
