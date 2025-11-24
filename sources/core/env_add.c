@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:43 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 18:27:02 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 18:30:27 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ int	env_export(const char *entry, t_env *env)
 {
 	size_t	length;
 	size_t	index;
+	char	*ptr;
 	bool	append;
 
 	length = 0;
@@ -113,11 +114,11 @@ int	env_export(const char *entry, t_env *env)
 	while (entry[length] != 0 && entry[length] != '=')
 		length++;
 	append = (length > 1) && (entry[length] == '=')	&& entry[length - 1] == '+';
-	env_find(entry, length - append, &index, env);
+	ptr = env_find(entry, length - append, &index, env);
 	length += (entry[length] == '=');
-	if (index == SIZE_MAX && append == 0)
+	if (ptr == NULL && append == 0)
 		return (env_add(entry, env));
-	else if (index == SIZE_MAX)
+	else if (ptr == NULL)
 		return (ft_error("msh_export: could not find var to append: ", entry, -2));
 	if (append == 0)
 		return (env_replace(entry, index, env));
