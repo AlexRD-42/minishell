@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 10:32:23 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 12:30:10 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ size_t	syntax_validation(t_token *tokens);
 
 // Core
 int		msh_init(t_env *env, t_hst *hst, const char **envp);
-int		heredoc(t_token *token, t_env *env);
+int		heredoc(const char *eof, size_t length, int32_t *fd, bool expand);
 int		att_exit(int code, int change);
 size_t	hst_add_entry(const char *str, size_t length, t_hst *hst);
 size_t	hst_read(size_t index, char *buffer, const t_hst *hst);
@@ -73,6 +73,5 @@ int		msh_open_files(t_token *tokens, t_token *end, t_env *env);
 // EXECUTE UTILS
 ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv);
 t_token	*msh_next_delimiter(t_token *start, t_token *end, uint32_t delimiter);
-void	msh_wait_child(pid_t *cpid_list, size_t count, t_env *env);
-
+int		msh_wait_child(pid_t *cpid_list, size_t count);
 #endif

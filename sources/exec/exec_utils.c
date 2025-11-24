@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 12:15:52 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 11:34:31 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 12:30:36 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,31 +15,33 @@
 #include <stdbool.h>
 #include <wait.h>
 #include "minishell.h"
+#include "msh_defines.h"
 #include "msh_types.h"
 #include "msh_utils.h"
 
 // Review :
 // Track whether waitpid actually succeeded for the last child and only inspect status in that case. 
 // On error, you probably want to set env->exit_status to some error value explicitly.
-void	msh_wait_child(pid_t *cpid_list, size_t count, t_env *env)
+int	msh_wait_child(pid_t *cpid_list, size_t count)
 {
 	size_t	i;
-	int		last_status;
+	int32_t	last_status;
 	pid_t	cpid;
 
-	i = 0;
-	while (i < count)
+	i = count;
+	(void) cpid;
+	cpid = waitpid(cpid_list[i], &last_status, 0);
+	while (i > 0)
 	{
-		cpid = waitpid(cpid_list[i], &last_status, 0);
-		if (i == count - 1)
-		{
-			if (WIFEXITED(last_status))
-				env->exit_status = WEXITSTATUS(last_status);
-			else if (WIFSIGNALED(last_status))
-				env->exit_status = 128 + WTERMSIG(last_status);
-		}
-		i++;
+		i--;
+		if (cpid_list[i] > 0)
+			cpid = waitpid(cpid_list[i], 0, 0);
 	}
+	if (WIFSIGNALED(last_status))
+		last_status = 128 + WTERMSIG(last_status);
+	else if (WIFEXITED(last_status))
+		return (WEXITSTATUS(last_status));
+	return (WEXITSTATUS(last_status));
 }
 
 t_token	*msh_next_delimiter(t_token *start, t_token *end, uint32_t delimiter)

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 12:04:27 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 12:19:16 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,8 @@ int	stt_heredoc(t_buf eof, t_env *env, int32_t fd[2])
 	return (fd[0]);
 }
 
-// To do: better error handling
-int	heredoc(t_token *token, t_env *env)	// bool expand, const char *eof, fd[2]
+// To do: better error handling	EOF"F"FEOFF'
+int	heredoc(const char *eof, size_t length, int32_t *fd, bool expand)
 {
 	char	eof[FT_NAME_MAX];
 	char	*ptr[1];
