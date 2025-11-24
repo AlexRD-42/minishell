@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 19:35:36 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 19:50:04 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@ int	stt_argless(t_env *env)
 	size_t	index;
 
 	index = 0;
-	ptr = env_find("HOME", 4, &index, env);
+	ptr = env_find("HOME=", 4, &index, env);
 	if (ptr == NULL)
 		return (ft_error("msh_cd: home not set", "", 1));
-	if (chdir(ptr))
+	if (chdir(ptr + 5))
 		return (ft_error("msh_chdir: ", NULL, 1));
 	return (0);
 }
