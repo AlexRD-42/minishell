@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 11:35:40 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 19:00:08 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,6 @@ int	msh_exit(t_vecp *argv, t_env *env)
 	if (argv->count == 1)
 		_exit(env->exit_status & 0xFF);
 	if (stt_parse_str(argv->ptr[1], &number))
-		_exit(ft_error("exit\nmsh_exit: numeric argument required", "", 2));
+		return (ft_error("exit\nmsh_exit: numeric argument required", "", 2));
 	_exit(number & 0xFF);	// Review: _exit or exit
 }
