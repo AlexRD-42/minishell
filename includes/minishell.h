@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 17:59:20 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 10:19:17 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,6 @@ size_t	parsing(t_token *tokens, char *input, t_env *env);
 size_t	tokenize(t_token *tokens, const char *input);
 size_t	syntax_validation(t_token *tokens);
 
-ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec);
-int		parse_interval(t_buf src, t_env *env, t_buf *dst);
-
 // Core
 int		msh_init(t_env *env, t_hst *hst, const char **envp);
 int		heredoc(t_token *token, t_env *env);
@@ -43,8 +40,13 @@ int		env_add(const char *new_entry, t_env *env);
 int		env_export(const char *entry, t_env *env);
 size_t	env_del(const char *entry, t_env *env);
 char	*env_find(const char *entry, size_t length, size_t *index, t_env *env);
-char	*env_expand(t_buf src, t_buf *dst, t_env *env);
 int		env_add_shlvl(t_env *env);
+
+// Expansion
+char	*msh_expand_env(t_buf src, t_buf *dst, t_env *env);
+ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec);
+int		parse_interval(t_buf src, t_env *env, t_buf *dst);
+
 
 // Signals
 void	signal_handler(int sig);

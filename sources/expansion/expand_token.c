@@ -6,73 +6,18 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 22:50:13 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 10:25:30 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
-#include <dirent.h>
-#include <errno.h>
 #include <unistd.h>
 #include "minishell.h"
 #include "msh_types.h"
 #include "msh_utils.h"
 
-// BUG: Wildcard matching considers asterisks within quotes if one asterisk was outside
-// Return: 0) EOF, 1) MATCH, 2) NO MATCH, -1) OOM, -2) readdir error (P)
-static
-int	stt_directory_read(DIR *dir_stream, const char *pattern, t_vecp *vec)
-{
-	size_t			length;
-	struct dirent	*dir_entry;
-
-	errno = 0;
-	dir_entry = readdir(dir_stream);
-	if (dir_entry == NULL && errno == 0)
-		return (0);
-	else if (dir_entry == NULL)
-		return (ft_error("msh_readdir: ", NULL, -2));
-	if (ft_strwcmp(dir_entry->d_name, pattern) == 1)
-	{
-		length = ft_strlen(dir_entry->d_name) + 1;
-		if (ft_lmcpy(vec->buf.wptr, dir_entry->d_name, length, vec->buf.end))
-			return (-1);
-		vec->ptr[vec->count++] = vec->buf.wptr;
-		vec->buf.wptr += length;
-		return (1);
-	}
-	return (2);
-}
-
-// This function reads from a directory, compares against pattern with wildcard matching and 
-// saves up to EOF entries inside the buffer supplied by arg.
-// Return: >=0) Number of matches until EOF
-// Return:	-1) OOM (P), -2) dir function problems (P), -4) exceeded count
-static
-ssize_t	stt_expand_glob(const char *pattern, t_vecp *vec)
-{
-	size_t	count;
-	DIR		*dir_stream;
-	ssize_t	rvalue;
-
-	dir_stream = opendir(".");
-	if (dir_stream == NULL)
-		return (ft_error("msh_opendir: ", NULL, -2));
-	count = 0;
-	rvalue = (vec->count + 1 >= vec->max_count);
-	rvalue = (rvalue == 0) - (rvalue << 2);
-	while (rvalue > 0)
-	{
-		rvalue = stt_directory_read(dir_stream, pattern, vec);
-		if (vec->count + 1 >= vec->max_count)
-			rvalue = -4;
-		count += (rvalue == 1);
-	}
-	if (closedir(dir_stream) < 0)
-		ft_error("msh_closedir: ", NULL, 0);
-	return (rvalue + (ssize_t)((rvalue == 0) * count));
-}
+ssize_t	msh_expand_glob(const char *pattern, t_vecp *vec);
 
 // Needs a better name
 // Parses the string and performs variable expansion
@@ -90,7 +35,7 @@ int	parse_interval(t_buf src, t_env *env, t_buf *dst)
 			if (ft_lmcpy(dst->wptr, src.optr, length, dst->end))
 				return (-1);
 			dst->wptr += length;
-			src.wptr = env_expand(src, dst, env);
+			src.wptr = msh_expand_env(src, dst, env);
 			if (src.wptr == NULL)
 				return (-1);
 			src.optr = src.wptr;
@@ -105,22 +50,41 @@ int	parse_interval(t_buf src, t_env *env, t_buf *dst)
 	return (0);
 }
 
+static
+char	*stt_rename_asterisks(uint8_t *src, uint8_t *end, uint8_t qtype, bool expand)
+{
+	if (expand)
+	{
+		while (src < end && *src != qtype)
+		{
+			if (*src == '*')
+				*src |= 128;	// Tag the bit
+			src++;
+		}
+	}
+	else
+	{
+		while (src < end && *src != qtype)
+			src++;
+	}
+	return ((char *)src);
+}
+
 // Needs a better name
 // Finds the interior length of the string between quotes, and copies it literally
 // if its a single quote, or performs variable expansion if it isnt
 // Return: NULL) OOM, !NULL) OK
 static
-char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst)
+char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst, bool expand)
 {
 	const char	qtype = *src.wptr;
-	const char	quoted = (qtype == '"' || qtype == '\'');
+	const bool	quoted = (qtype == '"' || qtype == '\'');
 	size_t		length;
 
 	if (quoted)
 	{
 		src.optr = ++src.wptr;
-		while (src.wptr < src.end && *src.wptr != qtype)
-			src.wptr++;
+		src.wptr = stt_rename_asterisks((uint8_t *) src.wptr, (uint8_t *) src.end, (uint8_t) qtype, expand);
 	}
 	else
 		while (src.wptr < src.end && *src.wptr != '"' && *src.wptr != '\'')
@@ -152,16 +116,16 @@ ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 		dst = &vec->buf;
 	while (src.wptr < src.end)
 	{
-		src.wptr = stt_find_interval(src, env, dst);
+		src.wptr = stt_find_interval(src, env, dst, !!(token.type & E_EXPAND));
 		if (src.wptr == NULL)
 			return (-1);
 		src.optr = src.wptr;
 	}
 	if (dst->wptr + 1 > dst->end)
 		return (-1);
-	*(dst->wptr++) = 0;
+	*(dst->wptr++) = 0;				// Check if not better inside parse_interval
 	if ((token.type & E_EXPAND))	// Check count == 0
-		return (stt_expand_glob(buffer, vec));
+		return (msh_expand_glob(buffer, vec));
 	vec->ptr[vec->count++] = (char *) address;
 	return (1);
 }

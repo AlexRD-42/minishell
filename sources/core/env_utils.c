@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/18 21:18:21 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 20:10:43 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/11/18 16:11:30 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/11/24 09:40:55 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,25 @@
 #include <stdbool.h>
 #include "minishell.h"
 #include "msh_utils.h"
+
+size_t	mark_for_deletion(char *ptr, t_env *env)
+{
+	size_t			start;
+	size_t			meta_index;
+	char			*metadata;
+	const size_t	max_count = env->max_count;
+
+	metadata = env->metadata;
+	meta_index = (size_t)(ptr - env->optr) / FT_BLOCK_SIZE;
+	start = meta_index;
+	metadata[meta_index++] = E_META_FREE;
+	while (meta_index < max_count && metadata[meta_index] >= E_META_USED)
+	{
+		metadata[meta_index] = E_META_FREE;
+		meta_index++;
+	}
+	return (meta_index - start);	// Blocks freed
+}
 
 // If length is 0, it will be calculated
 char	*env_find(const char *entry, size_t length, size_t *index, t_env *env)
@@ -42,63 +61,24 @@ char	*env_find(const char *entry, size_t length, size_t *index, t_env *env)
 	return (NULL);
 }
 
-// Handles solo $ and ?
-static
-char	*stt_expand_type(t_buf src, t_buf *dst, int32_t exit_status)
+size_t	env_del(const char *entry, t_env *env)
 {
-	char		*ptr;
-	char		buffer[32];
-	size_t		length;
+	char	*ptr;
+	size_t	index;
+	size_t	blocks_freed;
 
-	src.wptr += src.wptr < src.end && *src.wptr == '$';
-	if (src.wptr < src.end && *src.wptr == '?')
-	{
-		ptr = ft_itoa_stack(exit_status, buffer + sizeof(buffer) - 1);
-		length = ft_strlen(ptr);
-		if (ft_lmcpy(dst->wptr, ptr, length, dst->end))
-			return (NULL);
-		dst->wptr += length;
-		return (src.wptr + 1);
-	}
-	else if (src.wptr >= src.end || (ft_ascii(*src.wptr) & E_IDENT) == 0)
-	{
-		if (dst->wptr + 1 > dst->end)
-			return (NULL);
-		*(dst->wptr++) = '$';
-	}
-	return (src.wptr);
-}
-
-// Variable name is defined by all letters until not alphanumeric
-// This name is used to find the var name in ENV
-// Updates str and buffer to the end of their respective copy
-// To do: Create an env helper that returns the value rather than the entry
-// Return: NULL) OOM, !NULL) OK
-char	*env_expand(t_buf src, t_buf *dst, t_env *env)
-{
-	size_t		length;
-	const char	*ptr;
-
-	ptr = dst->wptr;
-	src.wptr = stt_expand_type(src, dst, env->exit_status);
-	if (src.wptr == NULL || ptr != dst->wptr)
-		return (src.wptr);
-	ptr = src.wptr;
-	while (src.wptr < src.end && (ft_ascii(*src.wptr) & E_IDENT))
-		src.wptr++;
-	ptr = env_find(ptr, (size_t)(src.wptr - ptr), NULL, env);
+	ptr = env_find(entry, 0, &index, env);
 	if (ptr == NULL)
-		return (src.wptr);
-	while (*ptr != 0 && *ptr != '=')
-		ptr++;
-	ptr += *ptr == '=';
-	length = 0;
-	while (ptr[length] != 0)
-		length++;
-	if (ft_lmcpy(dst->wptr, ptr, length, dst->end))
-		return (NULL);
-	dst->wptr += length;
-	return (src.wptr);
+		return (SIZE_MAX);
+	blocks_freed = mark_for_deletion(ptr, env);
+	while (index < env->count)
+	{
+		env->ptr[index] = env->ptr[index + 1];
+		index++;
+	}
+	env->count--;
+	env->ptr[env->count] = NULL;	// I think this might be useless
+	return (blocks_freed);
 }
 
 // Assumes entry name is SHLVL=
