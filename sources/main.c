@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 12:25:47 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 22:02:54 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:39:46 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	stt_tty_mode(t_env *env, t_hst *hst)
 		}
 		if (len == 0)
 			continue;
-		hst_add_entry(line, len, hst); // Review error
+		hst_add_entry(line, len, hst);
 		if (parsing(tokens, line, &end, env) == SIZE_MAX)
 		{
 			env->exit_status = 2;

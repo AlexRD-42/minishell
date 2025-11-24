@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:19:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:59:14 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,17 +31,17 @@ int	stt_exec_subshell(t_token *start, t_env *env)
 	size_t		pdepth;
 	uint32_t	type;
 
-	start += !!(start->type & E_OPAREN);	// Could just do start++
+	start += !!(start->type & E_OPAREN);
 	end = start;
 	type = end->type;
 	pdepth = 1 - !!(type & E_CPAREN);
-	while (pdepth != 0)		// Dangerous if pre-validation is wrong but good for debugging
+	while (pdepth != 0)
 	{
 		end++;
 		type = end->type;
 		pdepth += !!(type & E_OPAREN) - !!(type & E_CPAREN);
 	}
-	_exit (exec_line(start, end, env));	// Double check the math here
+	_exit (exec_line(start, end, env));
 }
 
 // static const struct sigaction
@@ -120,13 +120,13 @@ pid_t	stt_exec_pipe(t_token *current, t_token *next, t_token *end, t_env *env)
 int	exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env)
 {
 	size_t	count;
-	pid_t	cpid_list[FT_MAX_CHILDREN];	// No overflow because it is prevalidated
+	pid_t	cpid_list[FT_MAX_CHILDREN];
 	pid_t	process_id;
 	int		exit_status;
 
 	count = 0;
 	cpid_list[count++] = stt_exec_pipe(current, next, end, env);
-	current = next + 1;	// Execs once because next was calculated before entry
+	current = next + 1;
 	while (current < end)
 	{
 		next = msh_next_delimiter(current, end, E_PIPE);
@@ -135,6 +135,6 @@ int	exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env)
 			cpid_list[count++] = process_id;
 		current = next + 1;
 	}
-	exit_status = msh_wait_child(cpid_list, count);	// To do: Check returns of wait_child
+	exit_status = msh_wait_child(cpid_list, count);
 	return (exit_status);
 }

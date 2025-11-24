@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:55:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 19:20:19 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:41:49 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include "msh_utils.h"
 
 // Running env with no arguments will print the env to stdout
-// TO DO: option to print in ascending order
 int	msh_env(t_env *env)
 {
 	size_t	i;

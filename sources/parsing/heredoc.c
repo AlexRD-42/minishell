@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 17:49:22 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:43:40 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,6 @@ int	stt_heredoc(const char *eof, int32_t fd, bool expand, t_env *env)
 	return (0);
 }
 
-// To do: better error handling	EOF"F"FEOFF'
 // Returns -1 on failure
 int	heredoc(const char *src, size_t length, bool expand, t_env *env)
 {

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:43 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 18:30:27 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:53:09 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	env_replace(const char *new_entry, size_t index, t_env *env)
 		wptr = allocate_blocks(env, total_size);
 		if (wptr == NULL)
 			return (ft_error("msh_export: out of memory", "", -1));
-		mark_for_deletion(old_entry, env);	// Review: Call before allocate blocks
+		mark_for_deletion(old_entry, env);
 		ft_memcpy(wptr, new_entry, total_size);
 		env->ptr[index] = wptr;
 	}
@@ -74,10 +74,10 @@ int	env_append(const char *new_entry, size_t index, t_env *env)
 	{
 		wptr = allocate_blocks(env, total_size);
 		if (wptr == NULL)
-			return (ft_error("msh_export: out of memory", "", -1));	// OOM
-		mark_for_deletion(old_entry, env);		// Prevents aliasing if its after
+			return (ft_error("msh_export: out of memory", "", -1));
+		mark_for_deletion(old_entry, env);
 		old_entry = ft_memcpy(wptr, old_entry, old_length);
-		env->ptr[index] = old_entry;	// Reassigns pointer to new block
+		env->ptr[index] = old_entry;
 	}
 	old_entry += old_length;
 	ft_memcpy(old_entry, new_entry, new_size);
@@ -113,13 +113,14 @@ int	env_export(const char *entry, t_env *env)
 	index = 0;
 	while (entry[length] != 0 && entry[length] != '=')
 		length++;
-	append = (length > 1) && (entry[length] == '=')	&& entry[length - 1] == '+';
+	append = (length > 1) && (entry[length] == '=')
+		&& entry[length - 1] == '+';
 	ptr = env_find(entry, length - append, &index, env);
 	length += (entry[length] == '=');
 	if (ptr == NULL && append == 0)
 		return (env_add(entry, env));
 	else if (ptr == NULL)
-		return (ft_error("msh_export: could not find var to append: ", entry, -2));
+		return (ft_error("msh_export: var not found: ", entry, -2));
 	if (append == 0)
 		return (env_replace(entry, index, env));
 	return (env_append(entry + length, index, env));

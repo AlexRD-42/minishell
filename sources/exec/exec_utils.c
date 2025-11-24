@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 12:15:52 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 13:48:33 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:58:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,6 @@
 #include "msh_types.h"
 #include "msh_utils.h"
 
-// Review :
-// Track whether waitpid actually succeeded for the last child and only inspect status in that case. 
-// On error, you probably want to set env->exit_status to some error value explicitly.
 int	msh_wait_child(pid_t *cpid_list, size_t count)
 {
 	size_t	i;
@@ -31,15 +28,15 @@ int	msh_wait_child(pid_t *cpid_list, size_t count)
 	size_t	retries;
 
 	i = 0;
-	cpid = 0;	// Initializes cpid in case count == 0
+	cpid = 0;
 	while (i < count)
 	{
 		retries = FT_SYSCALL_RETRIES;
-		cpid = waitpid(cpid_list[i], &status, 0);		// Saves the result of waitpid
+		cpid = waitpid(cpid_list[i], &status, 0);
 		while (cpid == -1 && errno == EINTR && retries-- > 0)
 			cpid = waitpid(cpid_list[i], &status, 0);
 		if (cpid == -1)
-			ft_error("msh_waitpid: ", NULL, 1);	// Log the error but continue
+			ft_error("msh_waitpid: ", NULL, 1);
 		i++;
 	}
 	if (cpid > 0 && WIFEXITED(status))
@@ -71,9 +68,6 @@ t_token	*msh_next_delimiter(t_token *start, t_token *end, uint32_t delimiter)
 	return (end);
 }
 
-// To do: Check if expand_token null terminates the argument (it should)
-// To do: Print error messages for exceeded count
-// Review: Maybe this should also take an end pointer (all the callers have end)
 ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv)
 {
 	ssize_t	rvalue;

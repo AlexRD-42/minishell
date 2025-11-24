@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 19:50:04 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:37:00 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include "msh_utils.h"
 
 // Remember the prefix PWD= (check if needed)
-// Review: Empty arguments
 static
 int	stt_argless(t_env *env)
 {

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 21:18:21 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 09:52:20 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:43:34 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ char	*stt_expand_type(t_buf src, t_buf *dst, int32_t exit_status)
 	{
 		ptr = ft_itoa_stack(exit_status, buffer + sizeof(buffer) - 1);
 		length = ft_strlen(ptr);
-		if (ft_lmcpy(dst->wptr, ptr, length + 1, dst->end))	// Review: Length + 1 now
+		if (ft_lmcpy(dst->wptr, ptr, length + 1, dst->end))
 			return (NULL);
 		dst->wptr += length;
 		return (src.wptr + 1);
@@ -40,7 +40,7 @@ char	*stt_expand_type(t_buf src, t_buf *dst, int32_t exit_status)
 		if (dst->wptr + 1 > dst->end)
 			return (NULL);
 		*(dst->wptr++) = '$';
-		*dst->wptr = 0;	// Review:
+		*dst->wptr = 0;
 	}
 	return (src.wptr);
 }
@@ -48,7 +48,6 @@ char	*stt_expand_type(t_buf src, t_buf *dst, int32_t exit_status)
 // Variable name is defined by all letters until not alphanumeric
 // This name is used to find the var name in ENV
 // Updates str and buffer to the end of their respective copy
-// To do: Create an env helper that returns the value rather than the entry
 // Return: NULL) OOM, !NULL) OK
 char	*msh_expand_env(t_buf src, t_buf *dst, t_env *env)
 {
@@ -71,7 +70,7 @@ char	*msh_expand_env(t_buf src, t_buf *dst, t_env *env)
 	length = 0;
 	while (ptr[length] != 0)
 		length++;
-	if (ft_lmcpy(dst->wptr, ptr, length + 1, dst->end))	// Review : Changed to length + 1, check if harmless
+	if (ft_lmcpy(dst->wptr, ptr, length + 1, dst->end))
 		return (NULL);
 	dst->wptr += length;
 	return (src.wptr);

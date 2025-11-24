@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 09:36:27 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 10:28:18 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 21:07:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ int32_t	stt_strwcmp(const uint8_t *str, const uint8_t *pattern)
 	return (pattern[i] == 0);
 }
 
-// BUG: Wildcard matching considers asterisks within quotes if one asterisk was outside
 // Return: 0) EOF, 1) MATCH, 2) NO MATCH, -1) OOM, -2) readdir error (P)
 static
 int	stt_directory_read(DIR *dir_stream, const char *pattern, t_vecp *vec)
@@ -74,8 +73,8 @@ int	stt_directory_read(DIR *dir_stream, const char *pattern, t_vecp *vec)
 	return (2);
 }
 
-// This function reads from a directory, compares against pattern with wildcard matching and 
-// saves up to EOF entries inside the buffer supplied by arg.
+// This function reads from a directory, compares against pattern with wildcard
+// matching and saves up to EOF entries inside the buffer supplied by arg.
 // Return: >=0) Number of matches until EOF
 // Return:	-1) OOM (P), -2) dir function problems (P), -4) exceeded count
 ssize_t	msh_expand_glob(const char *pattern, t_vecp *vec)

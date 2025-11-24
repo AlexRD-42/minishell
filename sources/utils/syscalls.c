@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 11:59:05 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 22:51:32 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:42:48 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@
 #include "msh_utils.h"
 #include "msh_defines.h"
 
-// To do: Error handling, set errno (EIO)?
-// To do: Same for open, close and other utils
 // Repeats the write until the buffer is fully consumed, and repeats
 // The write when a signal interrupts it.
 ssize_t	ft_write(int fd, const void *buffer, size_t length)

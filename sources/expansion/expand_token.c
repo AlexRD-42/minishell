@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 10:25:30 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 21:07:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,15 +50,15 @@ int	parse_interval(t_buf src, t_env *env, t_buf *dst)
 	return (0);
 }
 
-static
-char	*stt_rename_asterisks(uint8_t *src, uint8_t *end, uint8_t qtype, bool expand)
+static char
+	*stt_rename_asterisks(uint8_t *src, uint8_t *end, uint8_t qtype, bool exp)
 {
-	if (expand)
+	if (exp)
 	{
 		while (src < end && *src != qtype)
 		{
 			if (*src == '*')
-				*src |= 128;	// Tag the bit
+				*src |= 128;
 			src++;
 		}
 	}
@@ -71,8 +71,8 @@ char	*stt_rename_asterisks(uint8_t *src, uint8_t *end, uint8_t qtype, bool expan
 }
 
 // Needs a better name
-// Finds the interior length of the string between quotes, and copies it literally
-// if its a single quote, or performs variable expansion if it isnt
+// Finds the interior length of the string between quotes, and copies 
+// it literally if its a single quote, or performs variable expansion
 // Return: NULL) OOM, !NULL) OK
 static
 char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst, bool expand)
@@ -84,7 +84,8 @@ char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst, bool expand)
 	if (quoted)
 	{
 		src.optr = ++src.wptr;
-		src.wptr = stt_rename_asterisks((uint8_t *) src.wptr, (uint8_t *) src.end, (uint8_t) qtype, expand);
+		src.wptr = stt_rename_asterisks((uint8_t *) src.wptr,
+				(uint8_t *) src.end, (uint8_t) qtype, expand);
 	}
 	else
 		while (src.wptr < src.end && *src.wptr != '"' && *src.wptr != '\'')
@@ -101,16 +102,16 @@ char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst, bool expand)
 	return (src.wptr + (src.wptr < src.end && quoted));
 }
 
-// Return: >=0) OK, -1) OOM (P), -2) dir function problems (P), -4) exceeded count;
+// Return: >=0) OK, -1) OOM (P), -2) dir problems (P), -4) exceeded count;
 ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 {
 	t_buf			*dst;
 	t_buf			src;
-	char			buffer[FT_ARG_SIZE];	// Limit for one argument
+	char			buffer[FT_ARG_SIZE];
 	const uintptr_t	address = (uintptr_t) vec->buf.wptr;
 
 	src = (t_buf){token.ptr, token.ptr + token.length, token.ptr};
-	if (token.type & E_EXPAND)		// Check
+	if (token.type & E_EXPAND)
 		dst = &(t_buf){buffer, buffer + sizeof(buffer), buffer};
 	else
 		dst = &vec->buf;
@@ -123,8 +124,8 @@ ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 	}
 	if (dst->wptr + 1 > dst->end)
 		return (-1);
-	*(dst->wptr++) = 0;				// Check if not better inside parse_interval
-	if ((token.type & E_EXPAND))	// Check count == 0
+	*(dst->wptr++) = 0;
+	if ((token.type & E_EXPAND))
 		return (msh_expand_glob(buffer, vec));
 	vec->ptr[vec->count++] = (char *) address;
 	return (1);

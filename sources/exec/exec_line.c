@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/24 20:19:53 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 21:01:44 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,34 +16,34 @@
 #include "msh_utils.h"
 
 // Returns 1 if a command was executed
-// Review: exit status
 static
-int stt_exec_simple(t_token *start, t_token *end, t_env *env)
+int	stt_exec_simple(t_token *start, t_token *end, t_env *env)
 {
 	const int32_t	prev_fd[2] = {dup(STDIN_FILENO), dup(STDOUT_FILENO)};
-	t_vecp  		argv;
+	t_vecp			argv;
 	char			*arg_ptr[FT_ARG_COUNT];
-	char			buf[FT_ARG_MAX];			// Kernel FT_ARG_MAX is 2 MB
-	int	 			rvalue;
+	char			buf[FT_ARG_MAX];
+	int				rvalue;
 
 	if (prev_fd[0] < 0 || prev_fd[1] < 0)
-		return (ft_error("msh_dup: ", NULL, 1));	// Failed to save the state
+		return (ft_error("msh_dup: ", NULL, 1));
 	argv = (t_vecp){{buf, buf + sizeof(buf), buf}, 0, FT_ARG_COUNT, arg_ptr};
 	if (msh_build_argv(start, env, &argv) <= 0 || !argv.ptr[0])
 		return (1);
 	msh_open_files(start, end, env);
 	rvalue = msh_dispatch(&argv, env);
-	if ((dup2(prev_fd[0], STDIN_FILENO) < 0) + (dup2(prev_fd[1], STDOUT_FILENO) < 0))
-		ft_error("msh_dup2: ", NULL, 1);	// Restores fds
-	close(prev_fd[0]);	// Do we throw error messages for close?
+	if ((dup2(prev_fd[0], STDIN_FILENO) < 0)
+		+ (dup2(prev_fd[1], STDOUT_FILENO) < 0))
+		ft_error("msh_dup2: ", NULL, 1);
+	close(prev_fd[0]);
 	close(prev_fd[1]);
-	return (rvalue);	
+	return (rvalue);
 }
 
 // Receives {start, end, env}
 int	exec_stu(t_token *start, t_token *end, t_env *env)
 {
-	const int32_t	original_stdin = dup(STDIN_FILENO); // Review: Leak on child
+	const int32_t	original_stdin = dup(STDIN_FILENO);
 	t_token			*next;
 	int				exit_status;
 
@@ -53,10 +53,11 @@ int	exec_stu(t_token *start, t_token *end, t_env *env)
 	if (start == end)
 		return (env->exit_status);
 	next = msh_next_delimiter(start, end, E_PIPE);
-	if (next == end && !(start->type & E_OPAREN) && msh_mutates_state(start, end))
+	if (next == end && !(start->type & E_OPAREN)
+		&& msh_mutates_state(start, end))
 		exit_status = stt_exec_simple(start, end, env);
 	else
-		exit_status = exec_pipeline(start, next, end, env);	// Review: return codes here
+		exit_status = exec_pipeline(start, next, end, env);
 	if ((dup2(original_stdin, STDIN_FILENO) < 0))
 		ft_error("msh_dup2: ", NULL, -1);
 	close(original_stdin);
@@ -89,4 +90,3 @@ int	exec_line(t_token *start, t_token *end, t_env *env)
 	}
 	return (env->exit_status);
 }
-

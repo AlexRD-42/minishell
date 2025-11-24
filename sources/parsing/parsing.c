@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 15:31:23 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/24 18:06:12 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:39:41 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ static void	stt_prepare_tokens(t_token *tokens)
 		{
 			tokens[0].fd[0] = -1;
 			tokens[0].fd[1] = -1;
-			tokens[1].type = E_FILENAME | stt_expan(tokens[1], 0);	// Review: | E_FILE eh derivado, nao pode ser atribuido. O nome tem que ser LIMITER
-		}	// Exemplo: cat > out = WORD REDIR_OUT LIMITER
+			tokens[1].type = E_FILENAME | stt_expan(tokens[1], 0);
+		}
 		else if (tokens[0].type & (E_WORD))
 		{
 			if (cmd && stt_expan(tokens[0], 0))
@@ -81,7 +81,7 @@ static size_t	stt_handle_heredocs(t_token *tokens, t_env *env)
 			else
 				must_expand = false;
 			tokens[1].type = E_LIMITER;
-			tokens[0].fd[0] = heredoc(tokens[1].ptr, tokens[1].length, must_expand, env); // Review: heredoc error.
+			tokens[0].fd[0] = heredoc(tokens[1].ptr, tokens[1].length, must_expand, env);
 			tokens[0].fd[1] = -1;
 			if (g_signal == SIGINT)
 			{
