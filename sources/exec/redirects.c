@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 11:53:38 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 16:39:59 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,7 @@ int32_t	stt_open_file(t_token *token, t_env *env)
 	return (-1);
 }
 
-// Returns: -1 Error (P), 1) STDIN REDIRECTED 2) STDOUT REDIRECTED
-// Review: Set heredocs dupped here to -1, maybe on exit we close all fds
+// Returns: 1) STDIN REDIRECTED 2) STDOUT REDIRECTED, 4) ERROR (P)
 static
 int	stt_apply_redir(t_token *token, t_env *env)
 {
@@ -71,17 +70,17 @@ int	stt_apply_redir(t_token *token, t_env *env)
 	else
 		fd = stt_open_file(token, env);
 	if (fd < 0)
-		return (-1);
+		return (4);
 	if (dup2(fd, target) < 0)
 	{
-		close(fd);									// Review: Do we close fd here? The assumption of the caller is that as the pipeline gets executed, the fds get closed
-		return (ft_error("msh_dup2: ", NULL, -1));	// Review: Stop execution on dup errors?
+		close(fd);
+		return (ft_error("msh_dup2: ", NULL, 4));
 	}
 	close(fd);
 	return (target + 1);
 }
 
-// Returns: -1) Error (P), 1) STDIN REDIRECTED 2) STDOUT REDIRECTED 3) Both
+// Returns: (P), 1) STDIN REDIRECTED 2) STDOUT REDIRECTED 3) Both, 4) Error
 int	msh_open_files(t_token *tokens, t_token *end, t_env *env)
 {
 	ssize_t		pdepth;
@@ -90,18 +89,15 @@ int	msh_open_files(t_token *tokens, t_token *end, t_env *env)
 
 	pdepth = 0;
 	rvalue = 0;
-	while (tokens < end && !(tokens->type & E_END) && rvalue != -1)
+	while (tokens < end && !(tokens->type & E_END) && rvalue < 4)
 	{
 		type = tokens->type;
 		pdepth += !!(type & E_OPAREN) - !!(type & E_CPAREN);
-		if (pdepth == 0 && (type & E_REDIR))	// Review: Why are 
+		if (pdepth == 0 && (type & E_REDIR))
 			rvalue |= stt_apply_redir(tokens, env);
 		if (pdepth < 0)
-			return (ft_error("msh_unexpected: Negative parenthesis depth", "", -1));
+			return (ft_error("msh_unexpected: Negative parenthesis depth", "", 4));
 		tokens++;
 	}
 	return (rvalue);
 }
-
-// << EOF > filename
-// HRDOC LIMITER REDIR_OUT FILE

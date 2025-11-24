@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 14:25:25 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 17:31:43 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ stt_find_eof(const char **line_ptr, const char *end, const char *eof, size_t eof
 			i++;
 		if ((i == eof_len) && (str[i] == 0 || str[i] == '\n'))
 			return (1);
-		str++;
 		while (str < end && *str != '\n')
 			str++;
+		str += (str < end && *str == '\n');
 	}
 	return (0);
 }
@@ -118,7 +118,7 @@ int	heredoc(const char *src, size_t length, bool expand, t_env *env)
 	if (length >= FT_NAME_MAX)
 		return (ft_error("msh_heredoc: eof name is too long", "", -1));
 	if (pipe(fd) == -1)
-		ft_error("msh_pipe: ", NULL, -1);
+		return (ft_error("msh_pipe: ", NULL, -1));
 	stt_clean_eof(eof, src, length);
 	rvalue = stt_heredoc(eof, fd[1], expand, env);
 	close(fd[1]);

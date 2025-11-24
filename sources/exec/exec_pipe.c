@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 11:18:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 16:33:45 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ pid_t	stt_child(int32_t *fd, t_token *current, t_token *next, t_env *env)
 		if (rvalue == -1)
 			return (ft_error("msh_dup2: ", NULL, -1));
 	}
-	msh_open_files(current, next, env);
+	if (msh_open_files(current, next, env) >= 4)
+		return (1);
 	if (not_subshell)
 		return (exec_cmd(current, env));
 	else

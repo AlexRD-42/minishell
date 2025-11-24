@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/24 10:52:13 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 17:22:10 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int stt_exec_simple(t_token *start, t_token *end, t_env *env)
 // Receives {start, end, env}
 int	exec_stu(t_token *start, t_token *end, t_env *env)
 {
-	const int32_t	original_stdin = dup(STDIN_FILENO);
+	const int32_t	original_stdin = dup(STDIN_FILENO);	// THIS LEAKS
 	t_token			*next;
 
 	if (original_stdin < 0)
