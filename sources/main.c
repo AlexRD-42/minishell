@@ -49,7 +49,7 @@ int	stt_notty_mode(t_env *env, t_hst *hst)
 static
 int	stt_tty_mode(t_env *env, t_hst *hst)
 {
-	t_token	tokens[FT_TOKEN_COUNT];	// Allocation
+	t_token	tokens[FT_TOKEN_COUNT];
 	char	line[FT_LINE_MAX];
 	size_t	len;
 	int		rvalue;
@@ -58,24 +58,24 @@ int	stt_tty_mode(t_env *env, t_hst *hst)
 	rvalue = env->exit_status;
 	while (1)
 	{
-		len = init_read(line, hst, env); // Read char by char in non canonical mode
-		if (len == SIZE_MAX) // Control + D on empty line -> exit
+		len = init_read(line, hst, env);
+		if (len == SIZE_MAX)
 		{
 			write(STDOUT_FILENO, "exit\n", 5);
 			break ;
 		}
-		if (len == 0) // Empty string "" , do not add to history
+		if (len == 0)
 			continue;
-		hst_add_entry(line, len, hst);
+		hst_add_entry(line, len, hst); // Review error
 		if (parsing(tokens, line, &end, env) == SIZE_MAX)
 		{
-			// att_exit(2, true); //exit_status for syntax error: 2
-			// continue ;
+			env->exit_status = 2;
+			continue ;
 		}
 		if (tokens[0].type != E_END)
-			rvalue = exec_line(tokens, end, env);	// This needs to have the correct length
-	}	// Review: Parsing returns the end tokens ptr
-	return (rvalue); // When passing false, only returns current exit_status
+			rvalue = exec_line(tokens, end, env);
+	}
+	return (rvalue);
 }
 
 int	main(int argc, const char **argv, const char **envp)

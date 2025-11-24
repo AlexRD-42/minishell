@@ -73,7 +73,6 @@ static size_t	stt_handle_heredocs(t_token *tokens, t_env *env)
 	{
 		if (tokens[0].type & (E_HRDOC) && tokens[1].type & E_WORD)
 		{
-			// tokens[0].type = E_HRDOC | E_EXPAND relativo a expansion no geral, tokens[1].type = E_LIMITER | E_EXPAND relativo a
 			if (stt_expan(tokens[1], 1))
 				must_expand = true;
 			else

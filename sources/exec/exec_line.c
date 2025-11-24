@@ -43,14 +43,14 @@ int stt_exec_simple(t_token *start, t_token *end, t_env *env)
 // Receives {start, end, env}
 int	exec_stu(t_token *start, t_token *end, t_env *env)
 {
-	const int32_t	original_stdin = dup(STDIN_FILENO);	// THIS LEAKS
+	const int32_t	original_stdin = dup(STDIN_FILENO); // Review: Leak on child
 	t_token			*next;
 
 	if (original_stdin < 0)
-		return (ft_error("msh_dup: ", NULL, 1));	// Failed to save the state
+		return (ft_error("msh_dup: ", NULL, 1));
 	if (start == end)
 		return (0);
-	next = msh_next_delimiter(start, end, E_PIPE); //Review unnecessary
+	next = msh_next_delimiter(start, end, E_PIPE);
 	if (next == end && !(start->type & E_OPAREN) && msh_mutates_state(start, end))
 		stt_exec_simple(start, end, env);
 	else

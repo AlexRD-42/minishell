@@ -27,18 +27,20 @@ int	stt_print_args(bool no_nl, char **argv)
 	{
 		while (argv[1] != NULL)
 		{
-			if (ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0])))
+			if (ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0])) == -1)
 				return (1);
-			if (ft_write(STDOUT_FILENO, " ", 1))
+			if (ft_write(STDOUT_FILENO, " ", 1) == -1)
 				return (1);
 			argv++;
 		}
-		if (ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0])))
+		if (ft_write(STDOUT_FILENO, argv[0], ft_strlen(argv[0])) == -1)
 			return (1);
 	}
-	if (no_nl == 0)
-		if (ft_write(STDOUT_FILENO, "\n", 1))
+	if (no_nl == 1)
+		if (ft_write(STDOUT_FILENO, "\033[7m%\033[27m", 10) == -1)
 			return (1);
+	if (ft_write(STDOUT_FILENO, "\n", 1) == -1)
+		return (1);
 	return (0);
 }
 

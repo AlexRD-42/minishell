@@ -26,7 +26,7 @@ int	msh_cd(t_vecp *argv, t_env *env)
 
 	if (argv->count < 2)
 	{
-		chdir("~");	//
+		chdir("~");	// Review: env_find of PATH!!!
 		write(STDOUT_FILENO, "\n", 1);
 		return (1);
 	}

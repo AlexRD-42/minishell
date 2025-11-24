@@ -96,6 +96,8 @@ size_t	init_read(char *buffer, t_hst *hst, t_env *env)
 
 	if (tcgetattr(STDIN_FILENO, &old_mode) == -1)
 		return (SIZE_MAX);
+	if (g_signal)
+		g_signal = 0;
 	rvalue = 0;
 	if (stt_init_line_editor(&data, buffer, hst, old_mode) == 0)
 	{
