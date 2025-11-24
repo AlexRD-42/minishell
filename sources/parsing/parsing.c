@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 15:31:23 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/24 12:05:45 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 18:06:12 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,8 @@ static size_t	stt_handle_heredocs(t_token *tokens, t_env *env)
 			else
 				must_expand = false;
 			tokens[1].type = E_LIMITER;
-			heredoc(tokens[1].ptr, tokens[1].length, must_expand, env); // Review: heredoc error.
+			tokens[0].fd[0] = heredoc(tokens[1].ptr, tokens[1].length, must_expand, env); // Review: heredoc error.
+			tokens[0].fd[1] = -1;
 		}
 		tokens++;
 	}

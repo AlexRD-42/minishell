@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 17:31:43 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 17:49:22 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,12 +97,12 @@ int	stt_heredoc(const char *eof, int32_t fd, bool expand, t_env *env)
 	src = (t_buf){buffer, buffer + length, buffer};
 	if (expand == true)
 	{
-		if (parse_interval(src, env, &dst))
+		if (parse_interval(src, env, &dst) < 0)
 			return (-1);
-		if (ft_write(fd, dst.optr, (size_t)(dst.wptr - dst.optr)))
+		if (ft_write(fd, dst.optr, (size_t)(dst.wptr - dst.optr)) < 0)
 			return (-1);
 	}
-	else if (ft_write(fd, buffer, length))
+	else if (ft_write(fd, buffer, length) < 0)
 		return (-1);
 	return (0);
 }
@@ -122,7 +122,7 @@ int	heredoc(const char *src, size_t length, bool expand, t_env *env)
 	stt_clean_eof(eof, src, length);
 	rvalue = stt_heredoc(eof, fd[1], expand, env);
 	close(fd[1]);
-	if (rvalue)
+	if (rvalue == -1)
 	{
 		close(fd[0]);
 		return (-1);
@@ -130,6 +130,3 @@ int	heredoc(const char *src, size_t length, bool expand, t_env *env)
 	else
 		return (fd[0]);
 }
-
-// << EOF > filename
-// HRDOC LIMITER REDIR_OUT FILE

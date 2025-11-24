@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 16:57:30 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 18:00:44 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <stdio.h>
 
 # include "msh_types.h"
+
+ssize_t	ft_putnbr(int64_t number, int fd, char c);
 
 // PARSING
 size_t	parsing(t_token *tokens, char *input, t_token **end, t_env *env);
