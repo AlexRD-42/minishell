@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 12:25:47 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:39:46 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/23 22:02:54 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,29 +29,36 @@ void	signal_handler(int sig)
 }
 
 static
-int	stt_notty_mode(t_env *env, t_hst *hst)
+int	stt_notty_mode(t_env *env)
 {
 	t_token		tokens[FT_TOKEN_COUNT];
 	static char	line[FT_LINE_MAX];
-	size_t		len;
+	int			len;
 	int			rvalue;
 	t_token		*end;
 
-	
-
-	return (0);
+	rvalue = 0;
+	len = read(STDIN_FILENO, line, FT_PIPE_SIZE);
+	if (len == -1)
+		return (1);
+	line[len] = '\0';
+	if (len == 0)
+		return (0);
+	if (parsing(tokens, line, &end, env) == SIZE_MAX)
+		return (2);
+	if (tokens[0].type != E_END)
+		rvalue = exec_line(tokens, end, env);
+	return (rvalue);
 }
 
 static
-int	stt_tty_mode(t_env *env, t_hst *hst)
+int	stt_tty_mode(t_env *env, t_hst *hst, int rvalue)
 {
 	t_token		tokens[FT_TOKEN_COUNT];
 	static char	line[FT_LINE_MAX];
 	size_t		len;
-	int			rvalue;
 	t_token		*end;
 
-	rvalue = env->exit_status;
 	while (1)
 	{
 		len = init_read(line, hst, env);
@@ -85,9 +92,9 @@ int	main(int argc, const char **argv, const char **envp)
 	if (msh_init(&env, &hst, envp) == 0)
 	{
 		if (isatty(STDIN_FILENO) == 1)
-			rvalue = stt_tty_mode(&env, &hst);
+			rvalue = stt_tty_mode(&env, &hst, env.exit_status);
 		else
-			rvalue = stt_notty_mode(&env, &hst);
+			rvalue = stt_notty_mode(&env);
 	}
 	return (rvalue);
 }

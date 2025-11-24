@@ -26,9 +26,9 @@ size_t	stt_env_copy(t_env *env, const char **envp)
 	const char	*entry;
 
 	ft_memset(env->optr, 0, FT_ENV_SIZE);
-	ft_memset(env->metadata, 0, FT_ENV_COUNT);	// Careful
-	ft_memset(env->ptr, 0, FT_ENV_COUNT * sizeof(char **));	// Check
-	while (envp[env->count] != NULL)	// no guard for env->count, env_add responsability
+	ft_memset(env->metadata, 0, FT_ENV_COUNT);
+	ft_memset(env->ptr, 0, FT_ENV_COUNT * sizeof(char **));
+	while (envp[env->count] != NULL)
 	{
 		entry = envp[env->count];
 		if (env_add(entry, env))
@@ -46,10 +46,10 @@ int	stt_setup_signals(void)
 	struct sigaction	sigmain;
 
 	ft_memset(&sigmain, 0, sizeof(sigmain));
-	sigemptyset(&sigmain.sa_mask);			// Clears the mask
+	sigemptyset(&sigmain.sa_mask);
 	sigmain.sa_flags = 0;
-	sigmain.sa_handler = signal_handler;			// Registers a handler
-	if (sigaction(SIGWINCH, &sigmain, NULL) < 0)	// Now listening to SIGWINCH
+	sigmain.sa_handler = signal_handler;
+	if (sigaction(SIGWINCH, &sigmain, NULL) < 0)
 		return (ft_error("msh_signals: ", NULL, -1));
 	if (sigaction(SIGINT, &sigmain, NULL) < 0)
 		return (ft_error("msh_signals: ", NULL, -1));
@@ -83,8 +83,8 @@ int	msh_init(t_env *env, t_hst *hst, const char **envp)
 	if (stt_setup_signals())
 		return (-1);
 	if (stt_env_copy(env, envp) == SIZE_MAX)
-		return (-2);	// OOM
+		return (-2);
 	if (env_add_shlvl(env) != 0)
-		return (-2);	// OOM
+		return (-2);
 	return (0);
 }
