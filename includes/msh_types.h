@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 10:24:23 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:16:05 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct s_env
 	char	*ptr[FT_ENV_COUNT];
 	void	*sig_dfl;
 	int32_t	exit_status;
+	int		fd_tmp;
 }	t_env;
 
 // General use buffer (24 bytes)

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 19:04:39 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:19:22 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,13 +56,15 @@ pid_t	stt_child(int32_t *fd, t_token *current, t_token *next, t_env *env)
 	sigaction(SIGQUIT, env->sig_dfl, NULL);
 	sigaction(SIGWINCH, env->sig_dfl, NULL);
 	rvalue = 0;
+	if (env->fd_tmp != -1)
+		close(env->fd_tmp);
 	if (fd[0] != -1 || fd[1] != -1)
 	{
 		close(fd[0]);
 		rvalue = dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
 		if (rvalue == -1)
-			return (ft_error("msh_dup2: ", NULL, -1));
+			return (ft_error("msh_dup2: ", NULL, 1));
 	}
 	if (msh_open_files(current, next, env) >= 4)
 		return (1);

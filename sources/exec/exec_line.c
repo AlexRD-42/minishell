@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/24 19:07:04 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:19:53 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,9 @@ int	exec_stu(t_token *start, t_token *end, t_env *env)
 
 	if (original_stdin < 0)
 		return (ft_error("msh_dup: ", NULL, 1));
+	env->fd_tmp = original_stdin;
 	if (start == end)
-		return (0);
+		return (env->exit_status);
 	next = msh_next_delimiter(start, end, E_PIPE);
 	if (next == end && !(start->type & E_OPAREN) && msh_mutates_state(start, end))
 		exit_status = stt_exec_simple(start, end, env);
@@ -59,6 +60,7 @@ int	exec_stu(t_token *start, t_token *end, t_env *env)
 	if ((dup2(original_stdin, STDIN_FILENO) < 0))
 		ft_error("msh_dup2: ", NULL, -1);
 	close(original_stdin);
+	env->fd_tmp = -1;
 	return (exit_status);
 }
 
@@ -69,7 +71,7 @@ int	exec_line(t_token *start, t_token *end, t_env *env)
 	bool	should_run;
 
 	if (start == end)
-		return (0);
+		return (env->exit_status);
 	current = start;
 	should_run = 1;
 	while (current < end)

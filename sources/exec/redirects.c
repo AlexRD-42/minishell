@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 18:07:30 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 20:10:13 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ int32_t	stt_parse_fd(const uint32_t type, const char *str)
 	int		fd;
 
 	fd = -1;
-	// printf("\n\n<%s, %d>\n\n", str, type);	// Review: Algo quebrou redirects
 	if (type & E_REDIR_IN)
 		fd = open(str, O_RDONLY);
 	else if (type & E_APPND)
