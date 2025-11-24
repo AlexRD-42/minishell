@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 09:40:55 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 18:26:49 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ char	*env_find(const char *entry, size_t length, size_t *index, t_env *env)
 		}
 		i++;
 	}
+	if (index != NULL)
+		*index = i;
 	return (NULL);
 }
 

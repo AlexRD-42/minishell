@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:43 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 10:24:46 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 18:27:02 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ int	env_export(const char *entry, t_env *env)
 	bool	append;
 
 	length = 0;
+	index = 0;
 	while (entry[length] != 0 && entry[length] != '=')
 		length++;
 	append = (length > 1) && (entry[length] == '=')	&& entry[length - 1] == '+';
