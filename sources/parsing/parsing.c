@@ -12,6 +12,9 @@
 
 #include "minishell.h"
 #include <stdint.h>
+#include <signal.h>
+
+extern volatile sig_atomic_t	g_signal;
 
 static uint32_t	stt_expan(t_token token, int heredoc)
 {
@@ -80,6 +83,12 @@ static size_t	stt_handle_heredocs(t_token *tokens, t_env *env)
 			tokens[1].type = E_LIMITER;
 			tokens[0].fd[0] = heredoc(tokens[1].ptr, tokens[1].length, must_expand, env); // Review: heredoc error.
 			tokens[0].fd[1] = -1;
+			if (g_signal == SIGINT)
+			{
+				env->exit_status = 130;
+				g_signal = 0;
+				break ;
+			}
 		}
 		tokens++;
 	}

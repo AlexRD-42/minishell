@@ -31,18 +31,14 @@ void	signal_handler(int sig)
 static
 int	stt_notty_mode(t_env *env, t_hst *hst)
 {
-	// t_token	tokens[FT_TOKEN_COUNT];
-	// size_t		token_count;
+	t_token		tokens[FT_TOKEN_COUNT];
+	static char	line[FT_LINE_MAX];
+	size_t		len;
+	int			rvalue;
+	t_token		*end;
 
-	// str = argv[1];	// We only care about the first argument
-	// token_count = tokenize(msh, str);
-	// if (token_count == SIZE_MAX)
-	// {
+	
 
-	// }
-	// syntax error;
-	// Execute
-	// Exit
 	return (0);
 }
 
