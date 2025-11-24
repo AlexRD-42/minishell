@@ -23,7 +23,7 @@ char	*stt_token_quote_handler(t_token *token, const char *end, char quote)
 	if (!*end)
 	{
 		token->type = E_ERROR;
-		write(2, "minishell: syntax error: unclosed quote\n", 40);
+		ft_error("msh: syntax error:", "unclosed quotes", 2);
 		return (NULL);
 	}
 	end++;
@@ -112,7 +112,7 @@ char	*stt_get_next_token(t_token *token, const char *str)
 	if (token->length == 0)
 	{
 		token->type = E_ERROR;
-		write(2, "minishell: syntax error near not implemented token\n", 51);
+		ft_error("msh: syntax error: ", "not implemented token", 2);
 		return (NULL);
 	}
 	return (str + token->length);
@@ -129,14 +129,14 @@ size_t	tokenize(t_token *tokens, const char *input, t_token **end)
 	{
 		if (count >= FT_TOKEN_COUNT - 1)
 		{
-			write(2, "too many tokens\n", 16);			// ERROR_MSG
+			ft_error("msh: syntax error: ", "too many tokens", 2);
 			tokens[FT_TOKEN_COUNT - 1].type = E_END;
 			return (SIZE_MAX);
 		}
 		input = stt_get_next_token(tokens + count, input);
 		if (tokens[count].type & (E_END))
 			break ;
-		if (tokens[count].type & (E_ERROR))			// ?
+		if (tokens[count].type & (E_ERROR))
 			return (SIZE_MAX);
 		count++;
 	}
