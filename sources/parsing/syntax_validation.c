@@ -12,58 +12,19 @@
 
 #include "minishell.h"
 
-static int	stt_count_forks(t_token *start, t_token *end, int max_forks);
-
-static int	stt_get_max_forks(t_token *start, t_token *end)
-{
-	int		current_max;
-	int		overall_max;
-    t_token	*delimiter;
-	t_token	*current_start;
-
-	if (start >= end)
-		return (0);
-	overall_max = 0;
-	current_start = start;
-	while (current_start < end)
-	{
-		delimiter = msh_next_delimiter(current_start, end, E_PIPE | E_OR);
-		current_max = stt_count_forks(current_start, delimiter, 0);
-		if (current_max > overall_max)
-			overall_max = current_max;
-		current_start = delimiter + 1;
-	}
-	return (overall_max);
-}
-
 static int	
-stt_count_forks(t_token *start, t_token *end, int max_forks)
+stt_count_pipes(t_token *tokens, t_token *end)
 {
-	int		pipe_count;
-	int		internal_max;
-	t_token	*close;
+	size_t	pipes_num;
 
-	pipe_count = 0;
-	while (start < end)
+	pipes_num = 0;
+	while (tokens < end)
 	{
-		if (start->type & E_PIPE)
-			pipe_count++;
-		else if (start->type & E_OPAREN)
-		{
-			close = msh_next_delimiter(start + 1, end, E_CPAREN);
-			internal_max = stt_get_max_forks(start + 1, close); 
-			if (internal_max > max_forks)
-				max_forks = internal_max;
-			pipe_count++; 
-			start = close;
-		}
-		else if (pipe_count == 0 && start->type & E_WORD)
-			pipe_count = 1;
-		if (pipe_count > max_forks)
-			max_forks = pipe_count;
-		start++;
+		if (tokens[0].type & E_PIPE)
+			pipes_num++;
+		tokens++;
 	}
-	return (max_forks);
+	return (pipes_num);
 }
 
 static
@@ -111,7 +72,7 @@ size_t	syntax_validation(t_token *tokens, t_token *end)
 		return (SIZE_MAX);	// Print error 
 	if (pdepth > 0)
 		return (SIZE_MAX);	// Unclosed (
-	if (stt_get_max_forks(start, end) >= FT_MAX_CHILDREN)
+	if (stt_count_pipes(start, end) >= FT_MAX_CHILDREN)
 		return (SIZE_MAX); // MAX CHILDREN
 	return (0);
 }

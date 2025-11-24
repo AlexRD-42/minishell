@@ -49,11 +49,11 @@ int	stt_notty_mode(t_env *env, t_hst *hst)
 static
 int	stt_tty_mode(t_env *env, t_hst *hst)
 {
-	t_token	tokens[FT_TOKEN_COUNT];
-	char	line[FT_LINE_MAX];
-	size_t	len;
-	int		rvalue;
-	t_token	*end;
+	t_token		tokens[FT_TOKEN_COUNT];
+	static char	line[FT_LINE_MAX];
+	size_t		len;
+	int			rvalue;
+	t_token		*end;
 
 	rvalue = env->exit_status;
 	while (1)
