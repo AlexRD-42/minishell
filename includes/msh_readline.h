@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef READ_INPUT_H
-# define READ_INPUT_H
+#ifndef MSH_READLINE_H
+# define MSH_READLINE_H
 
 # include "msh_types.h"
 
@@ -42,7 +42,7 @@ void	redraw_line(t_line_editor *data);
 void	cursor_end(t_line_editor *data);
 void	cursor_home(t_line_editor *data);
 int		get_window_size(t_pos *coords);
-int	rd_handle_sigint(t_line_editor *data, t_env *env);
+int		rd_handle_sigint(t_line_editor *data, t_env *env);
 void	reset_line(t_line_editor *data);
 
 #endif

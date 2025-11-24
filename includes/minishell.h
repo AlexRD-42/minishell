@@ -53,7 +53,7 @@ int		parse_interval(t_buf src, t_env *env, t_buf *dst);
 void	signal_handler(int sig);
 
 // BUILT-INS
-int 	msh_dispatch(t_vecp *argv, t_env *env);
+int		msh_dispatch(t_vecp *argv, t_env *env);
 bool	msh_mutates_state(t_token *start, t_token *end);
 int		msh_cd(t_vecp *argv, t_env *env);
 int		msh_pwd(void);
@@ -68,7 +68,9 @@ size_t	init_read(char *buffer, t_hst *hst, t_env *env);
 
 // EXECUTE
 int		exec_line(t_token *start, t_token *end, t_env *env);
-int		exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env);
+int		exec_pipeline\
+(t_token *current, t_token *next, t_token *end, t_env *env);
+
 int		exec_cmd(t_token *tokens, t_env *env);
 int		msh_open_files(t_token *tokens, t_token *end, t_env *env);
 

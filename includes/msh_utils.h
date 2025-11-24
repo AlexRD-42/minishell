@@ -13,10 +13,10 @@
 #ifndef MSH_UTILS_H
 # define MSH_UTILS_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <unistd.h>
-#include <stdbool.h>
+# include <stdint.h>
+# include <stddef.h>
+# include <unistd.h>
+# include <stdbool.h>
 
 size_t		ft_strlen(const char *str);
 size_t		ft_strlcpy(char *dst, const char *src, size_t dst_size);
@@ -33,8 +33,11 @@ const char	*ft_strchr(const char *str, unsigned char c);
 
 void		*ft_memmove(void *vdst, const void *vsrc, size_t length);
 void		*ft_memset(void *dst_void, const uint8_t byte, size_t length);
-void		*ft_memcpy(void *restrict vdst, const void *restrict vsrc, size_t length);
-int			ft_lmcpy(void *restrict vdst, const void *restrict vsrc, size_t length, char *end);
+void		*ft_memcpy\
+(void *restrict vdst, const void *restrict vsrc, size_t length);
+
+int			ft_lmcpy\
+(void *restrict vdst, const void *restrict vsrc, size_t length, char *end);
 
 // Wrappers
 ssize_t		ft_write(int fd, const void *buffer, size_t length);

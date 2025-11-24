@@ -49,8 +49,8 @@ typedef struct s_vecp
 
 typedef struct s_hst_entry
 {
-	uint32_t start;   // offset into buf
-	uint32_t length;  // length in bytes (not including '\0')
+	uint32_t	start;// offset into buf
+	uint32_t	length;// length in bytes (not including '\0')
 }	t_hst_entry;
 
 // Ideally should be vecp too but fuck that
@@ -61,7 +61,7 @@ typedef struct s_hst
 	size_t		first;		// index of oldest entry
 	size_t		count;		// number of valid entries
 	char		data[FT_HST_SIZE];
-	t_hst_entry entries[FT_HST_COUNT];
+	t_hst_entry	entries[FT_HST_COUNT];
 }	t_hst;
 
 typedef struct s_str
