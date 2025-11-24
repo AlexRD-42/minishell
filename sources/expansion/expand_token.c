@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 21:07:19 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 21:18:07 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,8 @@ ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 	char			buffer[FT_ARG_SIZE];
 	const uintptr_t	address = (uintptr_t) vec->buf.wptr;
 
-	src = (t_buf){token.ptr, token.ptr + token.length, token.ptr};
+	src = (t_buf){(char *)(uintptr_t)(token.ptr), (char *)(uintptr_t)(token.ptr)
+		+ token.length, (char *)(uintptr_t)(token.ptr)};
 	if (token.type & E_EXPAND)
 		dst = &(t_buf){buffer, buffer + sizeof(buffer), buffer};
 	else
