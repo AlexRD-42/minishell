@@ -6,13 +6,14 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 12:15:52 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 22:47:42 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 11:34:31 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <wait.h>
 #include "minishell.h"
 #include "msh_types.h"
 #include "msh_utils.h"
@@ -23,19 +24,19 @@
 void	msh_wait_child(pid_t *cpid_list, size_t count, t_env *env)
 {
 	size_t	i;
-	int		status;
+	int		last_status;
+	pid_t	cpid;
 
 	i = 0;
 	while (i < count)
 	{
-		if (cpid_list[i] > 0)
-			waitpid(cpid_list[i], &status, 0);
+		cpid = waitpid(cpid_list[i], &last_status, 0);
 		if (i == count - 1)
 		{
-			if (WIFEXITED(status))
-				env->exit_status = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-				env->exit_status = 128 + WTERMSIG(status);
+			if (WIFEXITED(last_status))
+				env->exit_status = WEXITSTATUS(last_status);
+			else if (WIFSIGNALED(last_status))
+				env->exit_status = 128 + WTERMSIG(last_status);
 		}
 		i++;
 	}

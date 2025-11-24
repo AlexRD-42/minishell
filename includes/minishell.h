@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 10:19:17 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 10:32:23 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 # include <stddef.h>
 # include <stdbool.h>
 # include <unistd.h>
-# include <wait.h>
 
 # include "msh_types.h"
 

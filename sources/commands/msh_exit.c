@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 22:02:12 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 11:35:40 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ int	msh_exit(t_vecp *argv, t_env *env)
 {
 	int64_t	number;
 
-	(void) env;
 	number = 0;
 	if (argv->count > 2)
 		return (ft_error("msh_exit: too many arguments", "", 1));

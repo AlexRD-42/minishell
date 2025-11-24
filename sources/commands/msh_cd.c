@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 22:00:49 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 11:25:09 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,14 @@
 // Review: Empty arguments
 int	msh_cd(t_vecp *argv, t_env *env)
 {
-	char	buffer[FT_PATH_SIZE * 2];
+	char		buffer[FT_PATH_SIZE * 2];
+	const char	default_path[] = "~";
+
+	// Env_find home, ~
 
 	if (argv->count < 2)
 	{
+		chdir("~");	//
 		write(STDOUT_FILENO, "\n", 1);
 		return (1);
 	}

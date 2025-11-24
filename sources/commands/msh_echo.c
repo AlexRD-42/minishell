@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 19:14:38 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 11:38:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	stt_print_args(bool no_nl, char **argv)
 			return (1);
 	}
 	if (no_nl == 0)
-		if (ft_write(STDOUT_FILENO, "\n", 1))
+		if (ft_write(STDOUT_FILENO, "\n\n", 2))
 			return (1);
 	return (0);
 }

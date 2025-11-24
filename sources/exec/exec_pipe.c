@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 19:01:11 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 11:18:34 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include <fcntl.h>
 #include "msh_utils.h"
 #include <stdlib.h>
-#include <signal>
+#include <signal.h>
 
 // Always exits upon return
 static
@@ -55,8 +55,6 @@ pid_t	stt_child(int32_t *fd, t_token *current, t_token *next, t_env *env)
 	sigaction(SIGINT, env->sig_dfl, NULL);
 	sigaction(SIGQUIT, env->sig_dfl, NULL);
 	sigaction(SIGWINCH, env->sig_dfl, NULL);
-	sigaction(SIGTTOU, env->sig_dfl, NULL);
-	sigaction(SIGTTIN, env->sig_dfl, NULL);
 	rvalue = 0;
 	if (fd[0] != -1 || fd[1] != -1)
 	{
@@ -118,8 +116,9 @@ pid_t	stt_exec_pipe(t_token *current, t_token *next, t_token *end, t_env *env)
 
 int	exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env)
 {
-	size_t		count;
-	pid_t		cpid_list[FT_MAX_CHILDREN];	// No overflow because it is prevalidated
+	size_t	count;
+	pid_t	cpid_list[FT_MAX_CHILDREN];	// No overflow because it is prevalidated
+	pid_t	process_id;
 
 	count = 0;
 	cpid_list[count++] = stt_exec_pipe(current, next, end, env);
@@ -127,7 +126,9 @@ int	exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env)
 	while (current < end)
 	{
 		next = msh_next_delimiter(current, end, E_PIPE);
-		cpid_list[count++] = stt_exec_pipe(current, next, end, env);
+		process_id = stt_exec_pipe(current, next, end, env);
+		if (process_id > 0)
+			cpid_list[count++] = process_id;
 		current = next + 1;
 	}
 	msh_wait_child(cpid_list, count, env);	// To do: Check returns of wait_child

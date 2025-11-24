@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 23:02:04 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 11:53:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,3 +102,6 @@ int	msh_open_files(t_token *tokens, t_token *end, t_env *env)
 	}
 	return (rvalue);
 }
+
+// << EOF > filename
+// HRDOC LIMITER REDIR_OUT FILE

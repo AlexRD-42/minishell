@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 18:53:28 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 11:53:06 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ enum e_type
 	E_LIMITER = 1u << 11,
 	E_EXPAND = 1u << 12,
 	E_END = 1u << 13,
-	E_FILE = 1u << 14,
+	E_FILENAME = 1u << 14,
 	E_REDIR = E_REDIR_IN | E_REDIR_OUT | E_APPND | E_HRDOC,
 	E_OPERATOR = E_OR | E_AND | E_PIPE,
 	E_CMD_END = E_AND | E_OR | E_PIPE | E_END | E_OPAREN | E_CPAREN

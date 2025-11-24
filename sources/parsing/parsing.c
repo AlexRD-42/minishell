@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 15:31:23 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/23 23:06:28 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 12:05:45 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static void	stt_prepare_tokens(t_token *tokens)
 		{
 			tokens[0].fd[0] = -1;
 			tokens[0].fd[1] = -1;
-			tokens[1].type = E_FILE | stt_expan(tokens[1], 0);	// Review: | E_FILE eh derivado, nao pode ser atribuido. O nome tem que ser LIMITER
+			tokens[1].type = E_FILENAME | stt_expan(tokens[1], 0);	// Review: | E_FILE eh derivado, nao pode ser atribuido. O nome tem que ser LIMITER
 		}	// Exemplo: cat > out = WORD REDIR_OUT LIMITER
 		else if (tokens[0].type & (E_WORD))
 		{
@@ -71,6 +71,7 @@ static size_t	stt_handle_heredocs(t_token *tokens, t_env *env)
 	{
 		if (tokens[0].type & (E_HRDOC) && tokens[1].type & E_WORD)
 		{
+			// tokens[0].type = E_HRDOC | E_EXPAND relativo a expansion no geral, tokens[1].type = E_LIMITER | E_EXPAND relativo a 
 			tokens[0].type = E_LIMITER | stt_expan(tokens[1], 1);
 			tokens[0].fd[0] = heredoc(&tokens[1], env); // Review: heredoc error.
 			tokens[0].fd[1] = -1;

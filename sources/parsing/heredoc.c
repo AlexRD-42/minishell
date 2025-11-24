@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/23 22:46:43 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 12:04:27 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ size_t	stt_read_eof(const char *eof, char *buffer)
 	return (SIZE_MAX);
 }
 
+// To do: bool expand
 int	stt_heredoc(t_buf eof, t_env *env, int32_t fd[2])
 {
 	char	buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
@@ -85,7 +86,7 @@ int	stt_heredoc(t_buf eof, t_env *env, int32_t fd[2])
 }
 
 // To do: better error handling
-int	heredoc(t_token *token, t_env *env)
+int	heredoc(t_token *token, t_env *env)	// bool expand, const char *eof, fd[2]
 {
 	char	eof[FT_NAME_MAX];
 	char	*ptr[1];
@@ -99,3 +100,6 @@ int	heredoc(t_token *token, t_env *env)
 		return (-1);
 	return (stt_heredoc(eof_buf, env, fd));
 }
+
+// << EOF > filename
+// HRDOC LIMITER REDIR_OUT FILE
