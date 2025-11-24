@@ -21,6 +21,7 @@
 #include <fcntl.h>
 #include "msh_utils.h"
 #include <stdlib.h>
+#include <signal>
 
 // Always exits upon return
 static

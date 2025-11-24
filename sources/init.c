@@ -56,7 +56,7 @@ int	stt_setup_signals(void)
 	if (sigaction(SIGQUIT, &sigmain, NULL) < 0)
 		return (ft_error("msh_signals: ", NULL, -1));
 	if (sigaction(SIGTTOU, &sigmain, NULL) < 0)			// Review: Why do we need these?
-		return (ft_error("msh_signals: ", NULL, -1));
+		return (ft_error("msh_signals: ", NULL, -1));   // Felipe: Dont think we need those, thought this were the reason for an error on previous exec_stu
 	if (sigaction(SIGTTIN, &sigmain, NULL) < 0)			// Review: Why do we need these?
 		return (ft_error("msh_signals: ", NULL, -1));
 	return (0);
