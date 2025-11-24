@@ -26,7 +26,7 @@ OBJS = $(addprefix $(OBJ_PATH)/, $(SRCS:.c=.o))
 
 # Flags --------------------------------------- #
 CC = cc
-CFLAGS = -Wall -Wextra $(addprefix -I,$(INC_PATH))
+CFLAGS = -Wall -Wextra $(addprefix -I,$(INC_PATH)) -Werror
 LFLAGS =
 DEBUG = -g -Wpedantic -Wcast-qual -Wfloat-equal -Wswitch-default -Wduplicated-branches -Wduplicated-cond -Wsign-conversion
 SANITIZERS = -fsanitize=address,undefined,leak -fno-omit-frame-pointer
