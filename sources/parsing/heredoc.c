@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 12:19:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 14:25:25 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ stt_find_eof(const char **line_ptr, const char *end, const char *eof, size_t eof
 	{
 		i = 0;
 		*line_ptr = str;
-		while (str[i] == eof[i] && i < eof_len)
+		while (i < eof_len && str[i] == eof[i])
 			i++;
 		if ((i == eof_len) && (str[i] == 0 || str[i] == '\n'))
 			return (1);
@@ -39,6 +39,24 @@ stt_find_eof(const char **line_ptr, const char *end, const char *eof, size_t eof
 			str++;
 	}
 	return (0);
+}
+
+static
+size_t	stt_clean_eof(char *dst, const char *src, size_t length)
+{
+	const char	*end = src + length;
+	char		*odst;
+
+	odst = dst;
+	while (src < end)
+	{
+		if (*src != '"' && *src != '\'')
+			*dst++ = *src++;
+		else
+			src++;
+	}
+	*dst++ = 0;
+	return ((size_t)(dst - odst));
 }
 
 // Truncate or error? And do we null terminate?
@@ -57,14 +75,13 @@ size_t	stt_read_eof(const char *eof, char *buffer)
 	{
 		if (stt_find_eof(&line_ptr, wptr, eof, eof_len) == 1)
 			return ((size_t)(line_ptr - buffer));
-		bytes_read = read(STDIN_FILENO, wptr, FT_PAGE_SIZE);
+		bytes_read = read(STDIN_FILENO, wptr, FT_PAGE_SIZE);	// Maybe print errors here
 		wptr += bytes_read;
 	}
 	return (SIZE_MAX);
 }
 
-// To do: bool expand
-int	stt_heredoc(t_buf eof, t_env *env, int32_t fd[2])
+int	stt_heredoc(const char *eof, int32_t fd, bool expand, t_env *env)
 {
 	char	buffer[FT_PIPE_SIZE + FT_PAGE_SIZE];
 	char	aux_buffer[FT_PIPE_SIZE];
@@ -72,33 +89,46 @@ int	stt_heredoc(t_buf eof, t_env *env, int32_t fd[2])
 	t_buf	src;
 	size_t	length;
 
-	dst = (t_buf){aux_buffer, aux_buffer + sizeof(aux_buffer), aux_buffer};
-	length = stt_read_eof(eof.optr, buffer);
+	length = stt_read_eof(eof, buffer);
 	if (length == SIZE_MAX)
 		return (-1);
+	buffer[length] = 0;	// Check
+	dst = (t_buf){aux_buffer, aux_buffer + sizeof(aux_buffer), aux_buffer};
 	src = (t_buf){buffer, buffer + length, buffer};
-	if (parse_interval(src, env, &dst))
+	if (expand == true)
+	{
+		if (parse_interval(src, env, &dst))
+			return (-1);
+		if (ft_write(fd, dst.optr, (size_t)(dst.wptr - dst.optr)))
+			return (-1);
+	}
+	else if (ft_write(fd, buffer, length))
 		return (-1);
-	*dst.wptr++ = 0;	// Check
-	ft_write(fd[1], dst.optr, (size_t)(dst.wptr - dst.optr));	// Error checking
-	close(fd[1]);
-	return (fd[0]);
+	return (0);
 }
 
 // To do: better error handling	EOF"F"FEOFF'
-int	heredoc(const char *eof, size_t length, int32_t *fd, bool expand)
+// Returns -1 on failure
+int	heredoc(const char *src, size_t length, bool expand, t_env *env)
 {
-	char	eof[FT_NAME_MAX];
-	char	*ptr[1];
 	int32_t	fd[2];
-	t_buf	eof_buf;
+	char	eof[FT_NAME_MAX];
+	int		rvalue;
 
+	if (length >= FT_NAME_MAX)
+		return (ft_error("msh_heredoc: eof name is too long", "", -1));
 	if (pipe(fd) == -1)
 		ft_error("msh_pipe: ", NULL, -1);
-	eof_buf = (t_buf){eof, eof + sizeof(eof), eof};
-	if (expand_token(*token, env, &(t_vecp){eof_buf, 0, 1, ptr}))	// Review: Check conditional expand
+	stt_clean_eof(eof, src, length);
+	rvalue = stt_heredoc(eof, fd[1], expand, env);
+	close(fd[1]);
+	if (rvalue)
+	{
+		close(fd[0]);
 		return (-1);
-	return (stt_heredoc(eof_buf, env, fd));
+	}
+	else
+		return (fd[0]);
 }
 
 // << EOF > filename

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 12:30:10 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 14:07:16 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ size_t	syntax_validation(t_token *tokens);
 
 // Core
 int		msh_init(t_env *env, t_hst *hst, const char **envp);
-int		heredoc(const char *eof, size_t length, int32_t *fd, bool expand);
+int		heredoc(const char *src, size_t length, bool expand, t_env *env);
 int		att_exit(int code, int change);
 size_t	hst_add_entry(const char *str, size_t length, t_hst *hst);
 size_t	hst_read(size_t index, char *buffer, const t_hst *hst);
@@ -45,7 +45,6 @@ int		env_add_shlvl(t_env *env);
 char	*msh_expand_env(t_buf src, t_buf *dst, t_env *env);
 ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec);
 int		parse_interval(t_buf src, t_env *env, t_buf *dst);
-
 
 // Signals
 void	signal_handler(int sig);

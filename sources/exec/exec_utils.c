@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 12:15:52 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 12:30:36 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 13:48:33 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <wait.h>
+#include <errno.h>
 #include "minishell.h"
 #include "msh_defines.h"
 #include "msh_types.h"
@@ -25,23 +26,27 @@
 int	msh_wait_child(pid_t *cpid_list, size_t count)
 {
 	size_t	i;
-	int32_t	last_status;
+	int		status;
 	pid_t	cpid;
+	size_t	retries;
 
-	i = count;
-	(void) cpid;
-	cpid = waitpid(cpid_list[i], &last_status, 0);
-	while (i > 0)
+	i = 0;
+	cpid = 0;	// Initializes cpid in case count == 0
+	while (i < count)
 	{
-		i--;
-		if (cpid_list[i] > 0)
-			cpid = waitpid(cpid_list[i], 0, 0);
+		retries = FT_SYSCALL_RETRIES;
+		cpid = waitpid(cpid_list[i], &status, 0);		// Saves the result of waitpid
+		while (cpid == -1 && errno == EINTR && retries-- > 0)
+			cpid = waitpid(cpid_list[i], &status, 0);
+		if (cpid == -1)
+			ft_error("msh_waitpid: ", NULL, 1);	// Log the error but continue
+		i++;
 	}
-	if (WIFSIGNALED(last_status))
-		last_status = 128 + WTERMSIG(last_status);
-	else if (WIFEXITED(last_status))
-		return (WEXITSTATUS(last_status));
-	return (WEXITSTATUS(last_status));
+	if (cpid > 0 && WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	else if (cpid > 0 && WIFSIGNALED(status))
+		return (128 + WTERMSIG(status));
+	return (1);
 }
 
 t_token	*msh_next_delimiter(t_token *start, t_token *end, uint32_t delimiter)
