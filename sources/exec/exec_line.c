@@ -50,7 +50,7 @@ int	exec_stu(t_token *start, t_token *end, t_env *env)
 		return (ft_error("msh_dup: ", NULL, 1));	// Failed to save the state
 	if (start == end)
 		return (0);
-	next = msh_next_delimiter(start, end, E_PIPE);
+	next = msh_next_delimiter(start, end, E_PIPE); //Review unnecessary
 	if (next == end && !(start->type & E_OPAREN) && msh_mutates_state(start, end))
 		stt_exec_simple(start, end, env);
 	else

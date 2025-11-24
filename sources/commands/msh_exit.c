@@ -51,6 +51,6 @@ int	msh_exit(t_vecp *argv, t_env *env)
 	if (argv->count == 1)
 		_exit(env->exit_status & 0xFF);
 	if (stt_parse_str(argv->ptr[1], &number))
-		return (ft_error("msh_exit: numeric argument required", "", 2));
+		_exit(ft_error("exit\nmsh_exit: numeric argument required", "", 2));
 	_exit(number & 0xFF);	// Review: _exit or exit
 }

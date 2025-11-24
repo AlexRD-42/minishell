@@ -37,7 +37,7 @@ int	stt_print_args(bool no_nl, char **argv)
 			return (1);
 	}
 	if (no_nl == 0)
-		if (ft_write(STDOUT_FILENO, "\n\n", 2))
+		if (ft_write(STDOUT_FILENO, "\n", 1))
 			return (1);
 	return (0);
 }

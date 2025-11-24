@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
-#include <msh_types.h>
 
 extern volatile sig_atomic_t	g_signal;
 

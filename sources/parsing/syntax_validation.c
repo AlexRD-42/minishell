@@ -12,6 +12,8 @@
 
 #include "minishell.h"
 
+static int	stt_count_forks(t_token *start, t_token *end, int max_forks);
+
 static int	stt_get_max_forks(t_token *start, t_token *end)
 {
 	int		current_max;
@@ -26,7 +28,7 @@ static int	stt_get_max_forks(t_token *start, t_token *end)
 	while (current_start < end)
 	{
 		delimiter = msh_next_delimiter(current_start, end, E_PIPE | E_OR);
-		current_max = stt_count_pipeline_forks(current_start, delimiter, 0);
+		current_max = stt_count_forks(current_start, delimiter, 0);
 		if (current_max > overall_max)
 			overall_max = current_max;
 		current_start = delimiter + 1;
@@ -35,7 +37,7 @@ static int	stt_get_max_forks(t_token *start, t_token *end)
 }
 
 static int	
-stt_count_pipeline_forks(t_token *start, t_token *end, int max_forks)
+stt_count_forks(t_token *start, t_token *end, int max_forks)
 {
 	int		pipe_count;
 	int		internal_max;

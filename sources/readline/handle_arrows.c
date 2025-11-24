@@ -67,6 +67,7 @@ static int	stt_history_prev(t_line_editor *data)
 		return (0);
 	cursor_home(data);
 	write(STDOUT_FILENO, "\033[0J", 4);
+	write(STDOUT_FILENO, data->prompt.ptr, data->prompt.length);
 	data->hst_current--;
 	len = hst_read(data->hst_current, temp, hst);
 	if (len == SIZE_MAX)
@@ -92,6 +93,7 @@ static int	stt_history_next(t_line_editor *data)
 		return (0);
 	cursor_home(data);
 	write(STDOUT_FILENO, "\033[0J", 4);
+	write(STDOUT_FILENO, data->prompt.ptr, data->prompt.length);
 	data->hst_current++;
 	if (data->hst_current >= hst->count)
 		return (reset_line(data), 0);

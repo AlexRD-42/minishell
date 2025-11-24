@@ -86,49 +86,13 @@ static size_t	stt_handle_heredocs(t_token *tokens, t_env *env)
 	return (0);
 }
 
-int get_max_forks(t_token *start, t_token *end)
-{
-    int     max_forks;
-    int     curr_pipe_len;
-	int		internal_max;
-    t_token *delimiter;
-	t_token	*close;
-
-	max_forks = 0;
-    while (start < end)
-    {
-        delimiter = msh_next_delimiter(start, end, (E_AND | E_OR));
-        curr_pipe_len = 0;
-        while (start < delimiter)
-        {
-            if (start->type & (E_PIPE))
-                curr_pipe_len++;
-            else if (start->type & E_OPAREN)
-            {
-                close = msh_next_delimiter(start + 1, delimiter, E_CPAREN);
-                internal_max = get_max_forks(start + 1, close);
-                if (internal_max > max_forks)
-                    max_forks = internal_max;
-                curr_pipe_len++; 
-                start = close;
-            }
-            start++;
-        }
-        if (curr_pipe_len > max_forks)
-            max_forks = curr_pipe_len;
-        
-        start = delimiter + 1;
-    }
-    return (max_forks);
-}
-
 size_t	parsing(t_token *tokens, char *input, t_token **end, t_env *env)
 {
 	if (tokenize(tokens, input, end) == SIZE_MAX)
 		return (SIZE_MAX);
 	if (stt_handle_heredocs(tokens, env) == SIZE_MAX)
 		return (SIZE_MAX);
-	if (syntax_validation(tokens) == SIZE_MAX)
+	if (syntax_validation(tokens, *end) == SIZE_MAX)
 		return (SIZE_MAX);
 	stt_prepare_tokens(tokens);
 	return (0);
