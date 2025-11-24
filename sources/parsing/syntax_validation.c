@@ -13,8 +13,7 @@
 #include "minishell.h"
 #include "msh_utils.h"
 
-static int	
-stt_count_pipes(t_token *tokens, t_token *end)
+static int	stt_count_pipes(t_token *tokens, t_token *end)
 {
 	size_t	pipes_num;
 
@@ -45,7 +44,8 @@ int	stt_syntax_check(uint32_t cur_type, uint32_t prev_type, int *pdepth)
 	}
 	if (*pdepth < 0)
 		return (-1);
-	if ((cur_type & E_OPERATOR) && (prev_type & (E_OPERATOR | E_REDIR | E_OPAREN)))
+	if ((cur_type & E_OPERATOR)
+		&& (prev_type & (E_OPERATOR | E_REDIR | E_OPAREN)))
 		return (-1);
 	if ((cur_type & E_WORD) && (prev_type & E_CPAREN))
 		return (-1);

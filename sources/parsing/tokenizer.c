@@ -36,7 +36,7 @@ char	*stt_token_quote_handler(t_token *token, const char *end, char quote)
 static
 size_t	stt_token_word_handler(t_token *token, const char *str)
 {
-	const char		*start;
+	const char	*start;
 	char		*lookup_table;
 	const char	*end;
 	char		quote;
@@ -51,7 +51,7 @@ size_t	stt_token_word_handler(t_token *token, const char *str)
 		quote = *end;
 		end = stt_token_quote_handler(token, end, quote);
 		if (!end)
-			return (0);		// Erro?
+			return (0);
 		end = ft_strfind(end, lookup_table, 1);
 		if (!end)
 			break ;

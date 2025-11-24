@@ -20,7 +20,8 @@
 #include "msh_utils.h"
 
 static uint8_t	\
-stt_find_eof(const char **line_ptr, const char *end, const char *eof, size_t eof_len)
+stt_find_eof\
+(const char **line_ptr, const char *end, const char *eof, size_t eof_len)
 {
 	const char	*str = *line_ptr;
 	size_t		i;
@@ -67,7 +68,7 @@ size_t	stt_read_eof(const char *eof, char *buffer)
 	ssize_t			bytes_read;
 	char			*wptr;
 	const size_t	eof_len = ft_strlen(eof);
-	const char 		*line_ptr = buffer;
+	const char		*line_ptr = buffer;
 
 	bytes_read = read(STDIN_FILENO, buffer, FT_PAGE_SIZE);
 	wptr = buffer + bytes_read * (bytes_read > 0);
@@ -75,7 +76,7 @@ size_t	stt_read_eof(const char *eof, char *buffer)
 	{
 		if (stt_find_eof(&line_ptr, wptr, eof, eof_len) == 1)
 			return ((size_t)(line_ptr - buffer));
-		bytes_read = read(STDIN_FILENO, wptr, FT_PAGE_SIZE);	// Maybe print errors here
+		bytes_read = read(STDIN_FILENO, wptr, FT_PAGE_SIZE);
 		wptr += bytes_read;
 	}
 	return (SIZE_MAX);
@@ -92,7 +93,7 @@ int	stt_heredoc(const char *eof, int32_t fd, bool expand, t_env *env)
 	length = stt_read_eof(eof, buffer);
 	if (length == SIZE_MAX)
 		return (-1);
-	buffer[length] = 0;	// Check
+	buffer[length] = 0;
 	dst = (t_buf){aux_buffer, aux_buffer + sizeof(aux_buffer), aux_buffer};
 	src = (t_buf){buffer, buffer + length, buffer};
 	if (expand == true)

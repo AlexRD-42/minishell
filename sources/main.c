@@ -21,7 +21,7 @@
 #include "msh_types.h"
 #include "msh_utils.h"
 
-volatile sig_atomic_t g_signal;
+volatile sig_atomic_t	g_signal;
 
 void	signal_handler(int sig)
 {
@@ -68,7 +68,7 @@ int	stt_tty_mode(t_env *env, t_hst *hst, int rvalue)
 			break ;
 		}
 		if (len == 0)
-			continue;
+			continue ;
 		hst_add_entry(line, len, hst);
 		if (parsing(tokens, line, &end, env) == SIZE_MAX)
 		{

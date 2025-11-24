@@ -24,7 +24,8 @@
 extern volatile sig_atomic_t	g_signal;
 
 static int	\
-stt_init_line_editor(t_line_editor *data, char *buffer, t_hst *hst, struct termios raw_mode)
+stt_init_readline\
+(t_line_editor *data, char *buffer, t_hst *hst, struct termios raw_mode)
 {
 	raw_mode.c_lflag &= ~((tcflag_t)(ICANON | ECHO));
 	raw_mode.c_cc[VMIN] = 1;
@@ -99,7 +100,7 @@ size_t	init_read(char *buffer, t_hst *hst, t_env *env)
 	if (g_signal)
 		g_signal = 0;
 	rvalue = 0;
-	if (stt_init_line_editor(&data, buffer, hst, old_mode) == 0)
+	if (stt_init_readline(&data, buffer, hst, old_mode) == 0)
 	{
 		rvalue = stt_read_input(&data, env);
 	}

@@ -68,29 +68,29 @@ static void	stt_prepare_tokens(t_token *tokens)
 	}
 }
 
-static size_t	stt_handle_heredocs(t_token *tokens, t_env *env)
+static size_t	stt_handle_heredocs(t_token *tok, t_env *env)
 {
-	bool	must_expand;
+	bool	expand;
 
-	while (!(tokens[0].type & (E_END)))
+	while (!(tok[0].type & (E_END)))
 	{
-		if (tokens[0].type & (E_HRDOC) && tokens[1].type & E_WORD)
+		if (tok[0].type & (E_HRDOC) && tok[1].type & E_WORD)
 		{
-			if (stt_expan(tokens[1], 1))
-				must_expand = true;
+			if (stt_expan(tok[1], 1))
+				expand = true;
 			else
-				must_expand = false;
-			tokens[1].type = E_LIMITER;
-			tokens[0].fd[0] = heredoc(tokens[1].ptr, tokens[1].length, must_expand, env);
-			tokens[0].fd[1] = -1;
+				expand = false;
+			tok[1].type = E_LIMITER;
+			tok[0].fd[0] = heredoc(tok[1].ptr, tok[1].length, expand, env);
+			tok[0].fd[1] = -1;
 			if (g_signal == SIGINT)
 			{
 				env->exit_status = 130;
 				g_signal = 0;
-				break ;
+				return (SIZE_MAX);
 			}
 		}
-		tokens++;
+		tok++;
 	}
 	return (0);
 }
