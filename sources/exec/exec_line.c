@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/24 17:22:10 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 19:07:04 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,17 @@ int stt_exec_simple(t_token *start, t_token *end, t_env *env)
 	int	 			rvalue;
 
 	if (prev_fd[0] < 0 || prev_fd[1] < 0)
-		return (ft_error("msh_dup: ", NULL, -1));	// Failed to save the state
+		return (ft_error("msh_dup: ", NULL, 1));	// Failed to save the state
 	argv = (t_vecp){{buf, buf + sizeof(buf), buf}, 0, FT_ARG_COUNT, arg_ptr};
 	if (msh_build_argv(start, env, &argv) <= 0 || !argv.ptr[0])
 		return (1);
 	msh_open_files(start, end, env);
-	rvalue = msh_dispatch(&argv, env);	// Review: Do we care about the rvalue here?
+	rvalue = msh_dispatch(&argv, env);
 	if ((dup2(prev_fd[0], STDIN_FILENO) < 0) + (dup2(prev_fd[1], STDOUT_FILENO) < 0))
-		ft_error("msh_dup2: ", NULL, -1);	// Restores fds
+		ft_error("msh_dup2: ", NULL, 1);	// Restores fds
 	close(prev_fd[0]);	// Do we throw error messages for close?
 	close(prev_fd[1]);
-	return (1);	
+	return (rvalue);	
 }
 
 // Receives {start, end, env}
@@ -45,6 +45,7 @@ int	exec_stu(t_token *start, t_token *end, t_env *env)
 {
 	const int32_t	original_stdin = dup(STDIN_FILENO); // Review: Leak on child
 	t_token			*next;
+	int				exit_status;
 
 	if (original_stdin < 0)
 		return (ft_error("msh_dup: ", NULL, 1));
@@ -52,13 +53,13 @@ int	exec_stu(t_token *start, t_token *end, t_env *env)
 		return (0);
 	next = msh_next_delimiter(start, end, E_PIPE);
 	if (next == end && !(start->type & E_OPAREN) && msh_mutates_state(start, end))
-		stt_exec_simple(start, end, env);
+		exit_status = stt_exec_simple(start, end, env);
 	else
-		exec_pipeline(start, next, end, env);	// Review: return codes here
+		exit_status = exec_pipeline(start, next, end, env);	// Review: return codes here
 	if ((dup2(original_stdin, STDIN_FILENO) < 0))
 		ft_error("msh_dup2: ", NULL, -1);
 	close(original_stdin);
-	return (env->exit_status);
+	return (exit_status);
 }
 
 int	exec_line(t_token *start, t_token *end, t_env *env)

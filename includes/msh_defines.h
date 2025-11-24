@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 11:53:06 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 19:10:26 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@
 
 // Bytes (1 byte) (Kernel = 2 MB)
 # ifndef FT_ARG_MAX
-#  define FT_ARG_MAX 2097152
+#  define FT_ARG_MAX 524288
 # endif
 
 // --- Variables ------------------
@@ -76,13 +76,13 @@
 #  define FT_HST_SIZE 2097152
 # endif
 
-# define FT_MAX_CHILDREN 64		// Review: Syntax validation needs to exit early if this is above 64
+# define FT_MAX_CHILDREN 128		// Review: Syntax validation needs to exit early if this is above 64
 # define FT_SYSCALL_RETRIES 16
 # define FT_BLOCK_SIZE 64		// Block count needs to map to env count
 
 // Bytes (1 byte)
 # ifndef FT_LINE_MAX
-#  define FT_LINE_MAX 2097152
+#  define FT_LINE_MAX 524288
 # endif
 
 # ifndef FT_PROMPT

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:25 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 11:25:09 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 19:35:36 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,27 @@
 
 // Remember the prefix PWD= (check if needed)
 // Review: Empty arguments
+static
+int	stt_argless(t_env *env)
+{
+	char	*ptr;
+	size_t	index;
+
+	index = 0;
+	ptr = env_find("HOME", 4, &index, env);
+	if (ptr == NULL)
+		return (ft_error("msh_cd: home not set", "", 1));
+	if (chdir(ptr))
+		return (ft_error("msh_chdir: ", NULL, 1));
+	return (0);
+}
+
 int	msh_cd(t_vecp *argv, t_env *env)
 {
-	char		buffer[FT_PATH_SIZE * 2];
-	const char	default_path[] = "~";
-
-	// Env_find home, ~
+	char	buffer[FT_PATH_SIZE * 2];
 
 	if (argv->count < 2)
-	{
-		chdir("~");	// Review: env_find of PATH!!!
-		write(STDOUT_FILENO, "\n", 1);
-		return (1);
-	}
+		return (stt_argless(env));
 	if (argv->count > 2)
 		return (ft_error("msh_cd: too many arguments", "", 1));
 	ft_memcpy(buffer, "OLDPWD=", 8);

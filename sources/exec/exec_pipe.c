@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 16:33:45 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/24 19:04:39 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,7 @@ int	exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env)
 	size_t	count;
 	pid_t	cpid_list[FT_MAX_CHILDREN];	// No overflow because it is prevalidated
 	pid_t	process_id;
+	int		exit_status;
 
 	count = 0;
 	cpid_list[count++] = stt_exec_pipe(current, next, end, env);
@@ -132,6 +133,6 @@ int	exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env)
 			cpid_list[count++] = process_id;
 		current = next + 1;
 	}
-	msh_wait_child(cpid_list, count);	// To do: Check returns of wait_child
-	return (env->exit_status);
+	exit_status = msh_wait_child(cpid_list, count);	// To do: Check returns of wait_child
+	return (exit_status);
 }
