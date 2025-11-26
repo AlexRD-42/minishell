@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 10:04:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:18:32 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 11:01:49 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void	*stt_signal_dfl(void)
 }
 
 // Are signals relevant to non-tty mode?
+// Returns: 0) OK, -1) OOM, -2) Signals failed
 int	msh_init(t_env *env, t_hst *hst, const char **envp)
 {
 	ft_memset(env, 0, sizeof(t_env));
@@ -81,10 +82,10 @@ int	msh_init(t_env *env, t_hst *hst, const char **envp)
 	env->exit_status = 0;
 	env->fd_tmp = -1;
 	if (stt_setup_signals())
-		return (-1);
+		return (-2);
 	if (stt_env_copy(env, envp) == SIZE_MAX)
-		return (-2);
+		return (-1);
 	if (env_add_shlvl(env) != 0)
-		return (-2);
+		return (-1);
 	return (0);
 }
