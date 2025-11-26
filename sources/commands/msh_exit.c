@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:37:23 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 15:59:43 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	stt_parse_str(const char *str, int64_t *number)
 	}
 	if (str - ostr > 11)
 		return (-1);
-	*number = ft_atoi(ostr);
+	*number = ft_strtol(ostr);
 	if (*number > INT_MAX || *number < INT_MIN)
 		return (-1);
 	return (0);

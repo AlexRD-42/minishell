@@ -6,49 +6,45 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/26 09:30:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:39:42 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "msh_defines.h"
 #include "msh_types.h"
-#include "msh_utils.h"
+#include <unistd.h>
 
-// Returns 1 if a command was executed
 static
 int	stt_exec_simple(t_token *start, t_token *end, t_env *env)
 {
-	const int32_t	prev_fd[2] = {dup(STDIN_FILENO), dup(STDOUT_FILENO)};
-	t_vecp			argv;
-	char			*arg_ptr[FT_ARG_COUNT];
-	char			buf[FT_ARG_MAX];
-	int				rvalue;
+	t_vecp	argv;
+	char	*arg_ptr[FT_ARG_COUNT];
+	char	buf[FT_ARG_MAX];
+	int		fd[2];
+	int		rvalue;
 
-	if (prev_fd[0] < 0 || prev_fd[1] < 0)
-		return (ft_error("msh_dup: ", NULL, 1));
 	argv = (t_vecp){{buf, buf + sizeof(buf), buf}, 0, FT_ARG_COUNT, arg_ptr};
-	if (msh_build_argv(start, env, &argv) <= 0 || !argv.ptr[0])
+	fd[0] = -1;
+	fd[1] = -1;
+	if (msh_build_argv(start, env, &argv) <= 0 || !argv.ptr[0])		// Fatal Error
 		return (1);
-	msh_open_files(start, end, env);
+	if (msh_open_files(start, end, env, fd) == -1)
+		return (1);
 	rvalue = msh_dispatch(&argv, env);
-	if ((dup2(prev_fd[0], STDIN_FILENO) < 0) + (dup2(prev_fd[1], STDOUT_FILENO) < 0))
-		ft_error("msh_dup2: ", NULL, 1);
-	close(prev_fd[0]);
-	close(prev_fd[1]);
+	if (fd[0] >= 0)
+		close(fd[0]);
+	if (fd[1] >= 0)
+		close(fd[1]);
 	return (rvalue);
 }
 
 // Receives {start, end, env}
 int	exec_stu(t_token *start, t_token *end, t_env *env)
 {
-	const int32_t	original_stdin = dup(STDIN_FILENO);
-	t_token			*next;
-	int				exit_status;
+	t_token	*next;
+	int		exit_status;
 
-	if (original_stdin < 0)
-		return (ft_error("msh_dup: ", NULL, 1));
-	env->fd_tmp = original_stdin;
 	if (start == end)
 		return (env->exit_status);
 	next = msh_next_delimiter(start, end, E_PIPE);
@@ -56,10 +52,6 @@ int	exec_stu(t_token *start, t_token *end, t_env *env)
 		exit_status = stt_exec_simple(start, end, env);
 	else
 		exit_status = exec_pipeline(start, next, end, env);
-	if ((dup2(original_stdin, STDIN_FILENO) < 0))
-		ft_error("msh_dup2: ", NULL, -1);
-	close(original_stdin);
-	env->fd_tmp = -1;
 	return (exit_status);
 }
 

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 09:28:31 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 12:14:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int	env_add_shlvl(t_env *env)
 	env_entry = env_find("SHLVL", 5, &index, env);
 	if (env_entry == NULL)
 		return (env_add("SHLVL=1", env));
-	level = ft_atoi(env_entry + 6) + 1;
+	level = ft_strtol(env_entry + 6) + 1;
 	if (level <= 0 || level >= 1000)
 		level = 1;
 	ptr = ft_itoa_stack(level, buffer + sizeof(buffer) - 1);

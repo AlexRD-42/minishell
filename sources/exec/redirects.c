@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 14:55:44 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:58:33 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 16:41:41 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,49 +54,50 @@ int32_t	stt_open_file(t_token *token, t_env *env)
 		return (stt_parse_fd(token->type, word));
 	if (rvalue == -4)
 		ft_error("msh_redirects: Ambiguous redirects", "", rvalue);
-	return (-1);
+	return (rvalue);
 }
 
-// Returns: 1) STDIN REDIRECTED 2) STDOUT REDIRECTED, 4) ERROR (P)
+// Return: >=0: Ok, -1) OOM (P), -2) dir function (P), -4) Ambiguous redir (P)
+// Overrides the previous fd and closes
 static
-int	stt_apply_redir(t_token *token, t_env *env)
+int	stt_override_fd(t_token *token, t_env *env, int *fd)
 {
-	const int	target = !!(token->type & (E_REDIR_OUT | E_APPND));
-	int			fd;
+	const bool	target = !!(token->type & (E_REDIR_OUT | E_APPND));
+	const int	old_fd = fd[target];
+	int			new_fd;
 
 	if (token->type & E_HRDOC)
-		fd = token->fd[0];
+		new_fd = token->fd[0];
 	else
-		fd = stt_open_file(token, env);
-	if (fd < 0)
-		return (4);
-	if (dup2(fd, target) < 0)
+		new_fd = stt_open_file(token, env);
+	if (new_fd >= 0)
 	{
-		close(fd);
-		return (ft_error("msh_dup2: ", NULL, 4));
+		if (old_fd >= 0)
+			close(old_fd);
+		fd[target] = new_fd;
 	}
-	close(fd);
-	return (target + 1);
+	return (new_fd);
 }
 
-// Returns: (P), 1) STDIN REDIRECTED 2) STDOUT REDIRECTED 3) Both, 4) Error
-int	msh_open_files(t_token *tokens, t_token *end, t_env *env)
+// Returns: 0) OK, -1) Fatal Error (P)
+int	msh_open_files(t_token *tokens, t_token *end, t_env *env, int *fd)
 {
 	ssize_t		pdepth;
 	uint32_t	type;
-	int			rvalue;
 
 	pdepth = 0;
-	rvalue = 0;
-	while (tokens < end && !(tokens->type & E_END) && rvalue < 4)
+	while (tokens < end && !(tokens->type & E_END))
 	{
 		type = tokens->type;
 		pdepth += !!(type & E_OPAREN) - !!(type & E_CPAREN);
 		if (pdepth == 0 && (type & E_REDIR))
-			rvalue |= stt_apply_redir(tokens, env);
+		{
+			if (stt_override_fd(tokens, env, fd) == -1)
+				return (-1);	// Proceed on all other errors
+		}
 		if (pdepth < 0)
-			return (ft_error("msh_unexpected: Negative pdepth", "", 4));
+			return (ft_error("msh_unexpected: Negative pdepth", "", -1));
 		tokens++;
 	}
-	return (rvalue);
+	return (0);
 }

@@ -6,13 +6,12 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 15:50:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:42:03 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:35:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdint.h>
 #include <stddef.h>
-#include <errno.h>
 
 // Receives an endptr to a buffer guaranteed to hold size of number
 char	*ft_itoa_stack(int64_t number, char *ptr)
@@ -32,7 +31,7 @@ char	*ft_itoa_stack(int64_t number, char *ptr)
 	return (ptr);
 }
 
-int64_t	ft_atoi_bounded(const char *str, size_t length)
+int64_t	ft_strntol(const char *str, size_t length)
 {
 	const char	*end = str + length;
 	int64_t		number;
@@ -55,7 +54,7 @@ int64_t	ft_atoi_bounded(const char *str, size_t length)
 }
 
 // To do: set errno on overflow
-int64_t	ft_atoi(const char *str)
+int64_t	ft_strtol(const char *str)
 {
 	int64_t	number;
 	int64_t	sign;

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 09:43:07 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 16:01:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ int		exec_line(t_token *start, t_token *end, t_env *env);
 int		exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env);
 
 int		exec_cmd(t_token *tokens, t_env *env);
-int		msh_open_files(t_token *tokens, t_token *end, t_env *env);
+int		msh_open_files(t_token *tokens, t_token *end, t_env *env, int *fd);
 
 // EXECUTE UTILS
 ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv);

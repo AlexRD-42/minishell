@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 09:29:53 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 16:02:16 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,5 @@ int	exec_cmd(t_token *tokens, t_env *env)
 			_exit(126);
 	if ((cmd - argv.ptr[0]) < FT_PATH_SIZE && *cmd != '/')
 		_exit(stt_search_path(&argv, env, (size_t)(cmd - argv.ptr[0] + 1)));
-	_exit(ft_error("msh_exec: command not found", "", 127));
+	_exit(ft_error("msh_exec: command not found: ", argv.ptr[0], 127));
 }

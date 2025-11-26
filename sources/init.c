@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 10:04:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 11:01:49 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:45:33 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ int	msh_init(t_env *env, t_hst *hst, const char **envp)
 	env->max_count = FT_ENV_COUNT;
 	env->sig_dfl = stt_signal_dfl();
 	env->exit_status = 0;
-	env->fd_tmp = -1;
 	if (stt_setup_signals())
 		return (-2);
 	if (stt_env_copy(env, envp) == SIZE_MAX)

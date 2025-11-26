@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 11:59:05 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 09:42:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 16:52:41 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,22 @@ ssize_t	ft_read(int fd, void *buffer, void *end, size_t read_size)
 			i++;
 	}
 	return ((ssize_t) ptr - (ssize_t) buffer);
+}
+
+int	ft_dup2(int fd1, int fd2)
+{
+	if (fd1 == fd2)
+		return (0);
+	if (dup2(fd1, fd2) == -1)
+	{
+		close(fd1);
+		return (ft_error("msh_dup2: ", NULL, -1));
+	}
+	else
+	{
+		close(fd1);
+		return (0);
+	}
 }
 
 // int	ft_open(const char *path, int flags, mode_t mode)
