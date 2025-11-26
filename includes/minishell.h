@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:43:54 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 18:00:44 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:43:07 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@
 
 # include "msh_types.h"
 
-ssize_t	ft_putnbr(int64_t number, int fd, char c);
-
 // PARSING
 size_t	parsing(t_token *tokens, char *input, t_token **end, t_env *env);
 size_t	tokenize(t_token *tokens, const char *input, t_token **end);
@@ -31,7 +29,6 @@ size_t	syntax_validation(t_token *tokens, t_token *end);
 // Core
 int		msh_init(t_env *env, t_hst *hst, const char **envp);
 int		heredoc(const char *src, size_t length, bool expand, t_env *env);
-int		att_exit(int code, int change);
 size_t	hst_add_entry(const char *str, size_t length, t_hst *hst);
 size_t	hst_read(size_t index, char *buffer, const t_hst *hst);
 
@@ -68,8 +65,7 @@ size_t	init_read(char *buffer, t_hst *hst, t_env *env);
 
 // EXECUTE
 int		exec_line(t_token *start, t_token *end, t_env *env);
-int		exec_pipeline\
-(t_token *current, t_token *next, t_token *end, t_env *env);
+int		exec_pipeline(t_token *current, t_token *next, t_token *end, t_env *env);
 
 int		exec_cmd(t_token *tokens, t_env *env);
 int		msh_open_files(t_token *tokens, t_token *end, t_env *env);

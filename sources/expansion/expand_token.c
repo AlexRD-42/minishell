@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 21:18:07 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:49:57 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,15 +50,15 @@ int	parse_interval(t_buf src, t_env *env, t_buf *dst)
 	return (0);
 }
 
-static char
-	*stt_rename_asterisks(uint8_t *src, uint8_t *end, uint8_t qtype, bool exp)
+static
+char	*stt_rename_asterisks(uint8_t *src, uint8_t *end, uint8_t qtype, bool expand)
 {
-	if (exp)
+	if (expand)
 	{
 		while (src < end && *src != qtype)
 		{
 			if (*src == '*')
-				*src |= 128;
+				*src |= 128;	// Tag the bit
 			src++;
 		}
 	}
@@ -84,8 +84,7 @@ char	*stt_find_interval(t_buf src, t_env *env, t_buf *dst, bool expand)
 	if (quoted)
 	{
 		src.optr = ++src.wptr;
-		src.wptr = stt_rename_asterisks((uint8_t *) src.wptr,
-				(uint8_t *) src.end, (uint8_t) qtype, expand);
+		src.wptr = stt_rename_asterisks((uint8_t *) src.wptr, (uint8_t *) src.end, (uint8_t) qtype, expand);
 	}
 	else
 		while (src.wptr < src.end && *src.wptr != '"' && *src.wptr != '\'')
@@ -107,11 +106,10 @@ ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 {
 	t_buf			*dst;
 	t_buf			src;
-	char			buffer[FT_ARG_SIZE];
+	char			buffer[FT_ARG_SIZE];	// Limit for one argument
 	const uintptr_t	address = (uintptr_t) vec->buf.wptr;
 
-	src = (t_buf){(char *)(uintptr_t)(token.ptr), (char *)(uintptr_t)(token.ptr)
-		+ token.length, (char *)(uintptr_t)(token.ptr)};
+	src = (t_buf){(token.ptr), (token.ptr) + token.length, (token.ptr)};	// Review
 	if (token.type & E_EXPAND)
 		dst = &(t_buf){buffer, buffer + sizeof(buffer), buffer};
 	else
@@ -125,8 +123,8 @@ ssize_t	expand_token(t_token token, t_env *env, t_vecp *vec)
 	}
 	if (dst->wptr + 1 > dst->end)
 		return (-1);
-	*(dst->wptr++) = 0;
-	if ((token.type & E_EXPAND))
+	*(dst->wptr++) = 0;				// Check if not better inside parse_interval
+	if ((token.type & E_EXPAND))	// Check count == 0
 		return (msh_expand_glob(buffer, vec));
 	vec->ptr[vec->count++] = (char *) address;
 	return (1);

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 16:52:37 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:34:26 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:45:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@
 
 // Bytes (1 byte)
 # ifndef FT_LINE_MAX
-#  define FT_LINE_MAX 524288
+#  define FT_LINE_MAX 524288	// 512 kb
 # endif
 
 # ifndef FT_PROMPT

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 15:31:23 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/24 20:39:41 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:49:51 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,21 +68,22 @@ static void	stt_prepare_tokens(t_token *tokens)
 	}
 }
 
-static size_t	stt_handle_heredocs(t_token *tok, t_env *env)
+static
+size_t	stt_handle_heredocs(t_token *tokens, t_env *env)
 {
 	bool	expand;
 
-	while (!(tok[0].type & (E_END)))
+	while (!(tokens[0].type & (E_END)))
 	{
-		if (tok[0].type & (E_HRDOC) && tok[1].type & E_WORD)
+		if (tokens[0].type & (E_HRDOC) && tokens[1].type & E_WORD)
 		{
-			if (stt_expan(tok[1], 1))
+			if (stt_expan(tokens[1], 1))
 				expand = true;
 			else
 				expand = false;
-			tok[1].type = E_LIMITER;
-			tok[0].fd[0] = heredoc(tok[1].ptr, tok[1].length, expand, env);
-			tok[0].fd[1] = -1;
+			tokens[1].type = E_LIMITER;
+			tokens[0].fd[0] = heredoc(tokens[1].ptr, tokens[1].length, expand, env);
+			tokens[0].fd[1] = -1;
 			if (g_signal == SIGINT)
 			{
 				env->exit_status = 130;
@@ -90,7 +91,7 @@ static size_t	stt_handle_heredocs(t_token *tok, t_env *env)
 				return (SIZE_MAX);
 			}
 		}
-		tok++;
+		tokens++;
 	}
 	return (0);
 }

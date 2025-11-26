@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 10:12:28 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/20 13:59:30 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/25 18:46:28 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,9 @@ const char	*ft_strchr(const char *str, unsigned char c);
 
 void		*ft_memmove(void *vdst, const void *vsrc, size_t length);
 void		*ft_memset(void *dst_void, const uint8_t byte, size_t length);
-void		*ft_memcpy\
-(void *restrict vdst, const void *restrict vsrc, size_t length);
+void		*ft_memcpy(void *restrict vdst, const void *restrict vsrc, size_t length);
 
-int			ft_lmcpy\
-(void *restrict vdst, const void *restrict vsrc, size_t length, char *end);
+int			ft_lmcpy(void *restrict vdst, const void *restrict vsrc, size_t length, char *end);
 
 // Wrappers
 ssize_t		ft_write(int fd, const void *buffer, size_t length);

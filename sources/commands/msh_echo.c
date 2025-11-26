@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:54:49 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:41:19 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:23:40 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include "minishell.h"
 #include "msh_utils.h"
 
+/* Echo prints out the arguments to stdout, with a space separating them
+followed by a newline (-n suppresses the newline) */
 static
 int	stt_print_args(bool no_nl, char **argv)
 {

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/24 21:01:44 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:30:16 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ int	stt_exec_simple(t_token *start, t_token *end, t_env *env)
 		return (1);
 	msh_open_files(start, end, env);
 	rvalue = msh_dispatch(&argv, env);
-	if ((dup2(prev_fd[0], STDIN_FILENO) < 0)
-		+ (dup2(prev_fd[1], STDOUT_FILENO) < 0))
+	if ((dup2(prev_fd[0], STDIN_FILENO) < 0) + (dup2(prev_fd[1], STDOUT_FILENO) < 0))
 		ft_error("msh_dup2: ", NULL, 1);
 	close(prev_fd[0]);
 	close(prev_fd[1]);
@@ -53,8 +52,7 @@ int	exec_stu(t_token *start, t_token *end, t_env *env)
 	if (start == end)
 		return (env->exit_status);
 	next = msh_next_delimiter(start, end, E_PIPE);
-	if (next == end && !(start->type & E_OPAREN)
-		&& msh_mutates_state(start, end))
+	if (next == end && !(start->type & E_OPAREN) && msh_mutates_state(start, end))
 		exit_status = stt_exec_simple(start, end, env);
 	else
 		exit_status = exec_pipeline(start, next, end, env);

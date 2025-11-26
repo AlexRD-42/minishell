@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:43 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:53:09 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:26:36 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,9 @@ int	env_replace(const char *new_entry, size_t index, t_env *env)
 		wptr = allocate_blocks(env, total_size);
 		if (wptr == NULL)
 			return (ft_error("msh_export: out of memory", "", -1));
-		mark_for_deletion(old_entry, env);
+		mark_for_deletion(old_entry, env);	// Always after allocate blocks to prevent aliasing
 		ft_memcpy(wptr, new_entry, total_size);
-		env->ptr[index] = wptr;
+		env->ptr[index] = wptr;	// Reassigns pointer to new block
 	}
 	else
 		ft_memcpy(old_entry, new_entry, total_size);
@@ -113,8 +113,7 @@ int	env_export(const char *entry, t_env *env)
 	index = 0;
 	while (entry[length] != 0 && entry[length] != '=')
 		length++;
-	append = (length > 1) && (entry[length] == '=')
-		&& entry[length - 1] == '+';
+	append = (length > 1) && (entry[length] == '=') && entry[length - 1] == '+';
 	ptr = env_find(entry, length - append, &index, env);
 	length += (entry[length] == '=');
 	if (ptr == NULL && append == 0)

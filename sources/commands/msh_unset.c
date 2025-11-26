@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 13:55:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:50:47 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:24:18 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	msh_unset(t_vecp *argv, t_env *env)
 	while (argv->ptr[i] != NULL)
 	{
 		if (env_del(argv->ptr[i], env) == SIZE_MAX)
-			rvalue = 1;
+			rvalue = 1;		// At least one failure
 		i++;
 	}
 	return (rvalue);

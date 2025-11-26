@@ -6,14 +6,15 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 10:44:17 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/23 17:53:49 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:40:57 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "msh_utils.h"
 
-static int	stt_count_pipes(t_token *tokens, t_token *end)
+static
+int	stt_count_pipes(t_token *tokens, t_token *end)
 {
 	size_t	pipes_num;
 
@@ -44,8 +45,7 @@ int	stt_syntax_check(uint32_t cur_type, uint32_t prev_type, int *pdepth)
 	}
 	if (*pdepth < 0)
 		return (-1);
-	if ((cur_type & E_OPERATOR)
-		&& (prev_type & (E_OPERATOR | E_REDIR | E_OPAREN)))
+	if ((cur_type & E_OPERATOR) && (prev_type & (E_OPERATOR | E_REDIR | E_OPAREN)))
 		return (-1);
 	if ((cur_type & E_WORD) && (prev_type & E_CPAREN))
 		return (-1);

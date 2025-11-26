@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:59:14 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:30:54 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	stt_exec_subshell(t_token *start, t_env *env)
 	end = start;
 	type = end->type;
 	pdepth = 1 - !!(type & E_CPAREN);
-	while (pdepth != 0)
+	while (pdepth != 0)	// Dangerous if pre-validation is wrong but good for debugging
 	{
 		end++;
 		type = end->type;

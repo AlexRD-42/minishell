@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:57:04 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:29:53 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,11 @@ static
 int	stt_search_path(t_vecp *argv, t_env *env, size_t cmd_size)
 {
 	size_t		i;
-	char		buf[2 * FT_PATH_SIZE];
+	char		buffer[2 * FT_PATH_SIZE];
 	char		*wptr;
 	const char	*path = stt_find_path(env->ptr);
 
-	wptr = ft_memcpy(buf + sizeof(buf) - cmd_size, argv->ptr[0], cmd_size);
+	wptr = ft_memcpy(buffer + sizeof(buffer) - cmd_size, argv->ptr[0], cmd_size);
 	*--wptr = '/';
 	while (*path != 0)
 	{
@@ -76,10 +76,10 @@ int	exec_cmd(t_token *tokens, t_env *env)
 	t_vecp	argv;
 	char	*cmd;
 	char	*arg_ptr[FT_ARG_COUNT];
-	char	buf[FT_ARG_MAX];
+	char	buffer[FT_ARG_MAX];
 	int		rvalue;
 
-	argv = (t_vecp){{buf, buf + sizeof(buf), buf}, 0, FT_ARG_COUNT, arg_ptr};
+	argv = (t_vecp){{buffer, buffer + sizeof(buffer), buffer}, 0, FT_ARG_COUNT, arg_ptr};
 	if (msh_build_argv(tokens, env, &argv) <= 0 || !argv.ptr[0])
 		_exit(1);
 	rvalue = msh_dispatch(&argv, env);

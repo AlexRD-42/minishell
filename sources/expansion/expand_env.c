@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 21:18:21 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:43:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:32:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ char	*stt_expand_type(t_buf src, t_buf *dst, int32_t exit_status)
 		if (dst->wptr + 1 > dst->end)
 			return (NULL);
 		*(dst->wptr++) = '$';
-		*dst->wptr = 0;
+		*dst->wptr = 0;		// Review
 	}
 	return (src.wptr);
 }

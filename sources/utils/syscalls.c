@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 11:59:05 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:42:48 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:42:16 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,7 @@ ssize_t	ft_write(int fd, const void *buffer, size_t length)
 			bytes_remaining -= (size_t) bytes_written;
 			ptr += (size_t) bytes_written;
 		}
-		else if (errno != EINTR || bytes_written == 0
-			|| i >= FT_SYSCALL_RETRIES)
+		else if (errno != EINTR || bytes_written == 0 || i >= FT_SYSCALL_RETRIES)
 			return (ft_error("msh_write: ", NULL, -1));
 		else
 			i++;

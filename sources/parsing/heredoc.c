@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 18:16:19 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:43:40 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:49:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,8 @@
 #include "msh_types.h"
 #include "msh_utils.h"
 
-static uint8_t	\
-stt_find_eof\
-(const char **line_ptr, const char *end, const char *eof, size_t eof_len)
+static
+uint8_t	stt_find_eof(const char **line_ptr, const char *end, const char *eof, size_t eof_len)
 {
 	const char	*str = *line_ptr;
 	size_t		i;
@@ -76,7 +75,7 @@ size_t	stt_read_eof(const char *eof, char *buffer)
 	{
 		if (stt_find_eof(&line_ptr, wptr, eof, eof_len) == 1)
 			return ((size_t)(line_ptr - buffer));
-		bytes_read = read(STDIN_FILENO, wptr, FT_PAGE_SIZE);
+		bytes_read = read(STDIN_FILENO, wptr, FT_PAGE_SIZE);	// Maybe print errors
 		wptr += bytes_read;
 	}
 	return (SIZE_MAX);

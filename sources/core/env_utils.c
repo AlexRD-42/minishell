@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 16:11:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:51:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:28:31 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ size_t	mark_for_deletion(char *ptr, t_env *env)
 		metadata[meta_index] = E_META_FREE;
 		meta_index++;
 	}
-	return (meta_index - start);
+	return (meta_index - start);	// Blocks freed
 }
 
 // If length is 0, it will be calculated
@@ -79,7 +79,7 @@ size_t	env_del(const char *entry, t_env *env)
 		index++;
 	}
 	env->count--;
-	env->ptr[env->count] = NULL;
+	env->ptr[env->count] = NULL;	// I think this might be useless
 	return (blocks_freed);
 }
 

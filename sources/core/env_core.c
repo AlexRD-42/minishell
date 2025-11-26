@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 15:24:01 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/24 20:55:03 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 09:46:08 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,14 @@
 #include "msh_defines.h"
 #include "msh_utils.h"
 
-static char	
-	*stt_assign_blocks(t_env *env, size_t m_index, size_t lower, size_t upper)
+static
+char	*stt_assign_blocks(t_env *env, size_t meta_index, size_t lower, size_t upper)
 {
 	size_t	i;
 	char	*metadata;
 
 	metadata = env->metadata;
-	i = m_index;
+	i = meta_index;
 	lower += i;
 	upper += i;
 	metadata[i++] = E_META_HEAD;
@@ -38,11 +38,11 @@ static char
 		metadata[i] = E_META_RESERVED;
 		i++;
 	}
-	return (env->optr + m_index * FT_BLOCK_SIZE);
+	return (env->optr + meta_index * FT_BLOCK_SIZE);
 }
 
-static size_t
-	stt_find_space(char *metadata, size_t max_count, size_t lower, size_t *out)
+static
+size_t	stt_find_space(char *metadata, size_t max_count, size_t lower, size_t *out)
 {
 	size_t	i;
 	size_t	block_index;
@@ -114,17 +114,17 @@ void	stt_compact(t_env *env)
 // Assign blocks, calls free if necessary
 char	*allocate_blocks(t_env *env, size_t bytes)
 {
-	size_t			m_index;
+	size_t			meta_index;
 	const size_t	lower = 1 + bytes / FT_BLOCK_SIZE;
 	size_t			upper;
 
-	m_index = stt_find_space(env->metadata, env->max_count, lower, &upper);
-	if (m_index == SIZE_MAX)
+	meta_index = stt_find_space(env->metadata, env->max_count, lower, &upper);
+	if (meta_index == SIZE_MAX)
 	{
 		stt_compact(env);
-		m_index = stt_find_space(env->metadata, env->max_count, lower, &upper);
-		if (m_index == SIZE_MAX)
+		meta_index = stt_find_space(env->metadata, env->max_count, lower, &upper);
+		if (meta_index == SIZE_MAX)
 			return (NULL);
 	}
-	return (stt_assign_blocks(env, m_index, lower, upper));
+	return (stt_assign_blocks(env, meta_index, lower, upper));
 }
