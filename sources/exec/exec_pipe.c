@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 20:50:06 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 17:41:36 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 18:03:37 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ pid_t	stt_child(int32_t *pipe_fd, t_token *current, t_token *next, t_env *env)
 		return (1);
 	}
 	if (not_subshell)
-		return (exec_cmd(current, env));
+		return (exec_cmd(current, next, env));
 	return (stt_exec_subshell(current, env));
 }
 

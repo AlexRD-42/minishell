@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 12:15:52 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 09:31:49 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 18:06:36 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,15 +69,17 @@ t_token	*msh_next_delimiter(t_token *start, t_token *end, uint32_t delimiter)
 }
 
 // Review: Maybe this should also take an end pointer (all the callers have end)
-ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv)
+ssize_t	msh_build_argv(t_token *start, t_token *end, t_env *env, t_vecp *argv)
 {
 	ssize_t	rvalue;
+	t_token	*tokens;
 
-	while ((token->type & E_CMD_END) == 0 && argv->count < argv->max_count - 1)
+	tokens = start;
+	while (tokens < end && argv->count < argv->max_count - 1)
 	{
-		if (token->type & E_WORD)
+		if (tokens->type & E_WORD)
 		{
-			rvalue = expand_token(*token, env, argv);
+			rvalue = expand_token(*tokens, env, argv);
 			if (rvalue < 0)
 			{
 				if (rvalue == -4)
@@ -85,7 +87,7 @@ ssize_t	msh_build_argv(t_token *token, t_env *env, t_vecp *argv)
 				return (rvalue);
 			}
 		}
-		token++;
+		tokens++;
 	}
 	argv->ptr[argv->count] = NULL;
 	return ((ssize_t) argv->count);

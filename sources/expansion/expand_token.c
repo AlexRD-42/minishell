@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 12:58:58 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 09:49:57 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 18:18:07 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,26 @@
 #include "msh_utils.h"
 
 ssize_t	msh_expand_glob(const char *pattern, t_vecp *vec);
+
+static
+char	*stt_rename_asterisks(uint8_t *src, uint8_t *end, uint8_t qtype, bool expand)
+{
+	if (expand)
+	{
+		while (src < end && *src != qtype)
+		{
+			if (*src == '*')
+				*src |= 128;	// Tag the bit
+			src++;
+		}
+	}
+	else
+	{
+		while (src < end && *src != qtype)
+			src++;
+	}
+	return ((char *)src);
+}
 
 // Needs a better name
 // Parses the string and performs variable expansion
@@ -48,26 +68,6 @@ int	parse_interval(t_buf src, t_env *env, t_buf *dst)
 		return (-1);
 	dst->wptr += length;
 	return (0);
-}
-
-static
-char	*stt_rename_asterisks(uint8_t *src, uint8_t *end, uint8_t qtype, bool expand)
-{
-	if (expand)
-	{
-		while (src < end && *src != qtype)
-		{
-			if (*src == '*')
-				*src |= 128;	// Tag the bit
-			src++;
-		}
-	}
-	else
-	{
-		while (src < end && *src != qtype)
-			src++;
-	}
-	return ((char *)src);
 }
 
 // Needs a better name

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 16:02:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 18:02:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int	stt_search_path(t_vecp *argv, t_env *env, size_t cmd_size)
 }
 
 // Path only matters if its not a built-in or if it has absolute path!
-int	exec_cmd(t_token *tokens, t_env *env)
+int	exec_cmd(t_token *tokens, t_token *end, t_env *env)
 {
 	t_vecp	argv;
 	char	*cmd;
@@ -80,7 +80,7 @@ int	exec_cmd(t_token *tokens, t_env *env)
 	int		rvalue;
 
 	argv = (t_vecp){{buffer, buffer + sizeof(buffer), buffer}, 0, FT_ARG_COUNT, arg_ptr};
-	if (msh_build_argv(tokens, env, &argv) <= 0 || !argv.ptr[0])
+	if (msh_build_argv(tokens, end, env, &argv) <= 0 || !argv.ptr[0])
 		_exit(1);
 	rvalue = msh_dispatch(&argv, env);
 	if (rvalue != 127)

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/05 13:34:39 by feazeved          #+#    #+#             */
-/*   Updated: 2025/11/26 17:39:42 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:58:38 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	stt_exec_simple(t_token *start, t_token *end, t_env *env)
 	argv = (t_vecp){{buf, buf + sizeof(buf), buf}, 0, FT_ARG_COUNT, arg_ptr};
 	fd[0] = -1;
 	fd[1] = -1;
-	if (msh_build_argv(start, env, &argv) <= 0 || !argv.ptr[0])		// Fatal Error
+	if (msh_build_argv(start, end, env, &argv) <= 0 || !argv.ptr[0])		// Fatal Error
 		return (1);
 	if (msh_open_files(start, end, env, fd) == -1)
 		return (1);
