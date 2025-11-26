@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 21:18:21 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 09:32:19 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 18:52:05 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 static
 char	*stt_expand_type(t_buf src, t_buf *dst, int32_t exit_status)
 {
-	char		*ptr;
-	char		buffer[32];
-	size_t		length;
+	char	*ptr;
+	char	buffer[32];
+	size_t	length;
 
 	src.wptr += src.wptr < src.end && *src.wptr == '$';
 	if (src.wptr < src.end && *src.wptr == '?')

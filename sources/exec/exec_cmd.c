@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 14:11:36 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 18:02:52 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/26 19:33:29 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	stt_search_path(t_vecp *argv, t_env *env, size_t cmd_size)
 		}
 		path += i + (path[i] == ':');
 	}
-	return (ft_error("msh_exec: command not found", "", 127));
+	return (ft_error("msh_exec: command not found: ", argv->ptr[0], 127));
 }
 
 // Path only matters if its not a built-in or if it has absolute path!
