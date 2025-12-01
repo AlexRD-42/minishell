@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 12:25:47 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 10:58:31 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/27 09:47:17 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,21 @@ int	stt_notty_mode(t_env *env, char *line)
 	ssize_t		bytes_read;
 	int			rvalue;
 	t_token		*end;
+	char		*wptr;
 
 	rvalue = 0;
-	bytes_read = read(STDIN_FILENO, line, FT_PIPE_SIZE);
-	if (bytes_read <= 0)
-		return (bytes_read != 0);
-	line[bytes_read] = '\0';
+	bytes_read = 0;
+	wptr = line;
+	while (wptr < line + FT_LINE_MAX - 1 - FT_PIPE_SIZE)
+	{
+		bytes_read = read(STDIN_FILENO, wptr, FT_PIPE_SIZE);
+		if (bytes_read <= 0)
+			break ;
+		wptr += (size_t) bytes_read;
+	}
+	if (bytes_read < 0 || (wptr - line == 0))
+		return (bytes_read < 0);
+	*wptr = '\0';
 	if (parsing(tokens, line, &end, env) == SIZE_MAX)
 		return (2);
 	if (tokens[0].type != E_END)

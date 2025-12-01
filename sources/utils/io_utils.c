@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 15:50:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/11/26 17:35:19 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/11/27 11:36:05 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int64_t	ft_strtol(const char *str)
 	}
 	else if (*str == '+')
 		str++;
-	while (*str >= '0' && *str <= '9' && number > INT64_MIN / 10)
+	while (*str >= '0' && *str <= '9')
 		number = number * 10 - (*str++ - '0');
 	return (sign * number);
 }
